@@ -1,0 +1,58 @@
+import com.badlogic.gdx.tools.texturepacker.TexturePacker
+
+buildscript {
+    ext {
+        appName = "jade"
+        gdxVersion = '1.11.0'
+    }
+
+    repositories {
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+
+    dependencies {
+        classpath "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+    }
+}
+
+allprojects {
+    version = '1.0'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+        gradlePluginPortal()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://jitpack.io" }
+    }
+}
+
+project(":desktop") {
+    apply plugin: "java-library"
+
+    dependencies {
+        implementation project(":core")
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    }
+}
+
+project(":core") {
+    apply plugin: "java-library"
+
+    dependencies {
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+    }
+}
+
+abstract class PackSpritesTask extends DefaultTask {
+    @TaskAction
+    def invoke() {
+        TexturePacker.process("assets/spritesRaw/", "assets/sprites/", "sprites.atlas")
+    }
+}
+
+tasks.register("packSprites", PackSpritesTask)
