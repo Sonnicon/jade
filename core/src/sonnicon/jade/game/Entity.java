@@ -92,4 +92,19 @@ public class Entity {
 
         return newEntity;
     }
+
+    public boolean compare(Entity other) {
+        if (!traits.equals(other.traits) ||
+                components.size() != other.components.size()) {
+            return false;
+        }
+
+        for (Map.Entry<Class<? extends Component>, Component> comp : components.entrySet()) {
+            if (!other.components.containsKey(comp.getKey()) ||
+                !comp.getValue().compare(other.components.get(comp.getKey()))) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

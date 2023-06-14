@@ -29,11 +29,11 @@ public class Tile {
         entities.add(WorldTemplates.createFloorEntity(this));
     }
 
-    public void renderAllEntities(SpriteBatch batch) {
+    public void renderAllEntities(SpriteBatch batch, float delta) {
         for (Entity entity : entities) {
             Renderable component = (Renderable) entity.components.getOrDefault(DrawComponent.class, null);
             if (component != null && !component.culled()) {
-                component.render(batch);
+                component.render(batch, delta);
             }
         }
     }

@@ -28,4 +28,6 @@ public abstract class Component {
     }
 
     public abstract Component copy();
+
+    public abstract boolean compare(Component other);
 }

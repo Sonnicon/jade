@@ -1,10 +1,28 @@
 package sonnicon.jade.input;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.graphics.Renderer;
 
 public class Input implements InputProcessor {
     protected int lastScreenX, lastScreenY;
+
+    public static InputMultiplexer inputIngame;
+
+    static {
+        inputIngame = new InputMultiplexer();
+        Gamestate.State.ingame.inputProcessor = inputIngame;
+    }
+
+    public Input() {
+        inputIngame.addProcessor(this);
+    }
+
+    public static void init() {
+        new Input();
+    }
 
     @Override
     public boolean keyDown(int keycode) {

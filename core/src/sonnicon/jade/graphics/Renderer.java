@@ -7,13 +7,15 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.gui.StageIngame;
 
 import java.util.LinkedList;
 
 
 public class Renderer {
     public static SpriteBatch spriteBatch;
-    private static Viewport viewport;
+    public static Viewport viewport;
     public static OrthographicCamera camera;
     public static LinkedList<Renderable> renderList;
 
@@ -29,16 +31,19 @@ public class Renderer {
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
 
+
         renderList = new LinkedList<>();
     }
 
-    public static void render() {
+    public static void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if (Gamestate.getState() == Gamestate.State.menu) return;
 
         spriteBatch.begin();
         for (Renderable renderable : renderList) {
             if (renderable.culled()) continue;
-            renderable.render(spriteBatch);
+            renderable.render(spriteBatch, delta);
         }
         spriteBatch.end();
 
@@ -60,13 +65,12 @@ public class Renderer {
 
     public static void resize(int width, int height) {
         viewport.update(width, height);
-        camera.viewportWidth = width * viewportScale;
-        camera.viewportHeight = height * viewportScale;
         updateCamera();
     }
 
     public static void updateCamera() {
-        camera.update();
+        camera.zoom = viewportScale;
+        viewport.apply();
         spriteBatch.setProjectionMatrix(camera.combined);
 
         cameraEdgeLeft = camera.position.x - camera.viewportWidth / 2;

@@ -52,9 +52,9 @@ public class Chunk implements Renderable {
     }
 
     @Override
-    public void render(SpriteBatch batch) {
+    public void render(SpriteBatch batch, float delta) {
         for (Tile tile : tiles) {
-            tile.renderAllEntities(batch);
+            tile.renderAllEntities(batch, delta);
         }
 
     }

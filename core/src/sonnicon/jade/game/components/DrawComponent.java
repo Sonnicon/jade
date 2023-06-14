@@ -43,7 +43,7 @@ public class DrawComponent extends Component implements Renderable {
     }
 
     @Override
-    public void render(SpriteBatch batch) {
+    public void render(SpriteBatch batch, float delta) {
         if (positionComponent != null && positionComponent.tile != null) {
             batch.draw(region, positionComponent.tile.getDrawX(), positionComponent.tile.getDrawY(), width, height);
         }
@@ -62,5 +62,17 @@ public class DrawComponent extends Component implements Renderable {
                 (drawX + width) < Renderer.getCameraEdgeLeft() ||
                 drawY > Renderer.getCameraEdgeBottom() ||
                 (drawY + height) < Renderer.getCameraEdgeTop();
+    }
+
+    @Override
+    public boolean compare(Component other) {
+        if (other.getClass() != getClass()) {
+            return false;
+        }
+        DrawComponent comp = (DrawComponent) other;
+        return region == comp.region &&
+                width == comp.width &&
+                height == comp.height &&
+                positionComponent.compare(((DrawComponent) other).positionComponent);
     }
 }

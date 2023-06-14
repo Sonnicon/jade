@@ -1,0 +1,33 @@
+{
+  BitmapFont: {
+    foldit.fnt: {
+      file: "foldit.fnt"
+    }
+  },
+
+  sonnicon.jade.gui.NinePatchDrawableButton: {
+    button1-ninepatch: { }
+  },
+
+  "LabelStyle": {
+    default: {
+      font: "foldit.fnt"
+    }
+  },
+
+  "TextButtonStyle": {
+    default: {
+      font: "foldit.fnt"
+      up: button1-ninepatch
+    }
+  }
+
+  ButtonStyle: {
+    default: {
+
+    },
+    button-hand-0: {
+
+    }
+  }
+}

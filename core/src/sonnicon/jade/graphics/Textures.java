@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import java.util.HashMap;
 
 public class Textures {
-    private static TextureAtlas atlas;
+    public static TextureAtlas atlas;
     private static final HashMap<String, TextureRegion> storedRegions = new HashMap<>();
 
     public static void init() {
