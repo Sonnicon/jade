@@ -1,6 +1,6 @@
-package sonnicon.jade.game;
+package sonnicon.jade.entity;
 
-import sonnicon.jade.game.components.Component;
+import sonnicon.jade.entity.components.Component;
 
 import java.util.*;
 
@@ -43,7 +43,7 @@ public class Entity {
             return false;
         }
         if (components.containsKey(component.getClass())) {
-                return false;
+            return false;
         }
         components.put(component.getClass(), component);
         component.addToEntity(this);
@@ -101,7 +101,7 @@ public class Entity {
 
         for (Map.Entry<Class<? extends Component>, Component> comp : components.entrySet()) {
             if (!other.components.containsKey(comp.getKey()) ||
-                !comp.getValue().compare(other.components.get(comp.getKey()))) {
+                    !comp.getValue().compare(other.components.get(comp.getKey()))) {
                 return false;
             }
         }

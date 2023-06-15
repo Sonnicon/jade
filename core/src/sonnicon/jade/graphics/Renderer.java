@@ -8,16 +8,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import sonnicon.jade.game.Gamestate;
-import sonnicon.jade.gui.StageIngame;
 
 import java.util.LinkedList;
-
 
 public class Renderer {
     public static SpriteBatch spriteBatch;
     public static Viewport viewport;
     public static OrthographicCamera camera;
-    public static LinkedList<Renderable> renderList;
+    public static LinkedList<IRenderable> renderList;
 
     public static float viewportScale = 0.25f;
 
@@ -41,7 +39,7 @@ public class Renderer {
         if (Gamestate.getState() == Gamestate.State.menu) return;
 
         spriteBatch.begin();
-        for (Renderable renderable : renderList) {
+        for (IRenderable renderable : renderList) {
             if (renderable.culled()) continue;
             renderable.render(spriteBatch, delta);
         }

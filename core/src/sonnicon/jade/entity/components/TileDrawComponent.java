@@ -1,21 +1,21 @@
-package sonnicon.jade.game.components;
+package sonnicon.jade.entity.components;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import sonnicon.jade.game.Entity;
-import sonnicon.jade.graphics.Renderable;
+import sonnicon.jade.entity.Entity;
+import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 
 import java.util.Collections;
 import java.util.HashSet;
 
-public class DrawComponent extends Component implements Renderable {
+public class TileDrawComponent extends Component implements IRenderable {
     protected TextureRegion region;
     protected float width;
     protected float height;
     protected PositionComponent positionComponent;
 
-    public DrawComponent(TextureRegion region, float width, float height) {
+    public TileDrawComponent(TextureRegion region, float width, float height) {
         this.region = region;
         this.width = width;
         this.height = height;
@@ -39,7 +39,7 @@ public class DrawComponent extends Component implements Renderable {
 
     @Override
     public Component copy() {
-        return new DrawComponent(region, width, height);
+        return new TileDrawComponent(region, width, height);
     }
 
     @Override
@@ -69,10 +69,10 @@ public class DrawComponent extends Component implements Renderable {
         if (other.getClass() != getClass()) {
             return false;
         }
-        DrawComponent comp = (DrawComponent) other;
+        TileDrawComponent comp = (TileDrawComponent) other;
         return region == comp.region &&
                 width == comp.width &&
                 height == comp.height &&
-                positionComponent.compare(((DrawComponent) other).positionComponent);
+                positionComponent.compare(((TileDrawComponent) other).positionComponent);
     }
 }

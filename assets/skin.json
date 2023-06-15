@@ -4,10 +4,28 @@
       file: "foldit.fnt"
     }
   },
-
-  sonnicon.jade.gui.NinePatchDrawableButton: {
-    button1-ninepatch: { }
-  },
+  com.badlogic.gdx.graphics.g2d.NinePatch: {
+    button1-9p: {
+      name: "button1"
+      leftEdge: 1
+      rightEdge: 1
+      bottomEdge: 1
+      leftWidth: 4
+      rightWidth: 4
+      bottomHeight: 6
+    }
+    button-inventory-9p: {
+      name: "button-inventory"
+      leftEdge: 3
+      rightEdge: 3
+      topEdge: 3
+      bottomEdge: 3
+      leftWidth: 16
+      rightWidth: 16
+      topHeight: 16
+      bottomHeight: 16
+    }
+  }
 
   "LabelStyle": {
     default: {
@@ -18,7 +36,7 @@
   "TextButtonStyle": {
     default: {
       font: "foldit.fnt"
-      up: button1-ninepatch
+      up: button1-9p
     }
   }
 
@@ -27,7 +45,10 @@
 
     },
     button-hand-0: {
-
+      up: button-inventory-9p
+    }
+    button-hand-1: {
+      up: button-inventory-9p
     }
   }
 }

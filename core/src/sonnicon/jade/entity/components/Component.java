@@ -1,6 +1,6 @@
-package sonnicon.jade.game.components;
+package sonnicon.jade.entity.components;
 
-import sonnicon.jade.game.Entity;
+import sonnicon.jade.entity.Entity;
 
 import java.util.HashSet;
 
@@ -8,6 +8,14 @@ public abstract class Component {
     protected Entity entity;
 
     public boolean canAddToEntity(Entity entity) {
+        HashSet<Class<? extends Component>> deps = getDependencies();
+        if (deps != null) {
+            for (Class<? extends Component> dep : deps) {
+                if (!entity.components.containsKey(dep)) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 

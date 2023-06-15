@@ -1,10 +1,10 @@
-package sonnicon.jade.game.components;
+package sonnicon.jade.entity.components;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import sonnicon.jade.game.Entity;
+import sonnicon.jade.entity.Entity;
 import sonnicon.jade.graphics.Renderer;
 
-public class AutoDrawComponent extends DrawComponent {
+public class AutoDrawComponent extends TileDrawComponent {
 
     public AutoDrawComponent(TextureRegion region, float width, float height) {
         super(region, width, height);

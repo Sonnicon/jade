@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import sonnicon.jade.game.Gamestate;
-import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.Textures;
 
 public class Gui {
@@ -15,9 +14,7 @@ public class Gui {
     public static Skin skin;
 
     public static void init() {
-        skin = new Skin(Gdx.files.internal("skin.json"), Textures.atlas);
-
-
+        skin = new SkinJade(Gdx.files.internal("skin.json"), Textures.atlas);
 
         stageMenu = new StageMenuMain();
         stageIngame = new StageIngame();

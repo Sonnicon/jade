@@ -1,11 +1,11 @@
 package sonnicon.jade.world;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import sonnicon.jade.graphics.Renderable;
+import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.util.Direction;
 
-public class Chunk implements Renderable {
+public class Chunk implements IRenderable {
     public static final short CHUNK_SIZE = 16;
     protected static final float CHUNK_TILE_SIZE = CHUNK_SIZE * Tile.TILE_SIZE;
 
@@ -13,7 +13,6 @@ public class Chunk implements Renderable {
     public final short x, y;
     public final Chunk[] nearbyChunks = new Chunk[4];
     public final World world;
-
 
     public Chunk(short x, short y, World world) {
         this.x = x;
@@ -56,7 +55,6 @@ public class Chunk implements Renderable {
         for (Tile tile : tiles) {
             tile.renderAllEntities(batch, delta);
         }
-
     }
 
     @Override

@@ -1,9 +1,10 @@
 package sonnicon.jade;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import sonnicon.jade.content.CharacterPrinter;
 import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.game.Update;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.Gui;
@@ -23,6 +24,8 @@ public class Jade extends ApplicationAdapter {
         for (int i = 0; i < 16; i++) {
             new Chunk((short) (i / 4), (short) (i % 4), w);
         }
+        CharacterPrinter.printCharacterPlayer(w.chunks.get(0).tiles[0]);
+
 
         Input.init();
 
@@ -32,6 +35,7 @@ public class Jade extends ApplicationAdapter {
     @Override
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
+        Update.update(delta);
         Renderer.render(delta);
         Gui.render(delta);
     }
