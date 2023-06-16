@@ -50,6 +50,10 @@ public class Entity {
         return true;
     }
 
+    public <T extends Component> T getComponent(Class<T> type) {
+        return (T) components.getOrDefault(type, null);
+    }
+
     public Entity copy() {
         Entity newEntity = new Entity();
         newEntity.traits.addAll(traits);
@@ -101,7 +105,7 @@ public class Entity {
 
         for (Map.Entry<Class<? extends Component>, Component> comp : components.entrySet()) {
             if (!other.components.containsKey(comp.getKey()) ||
-                    !comp.getValue().compare(other.components.get(comp.getKey()))) {
+                    !comp.getValue().compare(other.getComponent(comp.getKey()))) {
                 return false;
             }
         }

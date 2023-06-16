@@ -6,14 +6,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import sonnicon.jade.game.Gamestate;
 
 public class StageMenuMain extends Stage {
     protected Table tableMain, tableLeftButtons;
 
     public StageMenuMain() {
-        super(new FillViewport(300, 1000));
+        super(new ExtendViewport(400, 400));
         create();
         Gamestate.State.menu.stage = this;
     }

@@ -30,7 +30,7 @@ public class Tile {
 
     public void renderAllEntities(SpriteBatch batch, float delta) {
         for (Entity entity : entities) {
-            IRenderable component = (IRenderable) entity.components.getOrDefault(TileDrawComponent.class, null);
+            IRenderable component = entity.getComponent(TileDrawComponent.class);
             if (component != null && !component.culled()) {
                 component.render(batch, delta);
             }

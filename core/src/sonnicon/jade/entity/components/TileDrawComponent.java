@@ -29,7 +29,7 @@ public class TileDrawComponent extends Component implements IRenderable {
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
-        positionComponent = (PositionComponent) entity.components.get(PositionComponent.class);
+        positionComponent = entity.getComponent(PositionComponent.class);
     }
 
     @Override

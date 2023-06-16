@@ -4,19 +4,23 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.game.Update;
+import sonnicon.jade.util.Sets;
 import sonnicon.jade.world.Tile;
 
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 
+//todo remove debug component
 public class KeyboardMovementComponent extends Component implements Update.IUpdate {
     protected PositionComponent positionComponent;
+    protected StorageComponent storageComponent;
 
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
         Update.register(this);
-        positionComponent = (PositionComponent) entity.components.get(PositionComponent.class);
+        positionComponent = entity.getComponent(PositionComponent.class);
+        storageComponent = entity.getComponent(StorageComponent.class);
     }
 
     @Override
@@ -27,7 +31,7 @@ public class KeyboardMovementComponent extends Component implements Update.IUpda
 
     @Override
     public HashSet<Class<? extends Component>> getDependencies() {
-        return new HashSet<>(Collections.singletonList(PositionComponent.class));
+        return Sets.from(PositionComponent.class, StorageComponent.class);
     }
 
     @Override
@@ -49,17 +53,32 @@ public class KeyboardMovementComponent extends Component implements Update.IUpda
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             destination = destination.getNearbyNorth();
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        if (destination != null && Gdx.input.isKeyPressed(Input.Keys.A)) {
             destination = destination.getNearbyWest();
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        if (destination != null && Gdx.input.isKeyPressed(Input.Keys.S)) {
             destination = destination.getNearbySouth();
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if (destination != null && Gdx.input.isKeyPressed(Input.Keys.D)) {
             destination = destination.getNearbyEast();
         }
 
-        positionComponent.moveToTile(destination);
+        if (destination != null) {
+            Iterator<Entity> iter = destination.entities.iterator();
+            while (iter.hasNext()) {
+                Entity e = iter.next();
+                if (storageComponent.storage.addEntity(e)) {
+                    if (e.getComponent(PositionComponent.class) != null) {
+                        iter.remove();
+                        e.getComponent(PositionComponent.class).moveToTile(null);
+
+                    }
+                }
+            }
+            positionComponent.moveToTile(destination);
+        }
+
+
 
     }
 }

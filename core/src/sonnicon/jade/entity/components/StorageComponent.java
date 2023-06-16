@@ -6,7 +6,7 @@ public class StorageComponent extends Component {
     public EntityStorage storage;
 
     public StorageComponent() {
-        storage = new EntityStorage();
+        this(new EntityStorage());
     }
 
     public StorageComponent(EntityStorage storage) {

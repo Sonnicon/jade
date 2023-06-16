@@ -4,6 +4,7 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.AutoDrawComponent;
 import sonnicon.jade.entity.components.KeyboardMovementComponent;
 import sonnicon.jade.entity.components.PositionComponent;
+import sonnicon.jade.entity.components.StorageComponent;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.world.Tile;
 
@@ -12,7 +13,9 @@ public class CharacterPrinter {
         Entity result = new Entity();
         result.addComponents(new PositionComponent(location),
                 new AutoDrawComponent(Textures.atlasFindRegion("character-debug"), 16f, 16f),
+                new StorageComponent(),
                 new KeyboardMovementComponent());
+
         return result;
     }
 }
