@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.game.Update;
+import sonnicon.jade.gui.Gui;
 import sonnicon.jade.util.Sets;
 import sonnicon.jade.world.Tile;
 
@@ -63,7 +64,7 @@ public class KeyboardMovementComponent extends Component implements Update.IUpda
             destination = destination.getNearbyEast();
         }
 
-        if (destination != null) {
+        if (destination != null && destination != positionComponent.tile) {
             Iterator<Entity> iter = destination.entities.iterator();
             while (iter.hasNext()) {
                 Entity e = iter.next();
@@ -78,7 +79,8 @@ public class KeyboardMovementComponent extends Component implements Update.IUpda
             positionComponent.moveToTile(destination);
         }
 
-
-
+        if (Gdx.input.isKeyPressed(Input.Keys.I)) {
+            Gui.stageIngame.panelInventory.show(storageComponent.storage);
+        }
     }
 }

@@ -3,12 +3,11 @@ package sonnicon.jade.gui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.graphics.Textures;
 
 public class Gui {
-    protected static Stage stageMenu;
-    protected static Stage stageIngame;
+    public static StageMenuMain stageMenu;
+    public static StageIngame stageIngame;
     public static Stage activeStage;
 
     public static Skin skin;
@@ -18,9 +17,9 @@ public class Gui {
 
         stageMenu = new StageMenuMain();
         stageIngame = new StageIngame();
-        Gamestate.State.menu.inputProcessor = stageMenu;
 
         setActiveStage(stageMenu);
+
     }
 
     public static void update() {
@@ -39,6 +38,7 @@ public class Gui {
 
     public static void resize(int width, int height) {
         activeStage.getViewport().update(width, height, true);
+        stageIngame.resize();
     }
 
     public static void setActiveStage(Stage stage) {

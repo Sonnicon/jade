@@ -19,6 +19,7 @@ public class Jade extends ApplicationAdapter {
     public void create() {
         Textures.init();
         Renderer.init();
+        Input.init();
         Gui.init();
 
         World w = new World();
@@ -30,7 +31,7 @@ public class Jade extends ApplicationAdapter {
         ItemPrinter.printItemDebug(w.chunks.get(2).tiles[22]);
         ItemPrinter.printItemDebug(w.chunks.get(1).tiles[55]);
 
-        Input.init();
+
 
         Gamestate.setState(Gamestate.State.menu);
     }

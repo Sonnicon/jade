@@ -16,6 +16,7 @@ public class StageMenuMain extends Stage {
         super(new ExtendViewport(400, 400));
         create();
         Gamestate.State.menu.stage = this;
+        Gamestate.State.menu.inputProcessor = this;
     }
 
     protected void create() {
