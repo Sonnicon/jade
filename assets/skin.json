@@ -25,6 +25,17 @@
       topHeight: 16
       bottomHeight: 16
     }
+    button-inventory-1-checked-9p: {
+      name: "button-inventory-1-checked"
+      leftEdge: 3
+      rightEdge: 3
+      topEdge: 3
+      bottomEdge: 3
+      leftWidth: 16
+      rightWidth: 16
+      topHeight: 16
+      bottomHeight: 16
+    }
     button-inventory-2-9p: {
       name: "button-inventory-2"
       leftEdge: 1
@@ -35,6 +46,23 @@
       rightWidth: 6
       topHeight: 6
       bottomHeight: 6
+    }
+    button-inventory-2-checked-9p: {
+      name: "button-inventory-2-checked"
+      leftEdge: 1
+      rightEdge: 1
+      topEdge: 1
+      bottomEdge: 1
+      leftWidth: 6
+      rightWidth: 6
+      topHeight: 6
+      bottomHeight: 6
+    }
+  }
+  TintedDrawable: {
+    icon-cross: {
+      color: { hex: "#ffffff" }
+      name: icon-cross
     }
   }
 
@@ -54,13 +82,26 @@
   ButtonStyle: {
     button-inventorycontent: {
       up: button-inventory-2-9p
-
+      focused: button-inventory-2-checked-9p
     }
     button-hand-0: {
       up: button-inventory-1-9p
+      focused: button-inventory-1-checked-9p
     }
     button-hand-1: {
       up: button-inventory-1-9p
+      focused: button-inventory-1-checked-9p
+    }
+  }
+
+  ImageButtonStyle: {
+    default: {
+
+    }
+    imagebutton-inventorycontent-close: {
+      up: button-inventory-2-9p
+      focused: button-inventory-2-checked-9p
+      imageUp: icon-cross
     }
   }
 }

@@ -42,10 +42,10 @@ public class Entity {
         if (!canAddComponent(component)) {
             return false;
         }
-        if (components.containsKey(component.getClass())) {
+        if (components.containsKey(component.getKeyClass())) {
             return false;
         }
-        components.put(component.getClass(), component);
+        components.put(component.getKeyClass(), component);
         component.addToEntity(this);
         return true;
     }

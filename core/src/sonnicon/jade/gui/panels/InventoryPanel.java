@@ -4,50 +4,86 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
+import sonnicon.jade.entity.components.StorableComponent;
+import sonnicon.jade.entity.components.StorageComponent;
 import sonnicon.jade.game.EntityStorage;
-import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.Gui;
 import sonnicon.jade.gui.actors.InventorySlotButton;
+
+import java.util.Stack;
 
 public class InventoryPanel extends Panel {
     protected Table entriesTable;
     protected Cell<ScrollPane> entriesCell;
 
-    public EntityStorage currentStorage;
+    protected Table containerTable;
+    protected ImageButton containerExitButton;
+    public Stack<EntityStorage> containerStack = new Stack<>();
 
     @Override
     public void create() {
+        wrapper.pad(4f, 4f, 0f, 4f);
+        wrapper.debugAll();
+
         background("button-inventory-1-9p");
 
         Table tableTitle = new Table();
-        add(tableTitle).growX().top().row();
+        add(tableTitle).growX().padLeft(4f).row();
 
         Label labelTitle = new Label("Contents", Gui.skin);
         tableTitle.add(labelTitle).left().expandX();
 
-        ImageButton buttonClose = new ImageButton(Textures.atlasFindDrawable("icon-cross"));
+        ImageButton buttonClose = new ImageButton(Gui.skin, "imagebutton-inventorycontent-close");
         buttonClose.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 hide();
             }
         });
-        tableTitle.add(buttonClose).right();
+        tableTitle.add(buttonClose);
 
-
-        entriesTable = new Table();
-        ScrollPane entriesPane = new ScrollPane(entriesTable);;
+        entriesTable = new Table(Gui.skin);
+        ScrollPane entriesPane = new ScrollPane(entriesTable);
+        ;
         entriesPane.setScrollingDisabled(true, false);
         entriesCell = add(entriesPane).grow().pad(2f);
         entriesTable.align(Align.topLeft);
 
-        wrapper.pad(4f, 4f, 100f, 4f);
+
+        Table containersWrapper = new Table(Gui.skin);
+        containersWrapper.background("button-inventory-1-9p");
+        containerTable = new Table(Gui.skin);
+        containerTable.defaults().left().pad(0f, 4f, 0f, 4f).size(64f);
+        containerTable.left();
+        ScrollPane containersPane = new ScrollPane(containerTable);
+        wrapper.row();
+        wrapper.add(containersWrapper).growX().pad(4f, 96f, 0f, 96f).height(96f);
+        containersWrapper.add(containersPane).growX().pad(0f, -4f, 0f, -4f);
+        containersPane.setScrollingDisabled(false, true);
+
+
+        containerExitButton = new ImageButton(Gui.skin, "imagebutton-inventorycontent-close");
+        containerExitButton.background("button-inventory-2-9p");
+        containerExitButton.addCaptureListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                containerStack.pop();
+                if (containerStack.empty()) {
+                    hide();
+                } else {
+                    createContents();
+                }
+            }
+        });
     }
 
     protected void createContents() {
+        containerTable.clearChildren();
+        containerTable.add(containerExitButton);
+
         entriesTable.clearChildren();
         float sumWidth = 0;
-        for (EntityStorage.EntityStack stack : currentStorage.stacks) {
+        for (EntityStorage.EntityStack stack : containerStack.peek().stacks) {
             InventorySlotButton slot = new InventorySlotButton(stack);
             float slotPrefWidth = slot.getPrefWidth();
             sumWidth += slotPrefWidth;
@@ -56,11 +92,28 @@ public class InventoryPanel extends Panel {
                 sumWidth = slotPrefWidth;
             }
             entriesTable.add(slot).align(Align.topLeft);
+
+            StorageComponent stackStorage = stack.entity.getComponent(StorageComponent.class);
+            if (stackStorage != null) {
+                StorableComponent comp = stack.entity.getComponent(StorableComponent.class);
+                if (comp == null) continue;
+                Button containerButton = new Button(Gui.skin, "button-inventorycontent");
+                containerButton.add(new Image(comp.icons[0])).grow();
+                containerButton.addCaptureListener(new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        containerStack.push(stackStorage.storage);
+                        createContents();
+                    }
+                });
+                containerTable.add(containerButton).size(64f);
+            }
         }
     }
 
     public void show(EntityStorage storage) {
-        this.currentStorage = storage;
+        containerStack.clear();
+        containerStack.push(storage);
         createContents();
         show();
     }

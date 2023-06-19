@@ -31,6 +31,10 @@ public abstract class Component {
         return null;
     }
 
+    public Class<? extends Component> getKeyClass() {
+        return getClass();
+    }
+
     public void dispose() {
 
     }

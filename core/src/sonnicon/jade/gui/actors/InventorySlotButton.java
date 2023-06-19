@@ -29,7 +29,7 @@ public class InventorySlotButton extends Button {
         StorableComponent comp = stack.entity.getComponent(StorableComponent.class);
         if (comp == null) return;
         st.addActor(new Image(comp.icons[0]));
-        if (stack.amount > 0) {
+        if (stack.amount > 1) {
             st.addActor(new Label(String.valueOf(stack.amount), Gui.skin));
         }
     }

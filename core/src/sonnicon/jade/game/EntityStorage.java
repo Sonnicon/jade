@@ -2,6 +2,7 @@ package sonnicon.jade.game;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.EntitySizeComponent;
+import sonnicon.jade.entity.components.StorageComponent;
 
 import java.util.ArrayList;
 
@@ -11,7 +12,7 @@ public class EntityStorage {
 
     public EntitySize minimumSize = EntitySize.tiny;
     public EntitySize maximumSize = EntitySize.huge;
-    public int capacity = EntitySize.medium.value * 3;
+    public int capacity = Integer.MAX_VALUE;
 
     public boolean addEntity(Entity entity) {
         return addEntityAmount(entity, 1) == 1;
@@ -88,6 +89,19 @@ public class EntityStorage {
 
     public boolean hasMatchingEntity(Entity entity) {
         return stacks.stream().anyMatch(other -> other.entity.compare(entity));
+    }
+
+    public boolean containsExactEntity(Entity entity) {
+        for (EntityStack stack : stacks) {
+            if (stack.entity == entity) {
+                return true;
+            }
+            StorageComponent comp = stack.entity.getComponent(StorageComponent.class);
+            if (comp != null && comp.storage.containsExactEntity(entity)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public EntityStorage copy() {
