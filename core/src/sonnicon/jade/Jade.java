@@ -30,8 +30,8 @@ public class Jade extends ApplicationAdapter {
         ItemPrinter.printItemDebug(w.chunks.get(1).tiles[155]);
         ItemPrinter.printItemDebug(w.chunks.get(2).tiles[22]);
         ItemPrinter.printItemDebug(w.chunks.get(1).tiles[55]);
-
-
+        ItemPrinter.printItemDebug(w.chunks.get(0).tiles[55]);
+        ItemPrinter.printItemDebug(w.chunks.get(0).tiles[129]);
 
         Gamestate.setState(Gamestate.State.menu);
     }

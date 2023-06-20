@@ -22,6 +22,9 @@ public class InventorySlotButton extends Button {
 
     public void create(EntityStorage.EntityStack stack) {
         this.stack = stack;
+        if (this.stack == null) {
+            return;
+        }
 
         Stack st = new Stack();
         add(st).grow();

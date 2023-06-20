@@ -148,8 +148,16 @@ public class EntityStorage {
             this.amount = amount;
         }
 
+        public Entity obtain() {
+            if (amount-- == 1) {
+                return entity;
+            } else {
+                return entity.copy();
+            }
+        }
+
         public EntityStack copy() {
-            return new EntityStack(entity, amount);
+            return new EntityStack(entity.copy(), amount);
         }
 
         public boolean compare(EntityStack other) {

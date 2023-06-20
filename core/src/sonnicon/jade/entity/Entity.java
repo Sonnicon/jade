@@ -54,6 +54,10 @@ public class Entity {
         return (T) components.getOrDefault(type, null);
     }
 
+    public boolean hasComponent(Class<? extends Component> type) {
+        return components.containsKey(type);
+    }
+
     public Entity copy() {
         Entity newEntity = new Entity();
         newEntity.traits.addAll(traits);

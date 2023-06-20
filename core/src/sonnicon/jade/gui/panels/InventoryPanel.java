@@ -93,6 +93,10 @@ public class InventoryPanel extends Panel {
             }
             entriesTable.add(slot).align(Align.topLeft);
 
+            if (stack == null) {
+                continue;
+            }
+
             StorageComponent stackStorage = stack.entity.getComponent(StorageComponent.class);
             if (stackStorage != null) {
                 StorableComponent comp = stack.entity.getComponent(StorableComponent.class);

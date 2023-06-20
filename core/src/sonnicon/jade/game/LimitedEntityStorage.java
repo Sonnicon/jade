@@ -2,14 +2,26 @@ package sonnicon.jade.game;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.EntitySizeComponent;
+import sonnicon.jade.entity.components.StorageComponent;
 
 import java.util.ArrayList;
 
 public class LimitedEntityStorage extends EntityStorage {
-    protected ArrayList<LimitedEntityStorageSlot> slots;
+    protected ArrayList<LimitedEntityStorageSlot> slots = new ArrayList<>();
 
     public LimitedEntityStorage() {
         super();
+    }
+
+    public LimitedEntityStorage addSlot(LimitedEntityStorageSlot slot) {
+        slots.add(slot);
+        stacks.add(null);
+        return this;
+    }
+
+    public LimitedEntityStorage addSlot(EntitySize minimumSize, EntitySize maximumSize,
+                                        int maximumAmount, SlotType type) {
+        return addSlot(new LimitedEntityStorageSlot(minimumSize, maximumSize, maximumAmount, type));
     }
 
     @Override
@@ -42,80 +54,126 @@ public class LimitedEntityStorage extends EntityStorage {
                 // Stack is empty
                 transferAmount = Math.min(amountRemaining, slot.maximumAmount);
                 stacks.set(index, new EntityStack(entity, transferAmount));
-                amountRemaining -= transferAmount;
                 return amountRemaining;
             } else if (entity.compare(destination.entity)) {
                 // Stack is same type
                 transferAmount = Math.min(amountRemaining, slot.maximumAmount - destination.amount);
                 destination.amount += transferAmount;
-                amountRemaining -= transferAmount;
-            } else {
-                //todo
+            } else if (entity.hasComponent(StorageComponent.class)) {
+                // Stack can store things
+                StorageComponent comp = entity.getComponent(StorageComponent.class);
+                transferAmount = comp.storage.addEntityAmount(entity, amountRemaining);
             }
 
+            amountRemaining -= transferAmount;
             if (amountRemaining == 0) {
-                return amount;
-            }
-
-        }
-
-
-        //todo
-        EntityStack destination = null;
-        for (EntityStack stack : stacks) {
-            if (stack.entity.compare(entity)) {
-                destination = stack;
                 break;
             }
         }
-        if (destination != null) {
-            destination.amount += amount;
-        } else {
-            stacks.add(new EntityStack(entity, amount));
-        }
 
-        capacityUsed += amount * size.value;
-        return amount;
-    }
-
-    @Override
-    public boolean removeEntity(Entity entity) {
-        return super.removeEntity(entity);
+        capacityUsed += (amount - amountRemaining) * size.value;
+        return amount - amountRemaining;
     }
 
     @Override
     public int removeEntity(Entity entity, int amount) {
-        return super.removeEntity(entity, amount);
-    }
+        int removed = 0;
+        for (int i = 0; amount > 0 && i < stacks.size(); ) {
+            EntityStack stack = stacks.get(i);
 
-    @Override
-    public boolean hasMatchingEntity(Entity entity) {
-        return super.hasMatchingEntity(entity);
-    }
+            if (stack == null || !stack.entity.compare(entity)) {
+                i++;
+                continue;
+            }
 
-    @Override
-    public boolean containsExactEntity(Entity entity) {
-        return super.containsExactEntity(entity);
+            int diff = amount;
+            if (stack.amount >= amount) {
+                stack.amount -= amount;
+                amount = 0;
+            } else {
+                diff = stack.amount;
+                stack.amount = 0;
+                amount -= diff;
+            }
+            if (stack.amount == 0) {
+                stacks.set(i, null);
+            } else {
+                i++;
+            }
+
+            removed += diff;
+        }
+
+        EntitySizeComponent sizeComponent = entity.getComponent(EntitySizeComponent.class);
+        if (sizeComponent != null) {
+            capacityUsed -= sizeComponent.size.value * removed;
+        }
+        return removed;
     }
 
     @Override
     public EntityStorage copy() {
-        return super.copy();
+        LimitedEntityStorage copy = new LimitedEntityStorage();
+        copy.minimumSize = minimumSize;
+        copy.maximumSize = maximumSize;
+        copy.capacity = capacity;
+        copy.capacityUsed = capacityUsed;
+
+        for (EntityStack stack : stacks) {
+            copy.stacks.add(stack.copy());
+        }
+        for (LimitedEntityStorageSlot slot : slots) {
+            copy.slots.add(
+                    new LimitedEntityStorageSlot(slot.minimumSize, slot.maximumSize, slot.maximumAmount, slot.type));
+        }
+        return copy;
     }
 
     @Override
     public boolean compare(EntityStorage other) {
+        if (!(other instanceof LimitedEntityStorage) || ((LimitedEntityStorage) other).slots.size() != slots.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < slots.size(); i++) {
+            if (!slots.get(i).equals(((LimitedEntityStorage) other).slots.get(i))) {
+                return false;
+            }
+        }
+
         return super.compare(other);
     }
 
-    protected class LimitedEntityStorageSlot {
+    protected static class LimitedEntityStorageSlot {
         public EntitySize minimumSize;
         public EntitySize maximumSize;
-        public int maximumAmount = Integer.MAX_VALUE;
+        public int maximumAmount;
+        public SlotType type;
 
-        public LimitedEntityStorageSlot(EntitySize min, EntitySize max) {
-            this.minimumSize = min;
-            this.maximumSize = max;
+        public LimitedEntityStorageSlot(EntitySize minimumSize, EntitySize maximumSize) {
+            this(minimumSize, maximumSize, Integer.MAX_VALUE, SlotType.generic);
         }
+
+        public LimitedEntityStorageSlot(EntitySize minimumSize, EntitySize maximumSize,
+                                        int maximumAmount, SlotType type) {
+            this.minimumSize = minimumSize;
+            this.maximumSize = maximumSize;
+            this.maximumAmount = maximumAmount;
+            this.type = type;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return (o instanceof LimitedEntityStorageSlot) &&
+                    minimumSize == ((LimitedEntityStorageSlot) o).minimumSize &&
+                    maximumSize == ((LimitedEntityStorageSlot) o).maximumSize &&
+                    maximumAmount == ((LimitedEntityStorageSlot) o).maximumAmount &&
+                    type == ((LimitedEntityStorageSlot) o).type;
+        }
+    }
+
+    public enum SlotType {
+        hand,
+        generic
     }
 }
