@@ -23,7 +23,7 @@ public class StageMenuMain extends Stage {
         tableMain = new Table(Gui.skin);
         tableMain.debug();
         tableMain.setFillParent(true);
-        tableMain.defaults().pad(0f, 2f, 6f, 2f);
+        tableMain.defaults().pad(0f, 2f, 0f, 2f);
 
         Label labelTitle = new Label("hello world", Gui.skin);
         labelTitle.setFontScale(1.5f);

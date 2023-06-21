@@ -22,7 +22,7 @@ public class InventoryPanel extends Panel {
 
     @Override
     public void create() {
-        wrapper.pad(4f, 4f, 0f, 4f);
+        wrapper.pad(4f, 100f, 0f, 100f);
         wrapper.debugAll();
 
         background("button-inventory-1-9p");
@@ -44,11 +44,10 @@ public class InventoryPanel extends Panel {
 
         entriesTable = new Table(Gui.skin);
         ScrollPane entriesPane = new ScrollPane(entriesTable);
-        ;
+
         entriesPane.setScrollingDisabled(true, false);
         entriesCell = add(entriesPane).grow().pad(2f);
         entriesTable.align(Align.topLeft);
-
 
         Table containersWrapper = new Table(Gui.skin);
         containersWrapper.background("button-inventory-1-9p");
@@ -57,10 +56,9 @@ public class InventoryPanel extends Panel {
         containerTable.left();
         ScrollPane containersPane = new ScrollPane(containerTable);
         wrapper.row();
-        wrapper.add(containersWrapper).growX().pad(4f, 96f, 0f, 96f).height(96f);
+        wrapper.add(containersWrapper).growX().pad(4f, 0f, 0f, 0f).height(96f);
         containersWrapper.add(containersPane).growX().pad(0f, -4f, 0f, -4f);
         containersPane.setScrollingDisabled(false, true);
-
 
         containerExitButton = new ImageButton(Gui.skin, "imagebutton-inventorycontent-close");
         containerExitButton.background("button-inventory-2-9p");
@@ -83,8 +81,9 @@ public class InventoryPanel extends Panel {
 
         entriesTable.clearChildren();
         float sumWidth = 0;
-        for (EntityStorage.EntityStack stack : containerStack.peek().stacks) {
-            InventorySlotButton slot = new InventorySlotButton(stack);
+        EntityStorage storage = containerStack.peek();
+        for (EntityStorage.EntityStack stack : storage.stacks) {
+            InventorySlotButton slot = new InventorySlotButton(storage, stack);
             float slotPrefWidth = slot.getPrefWidth();
             sumWidth += slotPrefWidth;
             if (sumWidth >= entriesCell.getActorWidth()) {

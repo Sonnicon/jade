@@ -7,7 +7,7 @@ import sonnicon.jade.entity.components.StorageComponent;
 import java.util.ArrayList;
 
 public class LimitedEntityStorage extends EntityStorage {
-    protected ArrayList<LimitedEntityStorageSlot> slots = new ArrayList<>();
+    public ArrayList<LimitedEntityStorageSlot> slots = new ArrayList<>();
 
     public LimitedEntityStorage() {
         super();
@@ -144,7 +144,7 @@ public class LimitedEntityStorage extends EntityStorage {
         return super.compare(other);
     }
 
-    protected static class LimitedEntityStorageSlot {
+    public static class LimitedEntityStorageSlot {
         public EntitySize minimumSize;
         public EntitySize maximumSize;
         public int maximumAmount;

@@ -1,6 +1,5 @@
 package sonnicon.jade.gui.actors;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
@@ -8,15 +7,17 @@ import sonnicon.jade.entity.components.StorableComponent;
 import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.gui.Gui;
 
-public class InventorySlotButton extends Button {
+public class InventorySlotButton extends TapButton {
     public EntityStorage.EntityStack stack;
+    public EntityStorage storage;
 
-    public InventorySlotButton() {
-        super(Gui.skin, "button-inventorycontent");
+    public InventorySlotButton(EntityStorage storage) {
+        super("button-inventorycontent");
+        this.storage = storage;
     }
 
-    public InventorySlotButton(EntityStorage.EntityStack stack) {
-        this();
+    public InventorySlotButton(EntityStorage storage, EntityStorage.EntityStack stack) {
+        this(storage);
         create(stack);
     }
 
@@ -35,6 +36,11 @@ public class InventorySlotButton extends Button {
         if (stack.amount > 1) {
             st.addActor(new Label(String.valueOf(stack.amount), Gui.skin));
         }
+    }
+
+    @Override
+    public void tapped() {
+
     }
 
     @Override

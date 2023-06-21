@@ -82,15 +82,15 @@
   ButtonStyle: {
     button-inventorycontent: {
       up: button-inventory-2-9p
-      focused: button-inventory-2-checked-9p
+      checked: button-inventory-2-checked-9p
     }
     button-hand-0: {
       up: button-inventory-1-9p
-      focused: button-inventory-1-checked-9p
+      checked: button-inventory-1-checked-9p
     }
     button-hand-1: {
       up: button-inventory-1-9p
-      focused: button-inventory-1-checked-9p
+      checked: button-inventory-1-checked-9p
     }
   }
 
@@ -100,7 +100,6 @@
     }
     imagebutton-inventorycontent-close: {
       up: button-inventory-2-9p
-      focused: button-inventory-2-checked-9p
       imageUp: icon-cross
     }
   }
