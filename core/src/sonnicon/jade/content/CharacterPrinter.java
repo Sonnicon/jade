@@ -19,7 +19,7 @@ public class CharacterPrinter {
 
 
         result.addComponents(new PositionComponent(location),
-                new AutoDrawComponent(Textures.atlasFindRegion("character-debug"), 16f, 16f),
+                new AutoDrawComponent(Textures.atlasFindRegion("character-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE),
                 new StorageComponent(entityStorage),
                 new KeyboardMovementComponent(),
                 new PlayerControlComponent());

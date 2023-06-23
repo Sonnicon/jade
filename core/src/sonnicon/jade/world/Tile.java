@@ -13,7 +13,7 @@ public class Tile {
     public final Chunk chunk;
     public HashSet<Entity> entities;
 
-    public static final int TILE_SIZE = 16;
+    public static final int TILE_SIZE = 32;
 
     protected int globalX, globalY;
     protected int drawX, drawY;

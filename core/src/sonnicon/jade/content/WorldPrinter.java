@@ -12,7 +12,7 @@ public class WorldPrinter {
         Entity floorEntity = new Entity();
         floorEntity.addComponents(
                 new PositionComponent(location),
-                new TileDrawComponent(Textures.atlasFindRegion(Math.random() > 0.2 ? "floor1" : "wall1"), 16, 16));
+                new TileDrawComponent(Textures.atlasFindRegion(Math.random() > 0.2 ? "floor1" : "wall1"), Tile.TILE_SIZE, Tile.TILE_SIZE));
         return floorEntity;
     }
 }

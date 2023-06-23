@@ -9,6 +9,7 @@ import sonnicon.jade.entity.components.StorageComponent;
 import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.gui.Gui;
 import sonnicon.jade.gui.actors.InventorySlotButton;
+import sonnicon.jade.util.DoubleLinkedList;
 
 import java.util.Stack;
 
@@ -19,6 +20,8 @@ public class InventoryPanel extends Panel {
     protected Table containerTable;
     protected ImageButton containerExitButton;
     public Stack<EntityStorage> containerStack = new Stack<>();
+
+    public InventorySlotButton selectedInventoryButton;
 
     @Override
     public void create() {
@@ -82,8 +85,13 @@ public class InventoryPanel extends Panel {
         entriesTable.clearChildren();
         float sumWidth = 0;
         EntityStorage storage = containerStack.peek();
-        for (EntityStorage.EntityStack stack : storage.stacks) {
-            InventorySlotButton slot = new InventorySlotButton(storage, stack);
+
+        DoubleLinkedList.DoubleLinkedListNodeIterator<EntityStorage.EntityStack> iter = storage.stacks.nodeIterator();
+        while (iter.hasNext()) {
+            DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> node = iter.next();
+            EntityStorage.EntityStack stack = node.value;
+
+            InventorySlotButton slot = new InventorySlotButton(node);
             float slotPrefWidth = slot.getPrefWidth();
             sumWidth += slotPrefWidth;
             if (sumWidth >= entriesCell.getActorWidth()) {

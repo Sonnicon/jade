@@ -7,16 +7,20 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.StorageComponent;
+import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.game.LimitedEntityStorage;
 import sonnicon.jade.gui.actors.InventoryHandButton;
+import sonnicon.jade.gui.panels.InventoryDetailsPanel;
 import sonnicon.jade.gui.panels.InventoryPanel;
+import sonnicon.jade.util.DoubleLinkedList;
 
 public class StageIngame extends Stage {
     protected Entity controlledEntity;
 
     protected Table tableMain;
     public InventoryPanel panelInventory;
+    public InventoryDetailsPanel panelInventoryDetails;
 
     public StageIngame() {
         super(new ScreenViewport());
@@ -30,6 +34,7 @@ public class StageIngame extends Stage {
         addActor(tableMain);
 
         panelInventory = new InventoryPanel();
+        panelInventoryDetails = new InventoryDetailsPanel();
     }
 
     protected void create() {
@@ -46,15 +51,19 @@ public class StageIngame extends Stage {
 
             LimitedEntityStorage storage = (LimitedEntityStorage) storageComponent.storage;
             int hand = 0;
-            for (int i = 0; i < storage.stacks.size(); i++) {
-                if (storage.slots.get(i).type == LimitedEntityStorage.SlotType.hand) {
-                    InventoryHandButton handButton = new InventoryHandButton(storage, hand, i);
+            DoubleLinkedList.DoubleLinkedListNodeIterator<EntityStorage.EntityStack> iter = storage.stacks.nodeIterator();
+            int index = 0;
+            while (iter.hasNext()) {
+                DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> node = iter.next();
+                if (storage.slots.get(index).type == LimitedEntityStorage.SlotType.hand) {
+                    InventoryHandButton handButton = new InventoryHandButton(node, hand);
                     if (hand++ % 2 == 0) {
                         leftTable.add(handButton).row();
                     } else {
                         rightTable.add(handButton).row();
                     }
                 }
+                index++;
             }
         }
 

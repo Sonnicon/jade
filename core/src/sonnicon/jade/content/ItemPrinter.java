@@ -9,9 +9,9 @@ public class ItemPrinter {
     public static Entity printItemDebug(Tile location) {
         Entity result = new Entity();
         result.addComponents(new PositionComponent(location),
-                new AutoDrawComponent(Textures.atlasFindRegion("item-debug"), 16f, 16f),
+                new AutoDrawComponent(Textures.atlasFindRegion("item-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE),
                 EntitySizeComponent.medium,
-                new StorableComponent(Textures.atlasFindDrawable("item-debug")),
+                new StorableComponent("debug item", Textures.atlasFindDrawable("item-debug")),
                 new StorageComponent());
         return result;
     }

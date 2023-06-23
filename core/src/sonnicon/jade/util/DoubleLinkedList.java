@@ -265,6 +265,10 @@ public class DoubleLinkedList<T> implements List<T> {
         return new DoubleLinkedListListIterator<>(this, i);
     }
 
+    public DoubleLinkedListNodeIterator<T> nodeIterator() {
+        return new DoubleLinkedListNodeIterator<>(this);
+    }
+
     @Override
     public List<T> subList(int i, int i1) {
         //todo think of a way to make this work nicely
@@ -273,8 +277,8 @@ public class DoubleLinkedList<T> implements List<T> {
 
 
     public static class DoubleLinkedListNode<K> {
-        DoubleLinkedListNode<K> prev, next;
-        K value;
+        protected DoubleLinkedListNode<K> prev, next;
+        public K value;
 
         public DoubleLinkedListNode() {
 
@@ -296,17 +300,19 @@ public class DoubleLinkedList<T> implements List<T> {
 
         @Override
         public boolean hasNext() {
-            return node.next != null;
+            return node != null;
         }
 
         @Override
         public K next() {
-            return (node = node.next).value;
+            K result = node.value;
+            node = node.next;
+            return result;
         }
 
         @Override
         public void remove() {
-            list.removeNode(node);
+            list.removeNode(node.prev);
         }
     }
 
@@ -332,7 +338,7 @@ public class DoubleLinkedList<T> implements List<T> {
 
         @Override
         public int nextIndex() {
-            return list.indexOfNode(node.next);
+            return list.indexOfNode(node);
         }
 
         @Override
@@ -348,6 +354,33 @@ public class DoubleLinkedList<T> implements List<T> {
         @Override
         public void add(K k) {
             list.add(k);
+        }
+    }
+
+    public static class DoubleLinkedListNodeIterator<K> implements Iterator<DoubleLinkedListNode<K>> {
+        protected DoubleLinkedList<K> list;
+        protected DoubleLinkedListNode<K> node;
+
+        public DoubleLinkedListNodeIterator(DoubleLinkedList<K> doubleLinkedList) {
+            this.list = doubleLinkedList;
+            this.node = list.head;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return node != null;
+        }
+
+        @Override
+        public DoubleLinkedListNode<K> next() {
+            DoubleLinkedListNode<K>  result = node;
+            node = node.next;
+            return result;
+        }
+
+        @Override
+        public void remove() {
+            list.removeNode(node.prev);
         }
     }
 }

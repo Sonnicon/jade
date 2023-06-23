@@ -3,11 +3,10 @@ package sonnicon.jade.game;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.EntitySizeComponent;
 import sonnicon.jade.entity.components.StorageComponent;
-
-import java.util.ArrayList;
+import sonnicon.jade.util.DoubleLinkedList;
 
 public class EntityStorage {
-    public ArrayList<EntityStack> stacks = new ArrayList<>();
+    public DoubleLinkedList<EntityStack> stacks = new DoubleLinkedList<>();
     public int capacityUsed = 0;
 
     public EntitySize minimumSize = EntitySize.tiny;

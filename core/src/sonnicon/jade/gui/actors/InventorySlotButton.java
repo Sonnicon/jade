@@ -6,26 +6,27 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import sonnicon.jade.entity.components.StorableComponent;
 import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.gui.Gui;
+import sonnicon.jade.util.DoubleLinkedList;
 
 public class InventorySlotButton extends TapButton {
-    public EntityStorage.EntityStack stack;
-    public EntityStorage storage;
+    public DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> storageNode;
 
-    public InventorySlotButton(EntityStorage storage) {
+    public InventorySlotButton() {
         super("button-inventorycontent");
-        this.storage = storage;
     }
 
-    public InventorySlotButton(EntityStorage storage, EntityStorage.EntityStack stack) {
-        this(storage);
-        create(stack);
+    public InventorySlotButton(DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> storageNode) {
+        this();
+        create(storageNode);
     }
 
-    public void create(EntityStorage.EntityStack stack) {
-        this.stack = stack;
-        if (this.stack == null) {
+    public void create(DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> storageNode) {
+        this.storageNode = storageNode;
+        if (this.storageNode == null || this.storageNode.value == null) {
             return;
         }
+
+        EntityStorage.EntityStack stack = this.storageNode.value;
 
         Stack st = new Stack();
         add(st).grow();
@@ -40,7 +41,10 @@ public class InventorySlotButton extends TapButton {
 
     @Override
     public void tapped() {
-
+        if (storageNode == null || storageNode.value == null) {
+            return;
+        }
+        Gui.stageIngame.panelInventoryDetails.show(storageNode);
     }
 
     @Override
