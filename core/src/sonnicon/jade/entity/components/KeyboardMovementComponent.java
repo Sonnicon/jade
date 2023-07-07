@@ -2,6 +2,7 @@ package sonnicon.jade.entity.components;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import sonnicon.jade.content.ItemPrinter;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.game.Update;
 import sonnicon.jade.gui.Gui;
@@ -15,6 +16,8 @@ import java.util.Iterator;
 public class KeyboardMovementComponent extends Component implements Update.IUpdate {
     protected PositionComponent positionComponent;
     protected StorageComponent storageComponent;
+
+    private boolean pPressed = false;
 
     @Override
     public void addToEntity(Entity entity) {
@@ -81,6 +84,13 @@ public class KeyboardMovementComponent extends Component implements Update.IUpda
 
         if (Gdx.input.isKeyPressed(Input.Keys.I)) {
             Gui.stageIngame.panelInventory.show(storageComponent.storage);
+        }
+
+        if (pPressed && !Gdx.input.isKeyPressed(Input.Keys.P)) {
+            pPressed = false;
+        } else if (!pPressed && Gdx.input.isKeyPressed(Input.Keys.P)) {
+            pPressed = true;
+            storageComponent.storage.addEntity(ItemPrinter.printItemDebug(null));
         }
     }
 }

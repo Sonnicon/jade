@@ -1,0 +1,51 @@
+package sonnicon.jade.gui.actors;
+
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import sonnicon.jade.entity.components.StorableComponent;
+import sonnicon.jade.entity.components.StorageComponent;
+import sonnicon.jade.game.StorageSlotView;
+import sonnicon.jade.gui.Gui;
+
+public class InventoryContainerButton extends TapButton {
+    public StorageSlotView slot;
+
+    public InventoryContainerButton(StorageSlotView slot) {
+        super("button-inventorycontent");
+        this.slot = slot;
+        create();
+    }
+
+    public void create() {
+        pad(8f);
+        recreate();
+    }
+
+    protected void recreate() {
+        if (slot == null || !slot.exists()) {
+            remove();
+            return;
+        }
+
+        clearChildren();
+        //todo find better way to make it identical
+        StorableComponent storableComponent = slot.getEntity().getComponent(StorableComponent.class);
+        add(new Image(storableComponent.icons[0])).grow();
+    }
+
+    @Override
+    public void tapped() {
+        StorageComponent storageComponent = slot.getEntity().getComponent(StorageComponent.class);
+        Gui.stageIngame.panelInventory.containerStack.push(storageComponent.storage);
+        Gui.stageIngame.panelInventory.recreate();
+    }
+
+    @Override
+    public float getPrefWidth() {
+        return 64f;
+    }
+
+    @Override
+    public float getPrefHeight() {
+        return 64f;
+    }
+}

@@ -10,34 +10,46 @@ import sonnicon.jade.entity.components.StorageComponent;
 import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.game.LimitedEntityStorage;
+import sonnicon.jade.game.StorageSlotView;
 import sonnicon.jade.gui.actors.InventoryHandButton;
 import sonnicon.jade.gui.panels.InventoryDetailsPanel;
 import sonnicon.jade.gui.panels.InventoryPanel;
+import sonnicon.jade.gui.popups.InventoryMovePopup;
 import sonnicon.jade.util.DoubleLinkedList;
 
 public class StageIngame extends Stage {
+    // Entity that this player is controlling
     protected Entity controlledEntity;
 
+    // GUI elements
     protected Table tableMain;
     public InventoryPanel panelInventory;
     public InventoryDetailsPanel panelInventoryDetails;
+
+    public InventoryMovePopup popupInventoryMove;
 
     public StageIngame() {
         super(new ScreenViewport());
         Gamestate.State.ingame.stage = this;
         ((InputMultiplexer) Gamestate.State.ingame.inputProcessor).addProcessor(0, this);
 
+        panelInventory = new InventoryPanel();
+        panelInventoryDetails = new InventoryDetailsPanel();
+
+        popupInventoryMove = new InventoryMovePopup();
+    }
+
+    public void create() {
         tableMain = new Table();
         tableMain.setFillParent(true);
         tableMain.align(Align.bottom);
         tableMain.debug();
         addActor(tableMain);
 
-        panelInventory = new InventoryPanel();
-        panelInventoryDetails = new InventoryDetailsPanel();
+        recreate();
     }
 
-    protected void create() {
+    public void recreate() {
         tableMain.clearChildren();
 
         StorageComponent storageComponent = controlledEntity.getComponent(StorageComponent.class);
@@ -56,7 +68,8 @@ public class StageIngame extends Stage {
             while (iter.hasNext()) {
                 DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> node = iter.next();
                 if (storage.slots.get(index).type == LimitedEntityStorage.SlotType.hand) {
-                    InventoryHandButton handButton = new InventoryHandButton(node, hand);
+                    StorageSlotView slot = new StorageSlotView(storage, node);
+                    InventoryHandButton handButton = new InventoryHandButton(slot, hand);
                     if (hand++ % 2 == 0) {
                         leftTable.add(handButton).row();
                     } else {
@@ -66,8 +79,6 @@ public class StageIngame extends Stage {
                 index++;
             }
         }
-
-
     }
 
     public void resize() {

@@ -14,8 +14,13 @@ public class CharacterPrinter {
         LimitedEntityStorage entityStorage = new LimitedEntityStorage().
                 addSlot(EntitySize.tiny, EntitySize.huge, 1, LimitedEntityStorage.SlotType.hand).
                 addSlot(EntitySize.tiny, EntitySize.huge, 1, LimitedEntityStorage.SlotType.hand).
+                addSlot(EntitySize.tiny, EntitySize.huge, 4, LimitedEntityStorage.SlotType.generic).
                 addSlot(EntitySize.tiny, EntitySize.large, 2, LimitedEntityStorage.SlotType.generic);
-        entityStorage.capacity = EntitySize.huge.value * 4;
+        entityStorage.capacity = EntitySize.huge.value * 40;
+
+        for (int i = 0; i< 20; i++ ) {
+            entityStorage.addSlot(EntitySize.huge, EntitySize.huge, 1, LimitedEntityStorage.SlotType.generic);
+        }
 
 
         result.addComponents(new PositionComponent(location),

@@ -33,6 +33,15 @@ public class DoubleLinkedList<T> implements List<T> {
         return findNode(o) != null;
     }
 
+    public boolean containsNode(DoubleLinkedListNode<T> node) {
+        for (DoubleLinkedListNode<T> n = head; n != null; n = n.next) {
+            if (n == node) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public Iterator<T> iterator() {
         return new DoubleLinkedListIterator<>(this);
@@ -67,11 +76,13 @@ public class DoubleLinkedList<T> implements List<T> {
 
         if (head == null) {
             head = node;
+            node.prev = null;
         } else {
             tail.next = node;
             node.prev = tail;
         }
         tail = node;
+        node.next = null;
         length++;
         return true;
     }
@@ -151,10 +162,22 @@ public class DoubleLinkedList<T> implements List<T> {
     }
 
     public DoubleLinkedListNode<T> getNode(int i) {
-        DoubleLinkedListNode<T> result = head;
-        while (i > 0) {
-            result = result.next;
-            i--;
+        DoubleLinkedListNode<T> result;
+        if (i < length / 2) {
+            // from start
+            result = head;
+            while (i > 0) {
+                result = result.next;
+                i--;
+            }
+        } else {
+            // from end
+            result = tail;
+            i = length - i - 1;
+            while (i > 0) {
+                result = result.prev;
+                i--;
+            }
         }
         return result;
     }
@@ -169,6 +192,7 @@ public class DoubleLinkedList<T> implements List<T> {
         DoubleLinkedListNode<T> old = getNode(i);
         if (old == head) {
             head = t;
+            t.prev = null;
         } else {
             old.prev.next = t;
             t.prev = old.prev;
@@ -176,6 +200,7 @@ public class DoubleLinkedList<T> implements List<T> {
 
         if (old == tail) {
             tail = t;
+            t.next = null;
         } else {
             old.next.prev = t;
             t.next = old.next;
@@ -193,6 +218,7 @@ public class DoubleLinkedList<T> implements List<T> {
             addNode(t);
         } else if (i == 0) {
             t.next = head;
+            t.prev = null;
             head = t;
             length++;
         } else {
@@ -275,7 +301,6 @@ public class DoubleLinkedList<T> implements List<T> {
         throw new UnsupportedOperationException();
     }
 
-
     public static class DoubleLinkedListNode<K> {
         protected DoubleLinkedListNode<K> prev, next;
         public K value;
@@ -286,6 +311,14 @@ public class DoubleLinkedList<T> implements List<T> {
 
         public DoubleLinkedListNode(K value) {
             this.value = value;
+        }
+
+        public DoubleLinkedListNode<K> getPrev() {
+            return prev;
+        }
+
+        public DoubleLinkedListNode<K> getNext() {
+            return next;
         }
     }
 

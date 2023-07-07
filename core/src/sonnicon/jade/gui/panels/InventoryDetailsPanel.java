@@ -5,21 +5,25 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import sonnicon.jade.entity.components.StorableComponent;
-import sonnicon.jade.game.EntityStorage;
+import sonnicon.jade.game.StorageSlotView;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.Gui;
-import sonnicon.jade.util.DoubleLinkedList;
 
 public class InventoryDetailsPanel extends Panel {
-    protected DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> slot;
+    protected StorageSlotView slot;
 
     protected Image imageEntity;
     protected Label labelEntity, labelDescription;
 
     protected Table tableContents;
 
+    public InventoryDetailsPanel() {
+
+    }
+
     @Override
     public void create() {
+        super.create();
         wrapper.pad(32f, 32f, 32f, 32f);
         wrapper.debugAll();
         cell.maxSize(600f, 1000f);
@@ -58,22 +62,18 @@ public class InventoryDetailsPanel extends Panel {
         tableDescripton.add(labelDescription = new Label("", Gui.skin));
     }
 
-    protected void createContents() {
-        if (slot == null) {
-            hide();
-            return;
-        }
-
+    @Override
+    protected void recreate() {
         Drawable image;
         String title, description;
-        StorableComponent storableComponent = slot.value.entity.getComponent(StorableComponent.class);
+        StorableComponent storableComponent = slot.getStack().entity.getComponent(StorableComponent.class);
         if (storableComponent != null) {
             image = storableComponent.icons[0];
             title = storableComponent.displayName;
             description = storableComponent.displayDescription;
         } else {
             image = Textures.atlasFindDrawable("icon-error");
-            title = slot.value.toString();
+            title = slot.getStack().entity.toString();
             description = "Missing Description...";
         }
         imageEntity.setDrawable(image);
@@ -81,15 +81,10 @@ public class InventoryDetailsPanel extends Panel {
         labelDescription.setText(description);
     }
 
-    public void show(DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> slot) {
-        this.slot = slot;
-        createContents();
-        show();
-    }
-
-    public void resize() {
-        if (wrapper.hasParent()) {
-            createContents();
+    public void show(StorageSlotView slot) {
+        if (slot != null && slot.hasStack()) {
+            this.slot = slot;
+            show();
         }
     }
 }

@@ -71,12 +71,14 @@ public class Entity {
         components.forEach((key, value) -> graph.put(key, value.getDependencies()));
         // Nodes without incoming edges
         HashSet<Class<? extends Component>> roots = new HashSet<>(components.keySet());
+        HashSet<Class<? extends Component>> newRoots = new HashSet<>();
         graph.values().stream()
                 .filter(Objects::nonNull)
                 .forEach(set -> set.forEach(roots::remove));
 
         while (!roots.isEmpty()) {
             Iterator<Class<? extends Component>> iter = roots.iterator();
+
             while (iter.hasNext()) {
                 Class<? extends Component> node = iter.next();
                 iter.remove();
@@ -90,13 +92,15 @@ public class Entity {
                     Class<? extends Component> edge = iter2.next();
                     iter2.remove();
                     if (graph.values().stream().filter(Objects::nonNull).noneMatch(set -> set.contains(edge))) {
-                        roots.add(edge);
+                        newRoots.add(edge);
                     }
                 }
             }
+            roots.addAll(newRoots);
+            newRoots.clear();
         }
 
-        ordered.descendingIterator().forEachRemaining(comp -> newEntity.addComponent(components.get(comp)));
+        ordered.descendingIterator().forEachRemaining(comp -> newEntity.addComponent(components.get(comp).copy()));
 
         return newEntity;
     }

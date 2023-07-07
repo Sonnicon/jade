@@ -5,22 +5,26 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import sonnicon.jade.gui.Gui;
 
 public abstract class Panel extends Table {
-    protected final Table wrapper;
-    protected final Cell<Panel> cell;
+    protected Table wrapper;
+    protected Cell<Panel> cell;
 
     public Panel() {
         super(Gui.skin);
-
-        wrapper = new Table(Gui.skin);
-        wrapper.setFillParent(true);
-        cell = wrapper.add(this).grow();
-
         create();
     }
 
-    public abstract void create();
+    public void create() {
+        wrapper = new Table(Gui.skin);
+        wrapper.setFillParent(true);
+        cell = wrapper.add(this).grow();
+    }
+
+    protected void recreate() {
+
+    }
 
     public void show() {
+        recreate();
         Gui.activeStage.addActor(wrapper);
         wrapper.setVisible(true);
     }

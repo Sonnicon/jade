@@ -19,7 +19,6 @@ public class Gui {
         stageIngame = new StageIngame();
 
         setActiveStage(stageMenu);
-
     }
 
     public static void update() {
@@ -43,7 +42,9 @@ public class Gui {
 
     public static void setActiveStage(Stage stage) {
         activeStage = stage;
-        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        activeStage.getViewport().apply();
+        if (stage != null) {
+            resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            activeStage.getViewport().apply();
+        }
     }
 }

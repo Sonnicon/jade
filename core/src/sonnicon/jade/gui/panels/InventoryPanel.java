@@ -4,27 +4,61 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import sonnicon.jade.entity.components.StorableComponent;
-import sonnicon.jade.entity.components.StorageComponent;
+import com.badlogic.gdx.utils.Array;
 import sonnicon.jade.game.EntityStorage;
+import sonnicon.jade.game.StorageSlotView;
 import sonnicon.jade.gui.Gui;
+import sonnicon.jade.gui.actors.InventoryContainerButton;
 import sonnicon.jade.gui.actors.InventorySlotButton;
 import sonnicon.jade.util.DoubleLinkedList;
 
+import java.lang.reflect.Field;
 import java.util.Stack;
 
 public class InventoryPanel extends Panel {
+    // Actors
     protected Table entriesTable;
     protected Cell<ScrollPane> entriesCell;
-
-    protected Table containerTable;
+    protected HorizontalGroup containerGroup;
     protected ImageButton containerExitButton;
+
+    // Entity storages in order we are in (for returning)
     public Stack<EntityStorage> containerStack = new Stack<>();
 
-    public InventorySlotButton selectedInventoryButton;
+    protected StorageSlotView lastSlot;
+    protected float sumWidth = 0;
+
+
+    // can't do my own layouts easily without this
+    protected static final Field fieldCellEndRow, fieldCellRow, fieldCellColumn, fieldTableRows, fieldTableColumns;
+
+    static {
+        try {
+            fieldCellEndRow = Cell.class.getDeclaredField("endRow");
+            fieldCellRow = Cell.class.getDeclaredField("row");
+            fieldCellColumn = Cell.class.getDeclaredField("column");
+
+            fieldTableRows = Table.class.getDeclaredField("rows");
+            fieldTableColumns = Table.class.getDeclaredField("columns");
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+
+        fieldCellEndRow.setAccessible(true);
+        fieldCellRow.setAccessible(true);
+        fieldCellColumn.setAccessible(true);
+
+        fieldTableRows.setAccessible(true);
+        fieldTableColumns.setAccessible(true);
+    }
+
+    public InventoryPanel() {
+
+    }
 
     @Override
     public void create() {
+        super.create();
         wrapper.pad(4f, 100f, 0f, 100f);
         wrapper.debugAll();
 
@@ -48,23 +82,33 @@ public class InventoryPanel extends Panel {
         entriesTable = new Table(Gui.skin);
         ScrollPane entriesPane = new ScrollPane(entriesTable);
 
-        entriesPane.setScrollingDisabled(true, false);
+        entriesPane.setScrollingDisabled(false, false);
         entriesCell = add(entriesPane).grow().pad(2f);
         entriesTable.align(Align.topLeft);
 
+
         Table containersWrapper = new Table(Gui.skin);
         containersWrapper.background("button-inventory-1-9p");
-        containerTable = new Table(Gui.skin);
-        containerTable.defaults().left().pad(0f, 4f, 0f, 4f).size(64f);
-        containerTable.left();
-        ScrollPane containersPane = new ScrollPane(containerTable);
+        containerGroup = new HorizontalGroup();
+        containerGroup.left().space(4f);
+        ScrollPane containersPane = new ScrollPane(containerGroup);
         wrapper.row();
         wrapper.add(containersWrapper).growX().pad(4f, 0f, 0f, 0f).height(96f);
         containersWrapper.add(containersPane).growX().pad(0f, -4f, 0f, -4f);
         containersPane.setScrollingDisabled(false, true);
 
-        containerExitButton = new ImageButton(Gui.skin, "imagebutton-inventorycontent-close");
-        containerExitButton.background("button-inventory-2-9p");
+        containerExitButton = new ImageButton(Gui.skin, "imagebutton-inventorycontent-close") {
+            @Override
+            public float getPrefWidth() {
+                return 64f;
+            }
+
+            @Override
+            public float getPrefHeight() {
+                return 64f;
+            }
+        };
+        containerExitButton.background("button-inventory-2-9p").pad(0f, 4f, 0f, 4f);
         containerExitButton.addCaptureListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -72,66 +116,118 @@ public class InventoryPanel extends Panel {
                 if (containerStack.empty()) {
                     hide();
                 } else {
-                    createContents();
+                    recreate();
                 }
             }
         });
     }
 
-    protected void createContents() {
-        containerTable.clearChildren();
-        containerTable.add(containerExitButton);
+    @Override
+    public void recreate() {
+        sumWidth = 0f;
+        containerGroup.clearChildren();
+        containerGroup.addActor(containerExitButton);
 
         entriesTable.clearChildren();
-        float sumWidth = 0;
         EntityStorage storage = containerStack.peek();
 
         DoubleLinkedList.DoubleLinkedListNodeIterator<EntityStorage.EntityStack> iter = storage.stacks.nodeIterator();
         while (iter.hasNext()) {
             DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> node = iter.next();
-            EntityStorage.EntityStack stack = node.value;
 
-            InventorySlotButton slot = new InventorySlotButton(node);
-            float slotPrefWidth = slot.getPrefWidth();
-            sumWidth += slotPrefWidth;
-            if (sumWidth >= entriesCell.getActorWidth()) {
-                entriesTable.row();
-                sumWidth = slotPrefWidth;
-            }
-            entriesTable.add(slot).align(Align.topLeft);
+            lastSlot = new StorageSlotView(storage, node);
+            addInventoryButton(lastSlot);
+        }
+    }
 
-            if (stack == null) {
-                continue;
-            }
+    public void addInventoryButton(StorageSlotView slot) {
+        entriesTable.add(new InventorySlotButton(slot)).align(Align.topLeft);
+        if (slot.hasStorageEntity()) {
+            containerGroup.addActor(new InventoryContainerButton(slot));
+        }
+    }
 
-            StorageComponent stackStorage = stack.entity.getComponent(StorageComponent.class);
-            if (stackStorage != null) {
-                StorableComponent comp = stack.entity.getComponent(StorableComponent.class);
-                if (comp == null) continue;
-                Button containerButton = new Button(Gui.skin, "button-inventorycontent");
-                containerButton.add(new Image(comp.icons[0])).grow();
-                containerButton.addCaptureListener(new ChangeListener() {
-                    @Override
-                    public void changed(ChangeEvent event, Actor actor) {
-                        containerStack.push(stackStorage.storage);
-                        createContents();
-                    }
-                });
-                containerTable.add(containerButton).size(64f);
+    public void removeInventoryButton(StorageSlotView slot) {
+        for (Actor button : entriesTable.getChildren()) {
+            if (button instanceof InventorySlotButton &&
+                    slot.equals(((InventorySlotButton) button).slot)) {
+                button.remove();
+                break;
             }
         }
+
+        removeInventoryContainerButton(slot);
+    }
+
+    public void removeInventoryContainerButton(StorageSlotView slot) {
+        for (Actor button : containerGroup.getChildren()) {
+            if (button instanceof InventoryContainerButton &&
+                    slot.equals(((InventoryContainerButton) button).slot)) {
+                button.remove();
+                break;
+            }
+        }
+    }
+
+    public void appendNewSlots() {
+        DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> node = lastSlot.getNode();
+        while ((node = node.getNext()) != null) {
+            addInventoryButton(new StorageSlotView(lastSlot.getStorage(), node));
+        }
+    }
+
+    @Override
+    public void layout() {
+        // awful
+        try {
+            sumWidth = 0;
+            int row = 0, column = 0, maxColumn = 0;
+            Cell<?> previousCell = null;
+            for (Cell<?> cell : new Array.ArrayIterator<>(entriesTable.getCells())) {
+                if ((sumWidth += cell.getPrefWidth()) >= entriesCell.getActorWidth()) {
+                    maxColumn = Math.max(maxColumn, column);
+                    column = 0;
+                    row++;
+
+                    if (previousCell != null) {
+                        fieldCellEndRow.setBoolean(previousCell, true);
+                    }
+
+                    sumWidth = cell.getPrefWidth();
+                } else if (previousCell != null) {
+                    fieldCellEndRow.setBoolean(previousCell, false);
+                }
+
+                fieldCellRow.setInt(cell, row);
+                fieldCellColumn.setInt(cell, column);
+                column++;
+                previousCell = cell;
+            }
+            fieldTableRows.setInt(entriesTable, row + 1);
+            fieldTableColumns.setInt(entriesTable, maxColumn);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        entriesTable.invalidate();
+        super.layout();
     }
 
     public void show(EntityStorage storage) {
         containerStack.clear();
         containerStack.push(storage);
-        createContents();
         show();
     }
 
     public void resize() {
         if (wrapper.hasParent()) {
-            createContents();
+            recreate();
         }
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+        InventorySlotButton.unselectAll();
     }
 }

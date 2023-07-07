@@ -35,6 +35,15 @@ public class EntitySizeComponent extends Component {
         entity.components.replace(EntitySizeComponent.class, size);
     }
 
+    public static boolean fitsSize(Entity entity, EntitySize min, EntitySize max) {
+        EntitySizeComponent sizeComponent = entity.getComponent(EntitySizeComponent.class);
+        if (sizeComponent == null) {
+            return false;
+        }
+        EntitySize size = sizeComponent.size;
+        return max.value >= size.value && min.value <= size.value;
+    }
+
     @Override
     public void addToEntity(Entity entity) {
     }
