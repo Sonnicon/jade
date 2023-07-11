@@ -3,13 +3,13 @@ package sonnicon.jade.gui.actors;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import sonnicon.jade.entity.components.StorableComponent;
 import sonnicon.jade.entity.components.StorageComponent;
-import sonnicon.jade.game.StorageSlotView;
+import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.gui.Gui;
 
 public class InventoryContainerButton extends TapButton {
-    public StorageSlotView slot;
+    public EntityStorageSlot slot;
 
-    public InventoryContainerButton(StorageSlotView slot) {
+    public InventoryContainerButton(EntityStorageSlot slot) {
         super("button-inventorycontent");
         this.slot = slot;
         create();

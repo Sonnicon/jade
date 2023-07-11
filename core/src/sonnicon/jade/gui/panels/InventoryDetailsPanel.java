@@ -5,12 +5,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import sonnicon.jade.entity.components.StorableComponent;
-import sonnicon.jade.game.StorageSlotView;
+import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.Gui;
 
 public class InventoryDetailsPanel extends Panel {
-    protected StorageSlotView slot;
+    protected EntityStorageSlot slot;
 
     protected Image imageEntity;
     protected Label labelEntity, labelDescription;
@@ -66,14 +66,14 @@ public class InventoryDetailsPanel extends Panel {
     protected void recreate() {
         Drawable image;
         String title, description;
-        StorableComponent storableComponent = slot.getStack().entity.getComponent(StorableComponent.class);
+        StorableComponent storableComponent = slot.getEntity().getComponent(StorableComponent.class);
         if (storableComponent != null) {
             image = storableComponent.icons[0];
             title = storableComponent.displayName;
             description = storableComponent.displayDescription;
         } else {
             image = Textures.atlasFindDrawable("icon-error");
-            title = slot.getStack().entity.toString();
+            title = slot.getEntity().toString();
             description = "Missing Description...";
         }
         imageEntity.setDrawable(image);
@@ -81,8 +81,8 @@ public class InventoryDetailsPanel extends Panel {
         labelDescription.setText(description);
     }
 
-    public void show(StorageSlotView slot) {
-        if (slot != null && slot.hasStack()) {
+    public void show(EntityStorageSlot slot) {
+        if (slot != null && !slot.isEmpty()) {
             this.slot = slot;
             show();
         }

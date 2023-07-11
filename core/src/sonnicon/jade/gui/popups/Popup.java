@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import sonnicon.jade.gui.Gui;
 
 public abstract class Popup extends Table {
@@ -23,11 +24,10 @@ public abstract class Popup extends Table {
 
         // Hide if you click away
         overlay.setTouchable(Touchable.enabled);
-        overlay.addListener(new InputListener() {
+        overlay.addListener(new ClickListener() {
             @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+            public void clicked(InputEvent event, float x, float y) {
                 hide();
-                return true;
             }
         });
 

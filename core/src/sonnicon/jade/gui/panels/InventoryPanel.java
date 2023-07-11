@@ -6,13 +6,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import sonnicon.jade.game.EntityStorage;
-import sonnicon.jade.game.StorageSlotView;
+import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.gui.Gui;
 import sonnicon.jade.gui.actors.InventoryContainerButton;
 import sonnicon.jade.gui.actors.InventorySlotButton;
 import sonnicon.jade.util.DoubleLinkedList;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Stack;
 
 public class InventoryPanel extends Panel {
@@ -25,9 +26,8 @@ public class InventoryPanel extends Panel {
     // Entity storages in order we are in (for returning)
     public Stack<EntityStorage> containerStack = new Stack<>();
 
-    protected StorageSlotView lastSlot;
+    protected EntityStorageSlot lastSlot;
     protected float sumWidth = 0;
-
 
     // can't do my own layouts easily without this
     protected static final Field fieldCellEndRow, fieldCellRow, fieldCellColumn, fieldTableRows, fieldTableColumns;
@@ -131,48 +131,57 @@ public class InventoryPanel extends Panel {
         entriesTable.clearChildren();
         EntityStorage storage = containerStack.peek();
 
-        DoubleLinkedList.DoubleLinkedListNodeIterator<EntityStorage.EntityStack> iter = storage.stacks.nodeIterator();
-        while (iter.hasNext()) {
-            DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> node = iter.next();
-
-            lastSlot = new StorageSlotView(storage, node);
-            addInventoryButton(lastSlot);
+        for (EntityStorageSlot slot : storage.slots) {
+            addInventoryButton(lastSlot = slot);
         }
     }
 
-    public void addInventoryButton(StorageSlotView slot) {
-        entriesTable.add(new InventorySlotButton(slot)).align(Align.topLeft);
+    public void addInventoryButton(EntityStorageSlot slot) {
+        InventorySlotButton slotButton = new InventorySlotButton(slot);
+        entriesTable.add(slotButton).align(Align.topLeft);
         if (slot.hasStorageEntity()) {
-            containerGroup.addActor(new InventoryContainerButton(slot));
+            InventoryContainerButton containerButton = new InventoryContainerButton(slot);
+            containerGroup.addActor(containerButton);
+            slotButton.associatedActors.add(containerButton);
         }
     }
 
-    public void removeInventoryButton(StorageSlotView slot) {
+    public boolean removeInventoryButton(EntityStorageSlot slot) {
+        boolean success = false;
         for (Actor button : entriesTable.getChildren()) {
             if (button instanceof InventorySlotButton &&
                     slot.equals(((InventorySlotButton) button).slot)) {
-                button.remove();
+                ((InventorySlotButton) button).removeButton();
+                success = true;
                 break;
             }
         }
 
-        removeInventoryContainerButton(slot);
+        if (success) {
+            Actor[] actors = entriesTable.getChildren().items.clone();
+            entriesTable.clearChildren();
+            Arrays.stream(actors).forEach(it -> entriesTable.add(it));
+            entriesTable.invalidate();
+        }
+
+        return success;
     }
 
-    public void removeInventoryContainerButton(StorageSlotView slot) {
+    public boolean removeInventoryContainerButton(EntityStorageSlot slot) {
         for (Actor button : containerGroup.getChildren()) {
             if (button instanceof InventoryContainerButton &&
                     slot.equals(((InventoryContainerButton) button).slot)) {
                 button.remove();
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     public void appendNewSlots() {
-        DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> node = lastSlot.getNode();
+        DoubleLinkedList.DoubleLinkedListNode<EntityStorageSlot> node = lastSlot.getNode();
         while ((node = node.getNext()) != null) {
-            addInventoryButton(new StorageSlotView(lastSlot.getStorage(), node));
+            addInventoryButton(node.value);
         }
     }
 

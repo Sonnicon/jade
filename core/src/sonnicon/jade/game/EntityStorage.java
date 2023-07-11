@@ -8,7 +8,7 @@ import sonnicon.jade.util.DoubleLinkedList;
 import java.util.Iterator;
 
 public class EntityStorage {
-    public DoubleLinkedList<EntityStack> stacks = new DoubleLinkedList<>();
+    public DoubleLinkedList<EntityStorageSlot> slots = new DoubleLinkedList<>();
     protected int capacityUsed = 0;
 
     public EntitySize minimumSize = EntitySize.tiny;
@@ -20,23 +20,21 @@ public class EntityStorage {
     }
 
     public int addEntityAmount(Entity entity, int amount) {
-        amount = findMaxAmount(entity, amount);
+        amount = getMaxAddAmount(entity, amount);
 
-        // Add entities to existing nodes
-        Iterator<DoubleLinkedList.DoubleLinkedListNode<EntityStack>> iter = stacks.nodeIterator();
+        // Add entities to existing slots
+        Iterator<EntityStorageSlot> iter = slots.iterator();
         int remaining = amount;
         while (iter.hasNext() && remaining > 0) {
-            DoubleLinkedList.DoubleLinkedListNode<EntityStack> node = iter.next();
-            if (node.value == null || node.value.entity.compare(entity)) {
-                remaining -= addToNode(node, entity, remaining);
-            }
+            EntityStorageSlot slot = iter.next();
+            remaining -= slot.add(entity, remaining);
         }
 
-        // Leftover entities go in a new node
+        // Leftover entities go in a new slot
         if (remaining > 0) {
-            DoubleLinkedList.DoubleLinkedListNode<EntityStack> newNode = addToNewNode(entity, remaining);
-            if (newNode != null) {
-                remaining -= newNode.value.amount;
+            EntityStorageSlot newSlot = addToNewSlot(entity, remaining);
+            if (newSlot != null) {
+                remaining -= newSlot.amount;
             }
         }
 
@@ -45,89 +43,45 @@ public class EntityStorage {
         return amount - remaining;
     }
 
-    public boolean removeEntity(Entity entity) {
-        return removeEntity(entity, 1) == 1;
-    }
-
-    public int removeEntity(Entity entity, int amount) {
+    public int removeEntityAmount(Entity entity, int amount) {
         int remaining = amount;
-        Iterator<DoubleLinkedList.DoubleLinkedListNode<EntityStack>> iter = stacks.nodeIterator();
+        Iterator<EntityStorageSlot> iter = slots.iterator();
         while (iter.hasNext() && remaining > 0) {
-            DoubleLinkedList.DoubleLinkedListNode<EntityStack> node = iter.next();
-            if (node.value.entity.compare(entity)) {
-                remaining -= removeFromNode(node, remaining);
+            EntityStorageSlot slot = iter.next();
+            if (!slot.isEmpty() && slot.entity.compare(entity)) {
+                remaining -= slot.remove(remaining);
             }
         }
 
         return amount - remaining;
     }
 
-    public int addToNode(DoubleLinkedList.DoubleLinkedListNode<EntityStack> node, int amount) {
-        return addToNode(node, node.value.entity, amount, true);
+
+    public EntityStorageSlot addToNewSlot(Entity entity, int amount) {
+        return addToNewSlot(entity, amount, false);
     }
 
-    protected int addToNode(DoubleLinkedList.DoubleLinkedListNode<EntityStack> node, int amount, boolean check) {
-        return addToNode(node, node.value.entity, amount, check);
-    }
-
-     public int addToNode(DoubleLinkedList.DoubleLinkedListNode<EntityStack> node, Entity entity, int amount) {
-        return addToNode(node, entity, amount, true);
-     }
-
-     protected int addToNode(DoubleLinkedList.DoubleLinkedListNode<EntityStack> node, Entity entity, int amount, boolean check) {
-        if (check) {
-            if ((amount = findMaxAmount(entity, amount)) <= 0) {
-                return 0;
-            }
-        }
-        if (node.value == null) {
-            node.value = new EntityStack(entity, amount);
-        } else {
-            node.value.amount += amount;
-        }
-        updateCapacityUsed(entity, amount);
-        return amount;
-    }
-
-    public DoubleLinkedList.DoubleLinkedListNode<EntityStack> addToNewNode(Entity entity, int amount) {
-        return addToNewNode(entity, amount, true);
-    }
-
-    protected DoubleLinkedList.DoubleLinkedListNode<EntityStack> addToNewNode(Entity entity, int amount, boolean check) {
-        if (check) {
-            if ((amount = findMaxAmount(entity, amount)) <= 0) {
+    protected EntityStorageSlot addToNewSlot(Entity entity, int amount, boolean force) {
+        if (!force) {
+            if ((amount = getMaxAddAmount(entity, amount)) <= 0) {
                 return null;
             }
         }
 
-        DoubleLinkedList.DoubleLinkedListNode<EntityStack> node =
-                new DoubleLinkedList.DoubleLinkedListNode<>(new EntityStack(entity, amount));
-        stacks.addNode(node);
-        updateCapacityUsed(entity, amount);
-        return node;
+        return appendNewSlot(entity, amount);
     }
 
-    public int removeFromNode(DoubleLinkedList.DoubleLinkedListNode<EntityStack> node, int amount) {
-        if (amount == 0) {
-            return 0;
-        }
-        // removing everything
-        if (amount >= node.value.amount) {
-            amount = node.value.amount;
-            removeAllFromNode(node);
-            return amount;
+    protected void onSlotChanged(EntityStorageSlot slot, Entity entity, int oldAmount, int newAmount) {
+        if (newAmount == 0) {
+            disconnectSlot(slot);
         } else {
-            node.value.amount -= amount;
+            updateCapacityUsed(entity, newAmount - oldAmount);
         }
-        updateCapacityUsed(node.value.entity, -amount);
-        return amount;
     }
 
-    public void removeAllFromNode(DoubleLinkedList.DoubleLinkedListNode<EntityStack> node) {
-        stacks.removeNode(node);
-        if (node.value != null) {
-            updateCapacityUsed(node.value.entity, -node.value.amount);
-            node.value.amount = 0;
+    protected void onSlotDisconnected(EntityStorageSlot slot) {
+        if (!slot.isEmpty()) {
+            updateCapacityUsed(slot.entity, -slot.amount);
         }
     }
 
@@ -140,23 +94,23 @@ public class EntityStorage {
 
     public void updateCapacityUsed() {
         capacityUsed = 0;
-        for (EntityStack stack : stacks) {
-            if (stack != null) {
-                updateCapacityUsed(stack.entity, stack.amount);
+        for (EntityStorageSlot slot : slots) {
+            if (!slot.isEmpty()) {
+                updateCapacityUsed(slot.entity, slot.amount);
             }
         }
     }
 
     public boolean hasMatchingEntity(Entity entity) {
-        return stacks.stream().anyMatch(other -> other.entity.compare(entity));
+        return slots.stream().anyMatch(other -> other.entity.compare(entity));
     }
 
     public boolean containsExactEntity(Entity entity) {
-        for (EntityStack stack : stacks) {
-            if (stack.entity == entity) {
+        for (EntityStorageSlot slot : slots) {
+            if (slot.entity == entity) {
                 return true;
             }
-            StorageComponent comp = stack.entity.getComponent(StorageComponent.class);
+            StorageComponent comp = slot.entity.getComponent(StorageComponent.class);
             if (comp != null && comp.storage.containsExactEntity(entity)) {
                 return true;
             }
@@ -164,7 +118,7 @@ public class EntityStorage {
         return false;
     }
 
-    protected int findMaxAmount(Entity entity, int amount) {
+    public int getMaxAddAmount(Entity entity, int amount) {
         if (!EntitySizeComponent.fitsSize(entity, minimumSize, maximumSize)) {
             return 0;
         }
@@ -174,56 +128,58 @@ public class EntityStorage {
     }
 
     public EntityStorage copy() {
-        EntityStorage copy = new EntityStorage();
+        EntityStorage copy;
+        try {
+            copy = getClass().newInstance();
+        } catch (Exception ignored) {
+            copy = new EntityStorage();
+        }
         copy.minimumSize = minimumSize;
         copy.maximumSize = maximumSize;
         copy.capacity = capacity;
         copy.capacityUsed = capacityUsed;
 
-        for (EntityStack stack : stacks) {
-            copy.stacks.add(stack.copy());
+        for (EntityStorageSlot slot : slots) {
+            copy.appendSlot(slot.copy());
         }
         return copy;
     }
 
     public boolean compare(EntityStorage other) {
-        if (stacks == null || other == null || other.stacks == null ||
+        if (this == other) {
+            return true;
+        }
+
+        if (slots == null || other == null || other.slots == null ||
                 capacity != other.capacity || minimumSize != other.minimumSize || maximumSize != other.maximumSize ||
-                stacks.size() != other.stacks.size()) {
+                slots.size() != other.slots.size()) {
             return false;
         }
-        for (int i = 0; i < stacks.size(); i++) {
-            if (!stacks.get(i).compare(other.stacks.get(i))) {
+        for (int i = 0; i < slots.size(); i++) {
+            if (!slots.get(i).compare(other.slots.get(i))) {
                 return false;
             }
         }
         return true;
     }
 
-    public static class EntityStack {
-        public Entity entity;
-        public int amount;
-
-        public EntityStack() {
-
-        }
-
-        public EntityStack(Entity entity) {
-            this(entity, 1);
-        }
-
-        public EntityStack(Entity entity, int amount) {
-            this.entity = entity;
-            this.amount = amount;
-        }
-
-        public EntityStack copy() {
-            return new EntityStack(entity.copy(), amount);
-        }
-
-        public boolean compare(EntityStack other) {
-            return amount == other.amount && entity.compare(other.entity);
-        }
+    protected EntityStorageSlot appendNewSlot(Entity entity, int amount) {
+        DoubleLinkedList.DoubleLinkedListNode<EntityStorageSlot> node = new DoubleLinkedList.DoubleLinkedListNode<>();
+        node.value = new EntityStorageSlot(entity, amount, this, node);
+        slots.addNode(node);
+        return node.value;
     }
 
+    public boolean appendSlot(EntityStorageSlot slot) {
+        DoubleLinkedList.DoubleLinkedListNode<EntityStorageSlot> node = new DoubleLinkedList.DoubleLinkedListNode<>();
+        node.value = slot;
+        slots.addNode(node);
+        slot.attach(this, node);
+        return true;
+    }
+
+    public boolean disconnectSlot(EntityStorageSlot slot) {
+        slot.disconnect();
+        return true;
+    }
 }

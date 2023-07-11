@@ -7,15 +7,12 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.StorageComponent;
-import sonnicon.jade.game.EntityStorage;
+import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;
-import sonnicon.jade.game.LimitedEntityStorage;
-import sonnicon.jade.game.StorageSlotView;
 import sonnicon.jade.gui.actors.InventoryHandButton;
 import sonnicon.jade.gui.panels.InventoryDetailsPanel;
 import sonnicon.jade.gui.panels.InventoryPanel;
 import sonnicon.jade.gui.popups.InventoryMovePopup;
-import sonnicon.jade.util.DoubleLinkedList;
 
 public class StageIngame extends Stage {
     // Entity that this player is controlling
@@ -53,7 +50,7 @@ public class StageIngame extends Stage {
         tableMain.clearChildren();
 
         StorageComponent storageComponent = controlledEntity.getComponent(StorageComponent.class);
-        if (storageComponent != null && storageComponent.storage instanceof LimitedEntityStorage) {
+        if (storageComponent != null) {
             Table leftTable = new Table();
             Table rightTable = new Table();
 
@@ -61,14 +58,11 @@ public class StageIngame extends Stage {
             tableMain.add(new Table()).growX();
             tableMain.add(rightTable).width(96f).right().bottom();
 
-            LimitedEntityStorage storage = (LimitedEntityStorage) storageComponent.storage;
             int hand = 0;
-            DoubleLinkedList.DoubleLinkedListNodeIterator<EntityStorage.EntityStack> iter = storage.stacks.nodeIterator();
             int index = 0;
-            while (iter.hasNext()) {
-                DoubleLinkedList.DoubleLinkedListNode<EntityStorage.EntityStack> node = iter.next();
-                if (storage.slots.get(index).type == LimitedEntityStorage.SlotType.hand) {
-                    StorageSlotView slot = new StorageSlotView(storage, node);
+            for (EntityStorageSlot slot : storageComponent.storage.slots) {
+                //todo hands
+                if (index < 2) {
                     InventoryHandButton handButton = new InventoryHandButton(slot, hand);
                     if (hand++ % 2 == 0) {
                         leftTable.add(handButton).row();

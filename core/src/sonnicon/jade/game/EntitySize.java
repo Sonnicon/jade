@@ -2,7 +2,7 @@ package sonnicon.jade.game;
 
 public enum EntitySize {
     // walls, can't carry these
-    colossal(-1),
+    colossal(Integer.MAX_VALUE),
     // small tree
     huge(1500),
     // microwave
@@ -17,6 +17,7 @@ public enum EntitySize {
     tiny(1);
 
     public final int value;
+
     EntitySize(int value) {
         this.value = value;
     }

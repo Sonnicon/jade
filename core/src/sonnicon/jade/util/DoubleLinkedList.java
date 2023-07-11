@@ -99,12 +99,16 @@ public class DoubleLinkedList<T> implements List<T> {
 
         if (node == head) {
             head = node.next;
+        } else {
+            node.prev.next = node.next;
         }
+
         if (node == tail) {
             tail = node.prev;
+        } else {
+            node.next.prev = node.prev;
         }
-        node.prev.next = node.next;
-        node.next.prev = node.prev;
+
         length--;
         return true;
     }
@@ -406,7 +410,7 @@ public class DoubleLinkedList<T> implements List<T> {
 
         @Override
         public DoubleLinkedListNode<K> next() {
-            DoubleLinkedListNode<K>  result = node;
+            DoubleLinkedListNode<K> result = node;
             node = node.next;
             return result;
         }

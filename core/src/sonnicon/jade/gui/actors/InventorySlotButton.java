@@ -1,20 +1,22 @@
 package sonnicon.jade.gui.actors;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import sonnicon.jade.entity.components.StorableComponent;
-import sonnicon.jade.game.EntityStorage;
-import sonnicon.jade.game.StorageSlotView;
+import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.gui.Gui;
 
 import java.util.ArrayDeque;
+import java.util.LinkedList;
 
 public class InventorySlotButton extends TapButton {
-    public StorageSlotView slot;
+    public EntityStorageSlot slot;
+    public LinkedList<Actor> associatedActors = new LinkedList<>();
 
-    public static StorageSlotView selectedStorageSlot;
+    public static EntityStorageSlot selectedStorageSlot;
     public static ArrayDeque<InventorySlotButton> checkedButtons = new ArrayDeque<>();
     public static ArrayDeque<InventorySlotButton> flaggedButtons = new ArrayDeque<>();
 
@@ -24,14 +26,14 @@ public class InventorySlotButton extends TapButton {
         super("button-inventorycontent");
     }
 
-    public InventorySlotButton(StorageSlotView slot) {
+    public InventorySlotButton(EntityStorageSlot slot) {
         this();
         this.slot = slot;
         create();
     }
 
     public void create() {
-        if (slot == null || !slot.hasStack()) {
+        if (slot == null || slot.isEmpty()) {
             return;
         }
 
@@ -42,26 +44,29 @@ public class InventorySlotButton extends TapButton {
             }
         }
 
-        EntityStorage.EntityStack stack = slot.getStack();
-        Stack st = new Stack();
-        add(st).grow();
+        Stack stack = new Stack();
+        add(stack).grow();
 
         StorableComponent comp = slot.getEntity().getComponent(StorableComponent.class);
         if (comp == null) return;
-        st.addActor(new Image(comp.icons[0]));
-        if (stack.amount > 1) {
-            st.addActor(new Label(String.valueOf(stack.amount), Gui.skin));
+        stack.addActor(new Image(comp.icons[0]));
+        if (slot.getAmount() > 1) {
+            stack.addActor(new Label(String.valueOf(slot.getAmount()), Gui.skin));
         }
     }
 
     public void recreate() {
         if (slot == null || !slot.exists()) {
-            remove();
+            Gui.stageIngame.panelInventory.removeInventoryButton(slot);
             return;
         }
 
         clearChildren();
-        create();
+        if (!slot.isEmpty()) {
+            create();
+        } else {
+            removeAssociatedActors();
+        }
     }
 
     @Override
@@ -80,15 +85,14 @@ public class InventorySlotButton extends TapButton {
             // 2nd click: same slot
             Gui.stageIngame.panelInventoryDetails.show(slot);
             unselectAll();
-        } else if (selectedStorageSlot.hasStack() ^ slot.hasStack()) {
+        } else if (selectedStorageSlot.isEmpty() ^ slot.isEmpty()) {
             // One click: empty
             // One click: has stack
-            StorageSlotView slotFrom = slot.hasStack() ? slot : selectedStorageSlot;
-            StorageSlotView slotTo = slot.hasStack() ? selectedStorageSlot : slot;
-            slotFrom.moveToSlot(slotTo);
-
+            EntityStorageSlot slotFrom = slot.isEmpty() ? selectedStorageSlot : slot;
+            EntityStorageSlot slotTo = slot.isEmpty() ? slot : selectedStorageSlot;
+            slotFrom.moveAll(slotTo, null);
             updateChangedSlots();
-        } else if (selectedStorageSlot.hasStack()) {
+        } else if (!slot.isEmpty()) {
             // Both click: has stack
             // We try to move one way, then the other
             if (!tappedTryMove(selectedStorageSlot, slot)) {
@@ -97,15 +101,15 @@ public class InventorySlotButton extends TapButton {
         }
     }
 
-    protected boolean tappedTryMove(StorageSlotView source, StorageSlotView destination) {
+    protected boolean tappedTryMove(EntityStorageSlot source, EntityStorageSlot destination) {
         boolean isMatch = destination.matchesEntity(source);
         boolean isStore = destination.hasStorageEntity();
         if (isMatch && isStore) {
             tempVec = localToStageCoordinates(tempVec.set(0f, 0f));
 
             Gui.stageIngame.popupInventoryMove.show(tempVec.x + 48f, tempVec.y - 48f, action -> {
-                source.moveTo(destination, action);
-                if (action == StorageSlotView.InventoryMove.insert && destination.getStack().amount > 1) {
+                source.moveAll(destination, action);
+                if (action == EntityStorageSlot.InventoryMove.insert && destination.getAmount() > 1) {
                     Gui.stageIngame.panelInventory.appendNewSlots();
                 }
 
@@ -116,10 +120,10 @@ public class InventorySlotButton extends TapButton {
 
         boolean result = false;
         if (isMatch) {
-            result = source.moveToSlot(destination) >= 0;
+            result = source.moveAll(destination) >= 0;
         } else if (isStore) {
-            result = source.moveToStorage(destination) >= 0;
-            if (destination.getStack().amount > 1) {
+            result = source.moveAll(destination, EntityStorageSlot.InventoryMove.insert) >= 0;
+            if (destination.getAmount() > 1) {
                 Gui.stageIngame.panelInventory.appendNewSlots();
             }
         }
@@ -153,6 +157,7 @@ public class InventorySlotButton extends TapButton {
 
     public static void recreateFlagged() {
         flaggedButtons.forEach(InventorySlotButton::recreate);
+        flaggedButtons.clear();
     }
 
     public void flagRecreate() {
@@ -167,6 +172,16 @@ public class InventorySlotButton extends TapButton {
                 flaggedButtons.add(button);
             }
         });
+    }
+
+    public boolean removeButton() {
+        removeAssociatedActors();
+        return remove();
+    }
+
+    public void removeAssociatedActors() {
+        associatedActors.forEach(Actor::remove);
+        associatedActors.clear();
     }
 
     @Override

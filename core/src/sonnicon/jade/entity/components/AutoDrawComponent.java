@@ -21,4 +21,9 @@ public class AutoDrawComponent extends TileDrawComponent {
         super.removeFromEntity(entity);
         Renderer.renderList.remove(this);
     }
+
+    @Override
+    public Component copy() {
+        return new AutoDrawComponent(region, width, height);
+    }
 }
