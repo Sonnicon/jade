@@ -37,6 +37,10 @@ public class InventoryContainerButton extends TapButton {
         StorageComponent storageComponent = slot.getEntity().getComponent(StorageComponent.class);
         Gui.stageIngame.panelInventory.containerStack.push(storageComponent.storage);
         Gui.stageIngame.panelInventory.recreate();
+
+        if (slot == InventorySlotButton.selectedStorageSlot) {
+            InventorySlotButton.unselectAll();
+        }
     }
 
     @Override

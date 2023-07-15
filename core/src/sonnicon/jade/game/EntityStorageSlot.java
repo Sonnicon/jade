@@ -14,10 +14,10 @@ import java.util.function.Consumer;
 
 public class EntityStorageSlot {
     // General data
-    protected Entity entity;
-    protected int amount;
-    protected EntityStorage storage;
-    protected DoubleLinkedList.DoubleLinkedListNode<EntityStorageSlot> node;
+    private Entity entity;
+    private int amount;
+    private EntityStorage storage;
+    private DoubleLinkedList.DoubleLinkedListNode<EntityStorageSlot> node;
 
     // Restrictions
     public EntitySize minimumSize = EntitySize.tiny;

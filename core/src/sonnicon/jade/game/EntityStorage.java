@@ -9,8 +9,8 @@ import sonnicon.jade.util.ICopyable;
 import java.util.Iterator;
 
 public class EntityStorage implements ICopyable {
-    public DoubleLinkedList<EntityStorageSlot> slots = new DoubleLinkedList<>();
-    protected int capacityUsed = 0;
+    public final DoubleLinkedList<EntityStorageSlot> slots = new DoubleLinkedList<>();
+    private int capacityUsed = 0;
 
     public EntitySize minimumSize = EntitySize.tiny;
     public EntitySize maximumSize = EntitySize.huge;
@@ -35,7 +35,7 @@ public class EntityStorage implements ICopyable {
         if (remaining > 0) {
             EntityStorageSlot newSlot = addToNewSlot(entity, remaining);
             if (newSlot != null) {
-                remaining -= newSlot.amount;
+                remaining -= newSlot.getAmount();
             }
         }
 
@@ -49,7 +49,7 @@ public class EntityStorage implements ICopyable {
         Iterator<EntityStorageSlot> iter = slots.iterator();
         while (iter.hasNext() && remaining > 0) {
             EntityStorageSlot slot = iter.next();
-            if (!slot.isEmpty() && slot.entity.compare(entity)) {
+            if (!slot.isEmpty() && slot.getEntity().compare(entity)) {
                 remaining -= slot.remove(remaining);
             }
         }
@@ -83,7 +83,7 @@ public class EntityStorage implements ICopyable {
 
     protected void onSlotDisconnected(EntityStorageSlot slot) {
         if (!slot.isEmpty()) {
-            updateCapacityUsed(slot.entity, -slot.amount);
+            updateCapacityUsed(slot.getEntity(), -slot.getAmount());
         }
     }
 
@@ -98,21 +98,21 @@ public class EntityStorage implements ICopyable {
         capacityUsed = 0;
         for (EntityStorageSlot slot : slots) {
             if (!slot.isEmpty()) {
-                updateCapacityUsed(slot.entity, slot.amount);
+                updateCapacityUsed(slot.getEntity(), slot.getAmount());
             }
         }
     }
 
     public boolean hasMatchingEntity(Entity entity) {
-        return slots.stream().anyMatch(other -> other.entity.compare(entity));
+        return slots.stream().anyMatch(other -> other.getEntity().compare(entity));
     }
 
     public boolean containsExactEntity(Entity entity) {
         for (EntityStorageSlot slot : slots) {
-            if (slot.entity == entity) {
+            if (slot.getEntity() == entity) {
                 return true;
             }
-            StorageComponent comp = slot.entity.getComponent(StorageComponent.class);
+            StorageComponent comp = slot.getEntity().getComponent(StorageComponent.class);
             if (comp != null && comp.storage.containsExactEntity(entity)) {
                 return true;
             }
