@@ -15,10 +15,19 @@ public class TileDrawComponent extends Component implements IRenderable {
     protected float height;
     protected PositionComponent positionComponent;
 
+    public TileDrawComponent() {
+
+    }
+
     public TileDrawComponent(TextureRegion region, float width, float height) {
+        setup(region, width, height);
+    }
+
+    private TileDrawComponent setup(TextureRegion region, float width, float height) {
         this.region = region;
         this.width = width;
         this.height = height;
+        return this;
     }
 
     @Override
@@ -35,11 +44,6 @@ public class TileDrawComponent extends Component implements IRenderable {
     @Override
     public HashSet<Class<? extends Component>> getDependencies() {
         return new HashSet<>(Collections.singletonList(PositionComponent.class));
-    }
-
-    @Override
-    public Component copy() {
-        return new TileDrawComponent(region, width, height);
     }
 
     @Override
@@ -74,5 +78,10 @@ public class TileDrawComponent extends Component implements IRenderable {
                 width == comp.width &&
                 height == comp.height &&
                 positionComponent.compare(((TileDrawComponent) other).positionComponent);
+    }
+
+    @Override
+    public TileDrawComponent copy() {
+        return ((TileDrawComponent) super.copy()).setup(region, width, height);
     }
 }

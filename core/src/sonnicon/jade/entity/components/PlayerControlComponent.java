@@ -23,11 +23,6 @@ public class PlayerControlComponent extends Component {
     }
 
     @Override
-    public Component copy() {
-        return new PlayerControlComponent();
-    }
-
-    @Override
     public boolean compare(Component other) {
         return other instanceof PlayerControlComponent && other.entity == entity;
     }

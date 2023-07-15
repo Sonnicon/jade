@@ -5,14 +5,14 @@ import sonnicon.jade.util.Function3;
 
 public class FixedSlotEntityStorage extends EntityStorage {
 
-    public FixedSlotEntityStorage addSlot(EntitySize minimumSize, EntitySize maximumSize, int maximumAmount,
+    public EntityStorageSlot addSlot(EntitySize minimumSize, EntitySize maximumSize, int maximumAmount,
                                           Function3<EntityStorageSlot, Entity, Integer, Integer> restriction) {
         EntityStorageSlot slot = super.appendNewSlot(null, 0);
         slot.minimumSize = minimumSize;
         slot.maximumSize = maximumSize;
         slot.maximumAmount = maximumAmount;
         slot.restriction = restriction;
-        return this;
+        return slot;
     }
 
     @Override

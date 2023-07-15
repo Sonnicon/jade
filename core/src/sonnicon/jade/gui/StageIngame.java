@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.CharacterStorageComponent;
 import sonnicon.jade.entity.components.StorageComponent;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;
@@ -25,6 +26,9 @@ public class StageIngame extends Stage {
 
     public InventoryMovePopup popupInventoryMove;
 
+    protected int nextHandIndex = 0;
+    protected Table handTableLeft, handTableRight;
+
     public StageIngame() {
         super(new ScreenViewport());
         Gamestate.State.ingame.stage = this;
@@ -43,36 +47,52 @@ public class StageIngame extends Stage {
         tableMain.debug();
         addActor(tableMain);
 
+        handTableLeft = new Table();
+        handTableRight = new Table();
+
         recreate();
     }
 
     public void recreate() {
         tableMain.clearChildren();
+        if (controlledEntity == null) {
+            return;
+        }
 
-        StorageComponent storageComponent = controlledEntity.getComponent(StorageComponent.class);
+        CharacterStorageComponent storageComponent = (CharacterStorageComponent) controlledEntity.getComponent(StorageComponent.class);
         if (storageComponent != null) {
-            Table leftTable = new Table();
-            Table rightTable = new Table();
-
-            tableMain.add(leftTable).width(96f).left().bottom();
+            tableMain.add(handTableLeft).width(96f).left().bottom();
             tableMain.add(new Table()).growX();
-            tableMain.add(rightTable).width(96f).right().bottom();
+            tableMain.add(handTableRight).width(96f).right().bottom();
 
-            int hand = 0;
-            int index = 0;
-            for (EntityStorageSlot slot : storageComponent.storage.slots) {
-                //todo hands
-                if (index < 2) {
-                    InventoryHandButton handButton = new InventoryHandButton(slot, hand);
-                    if (hand++ % 2 == 0) {
-                        leftTable.add(handButton).row();
-                    } else {
-                        rightTable.add(handButton).row();
-                    }
-                }
-                index++;
+            recreateHands();
+        }
+    }
+
+    public void recreateHands() {
+        if (tableMain == null) {
+            return;
+        }
+
+        handTableLeft.clearChildren();
+        handTableRight.clearChildren();
+        if (controlledEntity == null) {
+            return;
+        }
+
+        CharacterStorageComponent storageComponent = (CharacterStorageComponent) controlledEntity.getComponent(StorageComponent.class);
+        if (storageComponent != null) {
+            nextHandIndex = 0;
+            for (EntityStorageSlot hand : storageComponent.hands) {
+                addHand(hand);
             }
         }
+    }
+
+    public void addHand(EntityStorageSlot slot) {
+        InventoryHandButton handButton = new InventoryHandButton(slot, nextHandIndex);
+        (nextHandIndex % 2 == 0 ? handTableLeft : handTableRight).add(handButton).row();
+        nextHandIndex++;
     }
 
     public void resize() {

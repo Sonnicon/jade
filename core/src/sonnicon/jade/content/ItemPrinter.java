@@ -2,6 +2,7 @@ package sonnicon.jade.content;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.*;
+import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.world.Tile;
 
@@ -12,7 +13,7 @@ public class ItemPrinter {
                 new AutoDrawComponent(Textures.atlasFindRegion("item-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE),
                 EntitySizeComponent.medium,
                 new StorableComponent("debug item", Textures.atlasFindDrawable("item-debug")),
-                new StorageComponent());
+                new StorageComponent(new EntityStorage()));
         return result;
     }
 }

@@ -9,16 +9,25 @@ public class StorableComponent extends Component {
     public String displayName, displayDescription;
     public Drawable[] icons;
 
+    public StorableComponent() {
+
+    }
+
     public StorableComponent(String displayName, Drawable... icons) {
+        setup(displayName, icons);
+    }
+
+    protected StorableComponent setup(String displayName, Drawable... icons) {
         this.displayName = displayName;
         this.icons = icons;
+        return this;
     }
 
     //todo funcs
 
     @Override
-    public Component copy() {
-        return new StorableComponent(displayName, icons);
+    public StorableComponent copy() {
+        return ((StorableComponent) super.copy()).setup(displayName, icons);
     }
 
     @Override

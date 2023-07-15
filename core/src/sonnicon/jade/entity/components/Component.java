@@ -1,10 +1,11 @@
 package sonnicon.jade.entity.components;
 
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.util.ICopyable;
 
 import java.util.HashSet;
 
-public abstract class Component {
+public abstract class Component implements ICopyable {
     protected Entity entity;
 
     public boolean canAddToEntity(Entity entity) {
@@ -39,7 +40,14 @@ public abstract class Component {
 
     }
 
-    public abstract Component copy();
+    @Override
+    public Component copy() {
+        try {
+            return getClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException ex) {
+            throw new AssertionError();
+        }
+    }
 
     public abstract boolean compare(Component other);
 }

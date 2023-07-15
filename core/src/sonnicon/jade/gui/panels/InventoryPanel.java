@@ -136,6 +136,22 @@ public class InventoryPanel extends Panel {
         }
     }
 
+    public void recreateContainerGroup() {
+        containerGroup.clearChildren();
+        containerGroup.addActor(containerExitButton);
+
+        for (Actor actor : entriesTable.getChildren()) {
+            if (actor instanceof InventorySlotButton) {
+                EntityStorageSlot slot = ((InventorySlotButton) actor).slot;
+                if (slot.hasStorageEntity()) {
+                    InventoryContainerButton containerButton = new InventoryContainerButton(slot);
+                    containerGroup.addActor(containerButton);
+                    ((InventorySlotButton) actor).associatedActors.add(containerButton);
+                }
+            }
+        }
+    }
+
     public void addInventoryButton(EntityStorageSlot slot) {
         InventorySlotButton slotButton = new InventorySlotButton(slot);
         entriesTable.add(slotButton).align(Align.topLeft);

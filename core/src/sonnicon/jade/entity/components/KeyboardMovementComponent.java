@@ -39,16 +39,6 @@ public class KeyboardMovementComponent extends Component implements Update.IUpda
     }
 
     @Override
-    public Component copy() {
-        return new KeyboardMovementComponent();
-    }
-
-    @Override
-    public boolean compare(Component other) {
-        return false;
-    }
-
-    @Override
     public void update(float delta) {
         Tile destination = positionComponent.tile;
         if (destination == null) {
@@ -92,5 +82,10 @@ public class KeyboardMovementComponent extends Component implements Update.IUpda
             pPressed = true;
             storageComponent.storage.addEntity(ItemPrinter.printItemDebug(null));
         }
+    }
+
+    @Override
+    public boolean compare(Component other) {
+        return false;
     }
 }

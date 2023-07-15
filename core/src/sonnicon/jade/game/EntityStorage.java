@@ -4,10 +4,11 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.EntitySizeComponent;
 import sonnicon.jade.entity.components.StorageComponent;
 import sonnicon.jade.util.DoubleLinkedList;
+import sonnicon.jade.util.ICopyable;
 
 import java.util.Iterator;
 
-public class EntityStorage {
+public class EntityStorage implements ICopyable {
     public DoubleLinkedList<EntityStorageSlot> slots = new DoubleLinkedList<>();
     protected int capacityUsed = 0;
 
@@ -71,6 +72,7 @@ public class EntityStorage {
         return appendNewSlot(entity, amount);
     }
 
+    // we don't use the slot event system for these because that would defeat the point of lazy event handler
     protected void onSlotChanged(EntityStorageSlot slot, Entity entity, int oldAmount, int newAmount) {
         if (newAmount == 0) {
             disconnectSlot(slot);
@@ -127,13 +129,29 @@ public class EntityStorage {
                         (capacity - capacityUsed) / entity.getComponent(EntitySizeComponent.class).size.value));
     }
 
+    protected EntityStorageSlot appendNewSlot(Entity entity, int amount) {
+        DoubleLinkedList.DoubleLinkedListNode<EntityStorageSlot> node = new DoubleLinkedList.DoubleLinkedListNode<>();
+        node.value = new EntityStorageSlot(entity, amount, this, node);
+        slots.addNode(node);
+        return node.value;
+    }
+
+    public boolean appendSlot(EntityStorageSlot slot) {
+        DoubleLinkedList.DoubleLinkedListNode<EntityStorageSlot> node = new DoubleLinkedList.DoubleLinkedListNode<>();
+        node.value = slot;
+        slots.addNode(node);
+        slot.attach(this, node);
+        return true;
+    }
+
+    public boolean disconnectSlot(EntityStorageSlot slot) {
+        slot.disconnect();
+        return true;
+    }
+
+    @Override
     public EntityStorage copy() {
-        EntityStorage copy;
-        try {
-            copy = getClass().newInstance();
-        } catch (Exception ignored) {
-            copy = new EntityStorage();
-        }
+        EntityStorage copy = (EntityStorage) ICopyable.super.copy();
         copy.minimumSize = minimumSize;
         copy.maximumSize = maximumSize;
         copy.capacity = capacity;
@@ -160,26 +178,6 @@ public class EntityStorage {
                 return false;
             }
         }
-        return true;
-    }
-
-    protected EntityStorageSlot appendNewSlot(Entity entity, int amount) {
-        DoubleLinkedList.DoubleLinkedListNode<EntityStorageSlot> node = new DoubleLinkedList.DoubleLinkedListNode<>();
-        node.value = new EntityStorageSlot(entity, amount, this, node);
-        slots.addNode(node);
-        return node.value;
-    }
-
-    public boolean appendSlot(EntityStorageSlot slot) {
-        DoubleLinkedList.DoubleLinkedListNode<EntityStorageSlot> node = new DoubleLinkedList.DoubleLinkedListNode<>();
-        node.value = slot;
-        slots.addNode(node);
-        slot.attach(this, node);
-        return true;
-    }
-
-    public boolean disconnectSlot(EntityStorageSlot slot) {
-        slot.disconnect();
         return true;
     }
 }

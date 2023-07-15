@@ -6,6 +6,10 @@ import sonnicon.jade.graphics.Renderer;
 
 public class AutoDrawComponent extends TileDrawComponent {
 
+    public AutoDrawComponent() {
+
+    }
+
     public AutoDrawComponent(TextureRegion region, float width, float height) {
         super(region, width, height);
     }
@@ -20,10 +24,5 @@ public class AutoDrawComponent extends TileDrawComponent {
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
         Renderer.renderList.remove(this);
-    }
-
-    @Override
-    public Component copy() {
-        return new AutoDrawComponent(region, width, height);
     }
 }

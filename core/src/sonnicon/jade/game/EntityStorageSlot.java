@@ -7,7 +7,10 @@ import sonnicon.jade.entity.components.StorageComponent;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.actors.InventorySlotButton;
 import sonnicon.jade.util.DoubleLinkedList;
+import sonnicon.jade.util.Events;
 import sonnicon.jade.util.Function3;
+
+import java.util.function.Consumer;
 
 public class EntityStorageSlot {
     // General data
@@ -21,6 +24,9 @@ public class EntityStorageSlot {
     public EntitySize maximumSize = EntitySize.huge;
     public int maximumAmount = Integer.MAX_VALUE;
     public Function3<EntityStorageSlot, Entity, Integer, Integer> restriction = null;
+
+    // Events
+    private Events<EntityStorageChange> events;
 
     public EntityStorageSlot() {
     }
@@ -92,8 +98,10 @@ public class EntityStorageSlot {
         if (isEmpty()) {
             this.entity = entity;
             this.amount = amount;
+            handleEvent(EntityStorageChange.set);
         } else {
             this.amount += amount;
+            handleEvent(EntityStorageChange.add, this, amount);
         }
 
         storage.onSlotChanged(this, entity, this.amount - amount, amount);
@@ -111,6 +119,7 @@ public class EntityStorageSlot {
             return amount;
         } else {
             this.amount -= amount;
+            handleEvent(EntityStorageChange.remove, this, amount);
         }
         storage.onSlotChanged(this, entity, this.amount + amount, amount);
         return amount;
@@ -190,6 +199,7 @@ public class EntityStorageSlot {
     }
 
     public void empty() {
+        handleEvent(EntityStorageChange.clear, this);
         storage.onSlotChanged(this, entity, amount, amount = 0);
         entity = null;
     }
@@ -203,23 +213,39 @@ public class EntityStorageSlot {
         this.node = node;
 
         storage.onSlotChanged(this, entity, 0, amount);
+        handleEvent(EntityStorageChange.attach, this);
     }
 
     protected void disconnect() {
         storage.onSlotDisconnected(this);
+        handleEvent(EntityStorageChange.detach);
         storage.slots.removeNode(node);
         this.storage = null;
         this.node = null;
     }
 
-    public boolean compare(EntityStorageSlot other) {
-        return (this == other) || (
-                    other != null &&
-                    amount == other.amount &&
-                    (entity == other.entity || (entity != null && entity.compare(other.entity))));
+    public void registerEvent(EntityStorageChange key, Consumer<Object[]> handler) {
+        // Lazy create events when we need them
+        if (events == null) {
+            events = new Events<>();
+        }
+        events.register(key, handler);
+    }
+
+    public void unregisterEvent(EntityStorageChange key, Consumer<Object[]> handler) {
+        if (events != null) {
+            events.unregister(key, handler);
+        }
+    }
+
+    protected void handleEvent(EntityStorageChange key, Object... values) {
+        if (events != null) {
+            events.handle(key, values);
+        }
     }
 
     public EntityStorageSlot copy() {
+        // we don't keep connections or events
         EntityStorageSlot slot = new EntityStorageSlot();
         slot.entity = entity.copy();
         slot.amount = amount;
@@ -228,6 +254,13 @@ public class EntityStorageSlot {
         slot.maximumSize = maximumSize;
         slot.maximumAmount = maximumAmount;
         return slot;
+    }
+
+    public boolean compare(EntityStorageSlot other) {
+        return (this == other) || (
+                other != null &&
+                        amount == other.amount &&
+                        (entity == other.entity || (entity != null && entity.compare(other.entity))));
     }
 
     public enum InventoryMove {
@@ -244,5 +277,14 @@ public class EntityStorageSlot {
         InventoryMove(String key) {
             this.icon = Textures.atlasFindDrawable(key);
         }
+    }
+
+    public enum EntityStorageChange {
+        set,
+        add,
+        remove,
+        clear,
+        attach,
+        detach
     }
 }

@@ -6,8 +6,17 @@ import sonnicon.jade.world.Tile;
 public class PositionComponent extends Component {
     public Tile tile;
 
+    public PositionComponent() {
+
+    }
+
     public PositionComponent(Tile tile) {
+        setup(tile);
+    }
+
+    protected PositionComponent setup(Tile tile) {
         this.tile = tile;
+        return this;
     }
 
     @Override
@@ -25,14 +34,14 @@ public class PositionComponent extends Component {
     }
 
     @Override
-    public Component copy() {
-        return new PositionComponent(tile);
-    }
-
-    @Override
     public boolean compare(Component other) {
         // Checking if two entities are in the same place isn't really the goal of this function
         return true;
+    }
+
+    @Override
+    public PositionComponent copy() {
+        return ((PositionComponent) super.copy()).setup(tile);
     }
 
     public void moveToTile(Tile destination) {

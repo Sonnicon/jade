@@ -16,6 +16,8 @@ public class InventorySlotButton extends TapButton {
     public EntityStorageSlot slot;
     public LinkedList<Actor> associatedActors = new LinkedList<>();
 
+    protected Stack entityStack;
+
     public static EntityStorageSlot selectedStorageSlot;
     public static ArrayDeque<InventorySlotButton> checkedButtons = new ArrayDeque<>();
     public static ArrayDeque<InventorySlotButton> flaggedButtons = new ArrayDeque<>();
@@ -33,26 +35,10 @@ public class InventorySlotButton extends TapButton {
     }
 
     public void create() {
-        if (slot == null || slot.isEmpty()) {
-            return;
-        }
+        entityStack = new Stack();
 
-        if (slot.isSelected()) {
-            setChecked(true);
-            if (!checkedButtons.contains(this)) {
-                checkedButtons.add(this);
-            }
-        }
 
-        Stack stack = new Stack();
-        add(stack).grow();
-
-        StorableComponent comp = slot.getEntity().getComponent(StorableComponent.class);
-        if (comp == null) return;
-        stack.addActor(new Image(comp.icons[0]));
-        if (slot.getAmount() > 1) {
-            stack.addActor(new Label(String.valueOf(slot.getAmount()), Gui.skin));
-        }
+        recreate();
     }
 
     public void recreate() {
@@ -63,7 +49,21 @@ public class InventorySlotButton extends TapButton {
 
         clearChildren();
         if (!slot.isEmpty()) {
-            create();
+            if (slot.isSelected()) {
+                setChecked(true);
+                if (!checkedButtons.contains(this)) {
+                    checkedButtons.add(this);
+                }
+            }
+
+            StorableComponent comp = slot.getEntity().getComponent(StorableComponent.class);
+            entityStack.clear();
+            if (comp == null) return;
+            entityStack.addActor(new Image(comp.icons[0]));
+            if (slot.getAmount() > 1) {
+                entityStack.addActor(new Label(String.valueOf(slot.getAmount()), Gui.skin));
+            }
+            add(entityStack).grow();
         } else {
             removeAssociatedActors();
         }
@@ -92,6 +92,7 @@ public class InventorySlotButton extends TapButton {
             EntityStorageSlot slotTo = slot.isEmpty() ? slot : selectedStorageSlot;
             slotFrom.moveAll(slotTo, null);
             updateChangedSlots();
+            Gui.stageIngame.panelInventory.recreateContainerGroup();
         } else if (!slot.isEmpty()) {
             // Both click: has stack
             // We try to move one way, then the other
@@ -136,7 +137,7 @@ public class InventorySlotButton extends TapButton {
 
     private void updateChangedSlots() {
         flagRecreate();
-        flagRecreateChecked();
+        checkedButtons.forEach(InventorySlotButton::flagRecreate);
         unselectAll();
         recreateFlagged();
     }
@@ -164,14 +165,6 @@ public class InventorySlotButton extends TapButton {
         if (!flaggedButtons.contains(this)) {
             flaggedButtons.add(this);
         }
-    }
-
-    public static void flagRecreateChecked() {
-        checkedButtons.forEach(button -> {
-            if (!flaggedButtons.contains(button)) {
-                flaggedButtons.add(button);
-            }
-        });
     }
 
     public boolean removeButton() {
