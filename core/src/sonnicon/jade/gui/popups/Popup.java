@@ -1,19 +1,19 @@
 package sonnicon.jade.gui.popups;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.gui.Gui;
 
 public abstract class Popup extends Table {
     protected WidgetGroup overlay;
+    protected boolean created = false;
 
     public Popup() {
         super(Gui.skin);
-        create();
     }
 
     public void create() {
@@ -34,15 +34,23 @@ public abstract class Popup extends Table {
         overlay.addActor(this);
     }
 
-    public void show(float x, float y) {
-        create();
+    public void recreate() {
 
-        x = Math.max(0, Math.min(x, Gui.activeStage.getWidth() - getWidth()));
-        y = Math.max(0, Math.min(y, Gui.activeStage.getHeight() - getHeight()));
+    }
+
+    public void show(float x, float y) {
+        if (!created) {
+            create();
+            created = true;
+        }
+        recreate();
+
+        x = Math.max(0, Math.min(x, Gamestate.getStage().getWidth() - getWidth()));
+        y = Math.max(0, Math.min(y, Gamestate.getStage().getHeight() - getHeight()));
 
         setPosition(x, y);
 
-        Gui.activeStage.addActor(overlay);
+        Gamestate.getStage().addActor(overlay);
         overlay.setVisible(true);
     }
 

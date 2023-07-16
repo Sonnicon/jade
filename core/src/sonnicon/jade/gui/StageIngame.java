@@ -1,7 +1,6 @@
 package sonnicon.jade.gui;
 
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -15,7 +14,7 @@ import sonnicon.jade.gui.panels.InventoryDetailsPanel;
 import sonnicon.jade.gui.panels.InventoryPanel;
 import sonnicon.jade.gui.popups.InventoryMovePopup;
 
-public class StageIngame extends Stage {
+public class StageIngame extends GuiStage {
     // Entity that this player is controlling
     protected Entity controlledEntity;
 
@@ -31,15 +30,14 @@ public class StageIngame extends Stage {
 
     public StageIngame() {
         super(new ScreenViewport());
-        Gamestate.State.ingame.stage = this;
         ((InputMultiplexer) Gamestate.State.ingame.inputProcessor).addProcessor(0, this);
 
         panelInventory = new InventoryPanel();
         panelInventoryDetails = new InventoryDetailsPanel();
-
         popupInventoryMove = new InventoryMovePopup();
     }
 
+    @Override
     public void create() {
         tableMain = new Table();
         tableMain.setFillParent(true);
@@ -95,14 +93,14 @@ public class StageIngame extends Stage {
         nextHandIndex++;
     }
 
-    public void resize() {
+    @Override
+    public void resize(int width, int height) {
         panelInventory.resize();
     }
 
     public void setControlledEntity(Entity entity) {
         this.controlledEntity = entity;
         create();
-        panelInventory.hide();
     }
 
     public Entity getControlledEntity() {

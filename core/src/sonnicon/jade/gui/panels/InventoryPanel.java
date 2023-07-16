@@ -245,7 +245,7 @@ public class InventoryPanel extends Panel {
     }
 
     public void resize() {
-        if (wrapper.hasParent()) {
+        if (wrapper != null && wrapper.hasParent()) {
             recreate();
         }
     }

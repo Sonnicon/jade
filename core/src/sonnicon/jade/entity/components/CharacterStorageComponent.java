@@ -1,8 +1,12 @@
 package sonnicon.jade.entity.components;
 
+import com.badlogic.gdx.Game;
 import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.game.EntityStorageSlot;
+import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.game.Gamestate.State;
 import sonnicon.jade.gui.Gui;
+import sonnicon.jade.gui.StageIngame;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,15 +29,15 @@ public class CharacterStorageComponent extends StorageComponent {
 
     public void addHand(EntityStorageSlot slot) {
         hands.add(slot);
-        if (Gui.activeStage == Gui.stageIngame && Gui.stageIngame.getControlledEntity() == entity) {
-            Gui.stageIngame.addHand(slot);
+        if (Gamestate.State.ingame.isActive() && ((StageIngame) State.ingame.getStage()).getControlledEntity() == entity) {
+            ((StageIngame)State.ingame.getStage()).addHand(slot);
         }
     }
 
     public void removeHand(EntityStorageSlot slot) {
         hands.remove(slot);
-        if (Gui.activeStage == Gui.stageIngame && Gui.stageIngame.getControlledEntity() == entity) {
-            Gui.stageIngame.recreateHands();
+        if (Gamestate.State.ingame.isActive() && ((StageIngame)State.ingame.getStage()).getControlledEntity() == entity) {
+            ((StageIngame)State.ingame.getStage()).recreateHands();
         }
     }
 

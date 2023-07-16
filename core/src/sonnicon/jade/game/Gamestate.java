@@ -2,27 +2,62 @@ package sonnicon.jade.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import sonnicon.jade.gui.Gui;
+import sonnicon.jade.gui.GuiStage;
+import sonnicon.jade.gui.StageIngame;
+import sonnicon.jade.gui.StageMenuMain;
+import sonnicon.jade.util.Events;
 
 public class Gamestate {
-    protected static State state;
+    protected static State state = State.loading;
+    public final static Events<State> events = new Events<>();
 
     public static State getState() {
         return state;
     }
 
+    public static GuiStage getStage() {
+        return state.getStage();
+    }
+
     public static void setState(State newState) {
         state = newState;
-        Gui.setActiveStage(newState.stage);
+        Gui.setActiveStage(newState.getStage());
         Gdx.input.setInputProcessor(newState.inputProcessor);
+        events.handle(state);
     }
 
     public enum State {
-        menu,
-        ingame;
+        loading,
+        menu(StageMenuMain.class),
+        ingame(StageIngame.class);
 
-        public Stage stage;
+        private GuiStage stage;
+        private final Class<? extends GuiStage> stageClass;
         public InputProcessor inputProcessor;
+
+        State() {
+            this(null);
+        }
+
+        State(Class<? extends GuiStage> stageClass) {
+            this.stageClass = stageClass;
+        }
+
+        public GuiStage getStage() {
+            if (stage == null && stageClass != null) {
+                try {
+                    return stage = stageClass.newInstance();
+                } catch (InstantiationException | IllegalAccessException ex) {
+                    throw new InstantiationError();
+                }
+            } else {
+                return stage;
+            }
+        }
+
+        public boolean isActive() {
+            return state == this;
+        }
     }
 }

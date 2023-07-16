@@ -3,7 +3,9 @@ package sonnicon.jade.gui.actors;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import sonnicon.jade.game.EntityStorageSlot;
+import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.gui.Gui;
+import sonnicon.jade.gui.StageIngame;
 
 public class InventoryHandButton extends InventorySlotButton {
     public int handNumber;
@@ -31,7 +33,7 @@ public class InventoryHandButton extends InventorySlotButton {
     @Override
     public void recreate() {
         if (slot == null || !slot.exists()) {
-            Gui.stageIngame.panelInventory.removeInventoryButton(slot);
+            ((StageIngame) Gamestate.State.ingame.getStage()).panelInventory.removeInventoryButton(slot);
             return;
         }
 

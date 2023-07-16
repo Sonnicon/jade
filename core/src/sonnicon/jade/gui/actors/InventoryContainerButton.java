@@ -4,7 +4,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import sonnicon.jade.entity.components.StorableComponent;
 import sonnicon.jade.entity.components.StorageComponent;
 import sonnicon.jade.game.EntityStorageSlot;
-import sonnicon.jade.gui.Gui;
+import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.gui.StageIngame;
+import sonnicon.jade.gui.panels.InventoryPanel;
 
 public class InventoryContainerButton extends TapButton {
     public EntityStorageSlot slot;
@@ -35,8 +37,9 @@ public class InventoryContainerButton extends TapButton {
     @Override
     public void tapped() {
         StorageComponent storageComponent = slot.getEntity().getComponent(StorageComponent.class);
-        Gui.stageIngame.panelInventory.containerStack.push(storageComponent.storage);
-        Gui.stageIngame.panelInventory.recreate();
+        InventoryPanel panelInventory = ((StageIngame) Gamestate.State.ingame.getStage()).panelInventory;
+        panelInventory.containerStack.push(storageComponent.storage);
+        panelInventory.recreate();
 
         if (slot == InventorySlotButton.selectedStorageSlot) {
             InventorySlotButton.unselectAll();

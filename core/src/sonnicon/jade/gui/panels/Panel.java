@@ -2,15 +2,16 @@ package sonnicon.jade.gui.panels;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.gui.Gui;
 
 public abstract class Panel extends Table {
     protected Table wrapper;
     protected Cell<Panel> cell;
+    private boolean created = false;
 
     public Panel() {
         super(Gui.skin);
-        create();
     }
 
     public void create() {
@@ -24,8 +25,12 @@ public abstract class Panel extends Table {
     }
 
     public void show() {
+        if (!created) {
+            create();
+            created = true;
+        }
         recreate();
-        Gui.activeStage.addActor(wrapper);
+        Gamestate.getStage().addActor(wrapper);
         wrapper.setVisible(true);
     }
 

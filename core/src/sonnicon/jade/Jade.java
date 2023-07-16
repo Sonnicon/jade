@@ -2,16 +2,13 @@ package sonnicon.jade;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import sonnicon.jade.content.CharacterPrinter;
-import sonnicon.jade.content.ItemPrinter;
+import sonnicon.jade.game.Content;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.game.Update;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.Gui;
 import sonnicon.jade.input.Input;
-import sonnicon.jade.world.Chunk;
-import sonnicon.jade.world.World;
 
 public class Jade extends ApplicationAdapter {
 
@@ -21,17 +18,7 @@ public class Jade extends ApplicationAdapter {
         Renderer.init();
         Input.init();
         Gui.init();
-
-        World w = new World();
-        for (int i = 0; i < 16; i++) {
-            new Chunk((short) (i / 4), (short) (i % 4), w);
-        }
-        CharacterPrinter.printCharacterPlayer(w.chunks.get(0).tiles[0]);
-        ItemPrinter.printItemDebug(w.chunks.get(1).tiles[155]);
-        ItemPrinter.printItemDebug(w.chunks.get(2).tiles[22]);
-        ItemPrinter.printItemDebug(w.chunks.get(1).tiles[55]);
-        ItemPrinter.printItemDebug(w.chunks.get(0).tiles[55]);
-        ItemPrinter.printItemDebug(w.chunks.get(0).tiles[129]);
+        Content.init();
 
         Gamestate.setState(Gamestate.State.menu);
     }

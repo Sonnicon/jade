@@ -1,7 +1,6 @@
 package sonnicon.jade.gui;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -9,17 +8,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import sonnicon.jade.game.Gamestate;
 
-public class StageMenuMain extends Stage {
+public class StageMenuMain extends GuiStage {
     protected Table tableMain, tableLeftButtons;
 
     public StageMenuMain() {
         super(new ExtendViewport(400, 400));
-        create();
-        Gamestate.State.menu.stage = this;
         Gamestate.State.menu.inputProcessor = this;
     }
 
-    protected void create() {
+    @Override
+    public void create() {
         tableMain = new Table(Gui.skin);
         tableMain.debug();
         tableMain.setFillParent(true);

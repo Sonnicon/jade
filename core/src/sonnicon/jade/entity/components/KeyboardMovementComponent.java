@@ -4,8 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import sonnicon.jade.content.ItemPrinter;
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.game.Update;
-import sonnicon.jade.gui.Gui;
+import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.util.Sets;
 import sonnicon.jade.world.Tile;
 
@@ -73,7 +74,7 @@ public class KeyboardMovementComponent extends Component implements Update.IUpda
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.I)) {
-            Gui.stageIngame.panelInventory.show(storageComponent.storage);
+            ((StageIngame) Gamestate.State.ingame.getStage()).panelInventory.show(storageComponent.storage);
         }
 
         if (pPressed && !Gdx.input.isKeyPressed(Input.Keys.P)) {

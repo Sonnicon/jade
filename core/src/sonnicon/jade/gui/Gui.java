@@ -1,50 +1,34 @@
 package sonnicon.jade.gui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.graphics.Textures;
 
 public class Gui {
-    public static StageMenuMain stageMenu;
-    public static StageIngame stageIngame;
-    public static Stage activeStage;
-
     public static Skin skin;
 
     public static void init() {
         skin = new SkinJade(Gdx.files.internal("skin.json"), Textures.atlas);
-
-        stageMenu = new StageMenuMain();
-        stageIngame = new StageIngame();
-
-        setActiveStage(stageMenu);
     }
 
     public static void update() {
-        if (activeStage != null) {
-            activeStage.act();
-        }
+        Gamestate.getStage().act();
     }
 
     public static void render(float delta) {
         //todo update loop
         update();
-        if (activeStage != null) {
-            activeStage.draw();
-        }
+        Gamestate.getStage().draw();
     }
 
     public static void resize(int width, int height) {
-        activeStage.getViewport().update(width, height, true);
-        stageIngame.resize();
+        Gamestate.getStage().resize(width, height);
     }
 
-    public static void setActiveStage(Stage stage) {
-        activeStage = stage;
-        if (stage != null) {
-            resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            activeStage.getViewport().apply();
-        }
+    public static void setActiveStage(GuiStage stage) {
+        stage.create();
+        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        stage.getViewport().apply();
     }
 }

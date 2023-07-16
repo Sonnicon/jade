@@ -7,7 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import sonnicon.jade.entity.components.StorableComponent;
 import sonnicon.jade.game.EntityStorageSlot;
+import sonnicon.jade.game.Gamestate.State;
 import sonnicon.jade.gui.Gui;
+import sonnicon.jade.gui.StageIngame;
 
 import java.util.ArrayDeque;
 import java.util.LinkedList;
@@ -36,14 +38,12 @@ public class InventorySlotButton extends TapButton {
 
     public void create() {
         entityStack = new Stack();
-
-
         recreate();
     }
 
     public void recreate() {
         if (slot == null || !slot.exists()) {
-            Gui.stageIngame.panelInventory.removeInventoryButton(slot);
+            ((StageIngame)State.ingame.getStage()).panelInventory.removeInventoryButton(slot);
             return;
         }
 
@@ -83,7 +83,7 @@ public class InventorySlotButton extends TapButton {
 
         if (slot.isSelected()) {
             // 2nd click: same slot
-            Gui.stageIngame.panelInventoryDetails.show(slot);
+            ((StageIngame)State.ingame.getStage()).panelInventoryDetails.show(slot);
             unselectAll();
         } else if (selectedStorageSlot.isEmpty() ^ slot.isEmpty()) {
             // One click: empty
@@ -92,7 +92,7 @@ public class InventorySlotButton extends TapButton {
             EntityStorageSlot slotTo = slot.isEmpty() ? slot : selectedStorageSlot;
             slotFrom.moveAll(slotTo, null);
             updateChangedSlots();
-            Gui.stageIngame.panelInventory.recreateContainerGroup();
+            ((StageIngame)State.ingame.getStage()).panelInventory.recreateContainerGroup();
         } else if (!slot.isEmpty()) {
             // Both click: has stack
             // We try to move one way, then the other
@@ -108,10 +108,10 @@ public class InventorySlotButton extends TapButton {
         if (isMatch && isStore) {
             tempVec = localToStageCoordinates(tempVec.set(0f, 0f));
 
-            Gui.stageIngame.popupInventoryMove.show(tempVec.x + 48f, tempVec.y - 48f, action -> {
+            ((StageIngame)State.ingame.getStage()).popupInventoryMove.show(tempVec.x + 48f, tempVec.y - 48f, action -> {
                 source.moveAll(destination, action);
                 if (action == EntityStorageSlot.InventoryMove.insert && destination.getAmount() > 1) {
-                    Gui.stageIngame.panelInventory.appendNewSlots();
+                    ((StageIngame)State.ingame.getStage()).panelInventory.appendNewSlots();
                 }
 
                 updateChangedSlots();
@@ -125,7 +125,7 @@ public class InventorySlotButton extends TapButton {
         } else if (isStore) {
             result = source.moveAll(destination, EntityStorageSlot.InventoryMove.insert) >= 0;
             if (destination.getAmount() > 1) {
-                Gui.stageIngame.panelInventory.appendNewSlots();
+                ((StageIngame)State.ingame.getStage()).panelInventory.appendNewSlots();
             }
         }
         // messy but needed to not unselect before popup finishes

@@ -9,8 +9,9 @@ import java.util.function.Consumer;
 public class InventoryMovePopup extends Popup {
     protected Consumer<EntityStorageSlot.InventoryMove> resultConsumer;
 
-    public InventoryMovePopup() {
-        super();
+    @Override
+    public void create() {
+        super.create();
         background("button-inventory-1-9p");
 
         int displayedButtons = 0;
