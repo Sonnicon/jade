@@ -38,5 +38,20 @@ public abstract class Panel extends Table {
         if (wrapper.hasParent()) {
             wrapper.getParent().removeActor(wrapper);
         }
+        wrapper.setVisible(false);
+    }
+
+    @Override
+    public boolean isVisible() {
+        return wrapper.isVisible();
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        wrapper.setVisible(visible);
+    }
+
+    public boolean isCreated() {
+        return created;
     }
 }

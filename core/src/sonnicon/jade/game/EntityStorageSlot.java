@@ -199,9 +199,9 @@ public class EntityStorageSlot {
     }
 
     public void empty() {
-        handleEvent(EntityStorageChange.clear, this);
         storage.onSlotChanged(this, entity, amount, amount = 0);
         entity = null;
+        handleEvent(EntityStorageChange.clear, this);
     }
 
     public void attach(EntityStorage storage, DoubleLinkedList.DoubleLinkedListNode<EntityStorageSlot> node) {

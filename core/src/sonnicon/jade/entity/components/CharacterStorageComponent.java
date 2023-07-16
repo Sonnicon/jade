@@ -1,11 +1,9 @@
 package sonnicon.jade.entity.components;
 
-import com.badlogic.gdx.Game;
 import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.game.Gamestate.State;
-import sonnicon.jade.gui.Gui;
 import sonnicon.jade.gui.StageIngame;
 
 import java.util.ArrayList;
@@ -29,15 +27,16 @@ public class CharacterStorageComponent extends StorageComponent {
 
     public void addHand(EntityStorageSlot slot) {
         hands.add(slot);
-        if (Gamestate.State.ingame.isActive() && ((StageIngame) State.ingame.getStage()).getControlledEntity() == entity) {
-            ((StageIngame)State.ingame.getStage()).addHand(slot);
+        if (entity != null && Gamestate.State.ingame.isActive() &&
+                ((StageIngame) State.ingame.getStage()).getControlledEntity() == entity) {
+            ((StageIngame) State.ingame.getStage()).addHand(slot);
         }
     }
 
     public void removeHand(EntityStorageSlot slot) {
         hands.remove(slot);
-        if (Gamestate.State.ingame.isActive() && ((StageIngame)State.ingame.getStage()).getControlledEntity() == entity) {
-            ((StageIngame)State.ingame.getStage()).recreateHands();
+        if (Gamestate.State.ingame.isActive() && ((StageIngame) State.ingame.getStage()).getControlledEntity() == entity) {
+            ((StageIngame) State.ingame.getStage()).recreateHands();
         }
     }
 
@@ -48,7 +47,7 @@ public class CharacterStorageComponent extends StorageComponent {
         //todo find a better way to identify hands
         // this relies on order of slots being maintained
         Iterator<EntityStorageSlot> copyIterator = copy.storage.slots.iterator();
-        for(EntityStorageSlot slot : storage.slots) {
+        for (EntityStorageSlot slot : storage.slots) {
             EntityStorageSlot copySlot = copyIterator.next();
             if (hands.contains(slot)) {
                 copy.hands.add(copySlot);

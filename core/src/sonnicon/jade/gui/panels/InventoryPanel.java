@@ -5,9 +5,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import sonnicon.jade.entity.components.CharacterStorageComponent;
+import sonnicon.jade.entity.components.StorageComponent;
 import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.game.EntityStorageSlot;
+import sonnicon.jade.game.Gamestate.State;
 import sonnicon.jade.gui.Gui;
+import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.gui.actors.InventoryContainerButton;
 import sonnicon.jade.gui.actors.InventorySlotButton;
 import sonnicon.jade.util.DoubleLinkedList;
@@ -159,6 +163,17 @@ public class InventoryPanel extends Panel {
             InventoryContainerButton containerButton = new InventoryContainerButton(slot);
             containerGroup.addActor(containerButton);
             slotButton.associatedActors.add(containerButton);
+        }
+
+        if (State.ingame.isActive()) {
+            StorageComponent storageComponent =
+                    ((StageIngame) State.ingame.getStage()).getControlledEntity().getComponent(StorageComponent.class);
+            if (storageComponent instanceof CharacterStorageComponent) {
+                int handIndex = ((CharacterStorageComponent) storageComponent).hands.indexOf(slot);
+                if (handIndex != -1) {
+                    slotButton.setIcon(new Label(String.valueOf(handIndex), Gui.skin));
+                }
+            }
         }
     }
 

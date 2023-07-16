@@ -1,49 +1,48 @@
 package sonnicon.jade.gui.actors;
 
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import sonnicon.jade.game.EntityStorageSlot;
-import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.gui.Gui;
-import sonnicon.jade.gui.StageIngame;
+
+import java.util.function.Consumer;
 
 public class InventoryHandButton extends InventorySlotButton {
     public int handNumber;
-
-    protected Table numberTable;
+    private Consumer<Object[]> slotWatch;
 
     public InventoryHandButton(EntityStorageSlot slot, int handNumber) {
         super();
         this.slot = slot;
         this.handNumber = handNumber;
         create();
-
-        slot.registerEvent(null, ignored -> recreate());
     }
 
     @Override
     public void create() {
-        numberTable = new Table();
-        numberTable.add(new Label(String.valueOf(handNumber), Gui.skin));
-        numberTable.setFillParent(true);
-        setStyle(Gui.skin.get("button-hand-" + handNumber % 2, ButtonStyle.class));
         super.create();
-    }
-
-    @Override
-    public void recreate() {
-        if (slot == null || !slot.exists()) {
-            ((StageIngame) Gamestate.State.ingame.getStage()).panelInventory.removeInventoryButton(slot);
-            return;
-        }
-
-        clearChildren();
-        super.recreate();
-        addActorAt(0, numberTable);
+        setIcon(new Label(String.valueOf(handNumber), Gui.skin));
+        setStyle(Gui.skin.get("button-hand-" + handNumber % 2, ButtonStyle.class));
     }
 
     @Override
     public void tapped() {
         //todo
+    }
+
+    @Override
+    protected void setParent(Group parent) {
+        if (slotWatch != null) {
+            slot.unregisterEvent(null, slotWatch);
+        }
+        slot.registerEvent(null, slotWatch = ignored -> recreate());
+        super.setParent(parent);
+    }
+
+    @Override
+    public boolean remove() {
+        slot.unregisterEvent(null, slotWatch);
+        slotWatch = null;
+        return super.remove();
     }
 }

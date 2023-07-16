@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import sonnicon.jade.entity.components.StorableComponent;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate.State;
@@ -19,6 +20,7 @@ public class InventorySlotButton extends TapButton {
     public LinkedList<Actor> associatedActors = new LinkedList<>();
 
     protected Stack entityStack;
+    protected Table iconTable;
 
     public static EntityStorageSlot selectedStorageSlot;
     public static ArrayDeque<InventorySlotButton> checkedButtons = new ArrayDeque<>();
@@ -38,6 +40,8 @@ public class InventorySlotButton extends TapButton {
 
     public void create() {
         entityStack = new Stack();
+        iconTable = new Table();
+        iconTable.setFillParent(true);
         recreate();
     }
 
@@ -48,6 +52,7 @@ public class InventorySlotButton extends TapButton {
         }
 
         clearChildren();
+        addActor(iconTable);
         if (!slot.isEmpty()) {
             if (slot.isSelected()) {
                 setChecked(true);
@@ -67,6 +72,11 @@ public class InventorySlotButton extends TapButton {
         } else {
             removeAssociatedActors();
         }
+    }
+
+    public void setIcon(Actor actor) {
+        iconTable.clearChildren();
+        iconTable.add(actor);
     }
 
     @Override

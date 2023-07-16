@@ -85,6 +85,10 @@ public class StageIngame extends GuiStage {
                 addHand(hand);
             }
         }
+
+        if (panelInventory.isCreated() && panelInventory.isVisible()) {
+            panelInventory.recreate();
+        }
     }
 
     public void addHand(EntityStorageSlot slot) {
@@ -95,6 +99,7 @@ public class StageIngame extends GuiStage {
 
     @Override
     public void resize(int width, int height) {
+        super.resize(width, height);
         panelInventory.resize();
     }
 
