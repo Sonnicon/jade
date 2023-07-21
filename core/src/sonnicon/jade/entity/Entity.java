@@ -1,6 +1,8 @@
 package sonnicon.jade.entity;
 
 import sonnicon.jade.entity.components.Component;
+import sonnicon.jade.game.EntityStorageSlot;
+import sonnicon.jade.util.Events;
 
 import java.util.*;
 
@@ -9,6 +11,8 @@ public class Entity {
     public HashSet<Trait> traits;
     public final int id;
     private static int nextId = 1;
+
+    public final Events<Class<?>> events = new Events<>();
 
     public Entity() {
         components = new HashMap<>();
@@ -25,6 +29,7 @@ public class Entity {
 
     public void addTrait(Trait trait) {
         traits.add(trait);
+        events.handle(EntityTraitAddEvent.class, this, trait);
     }
 
     public Entity addTraits(Trait... traits) {
@@ -47,6 +52,7 @@ public class Entity {
         }
         components.put(component.getKeyClass(), component);
         component.addToEntity(this);
+        events.handle(EntityComponentAddEvent.class, this, component);
         return true;
     }
 
@@ -119,4 +125,7 @@ public class Entity {
         }
         return true;
     }
+
+    public static final class EntityComponentAddEvent {}
+    public static final class EntityTraitAddEvent {}
 }

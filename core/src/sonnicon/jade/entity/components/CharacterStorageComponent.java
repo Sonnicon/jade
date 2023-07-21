@@ -1,5 +1,7 @@
 package sonnicon.jade.entity.components;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import sonnicon.jade.entity.Entity;
 import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;
@@ -11,6 +13,7 @@ import java.util.Iterator;
 
 public class CharacterStorageComponent extends StorageComponent {
     public ArrayList<EntityStorageSlot> hands = new ArrayList<>();
+    private Actor guiButton;
 
     public CharacterStorageComponent() {
 
@@ -38,6 +41,38 @@ public class CharacterStorageComponent extends StorageComponent {
         if (Gamestate.State.ingame.isActive() && ((StageIngame) State.ingame.getStage()).getControlledEntity() == entity) {
             ((StageIngame) State.ingame.getStage()).recreateHands();
         }
+    }
+
+    @Override
+    public void addToEntity(Entity entity) {
+        super.addToEntity(entity);
+
+        // Handling changes in control
+        entity.events.register(PlayerControlComponent.EntityControlledEvent.class, ignored -> addGuiSlots());
+        entity.events.register(PlayerControlComponent.EntityUncontrolledEvent.class, ignored -> removeGuiSlots());
+
+        // Adding to already controlled entity
+        if (PlayerControlComponent.isControlled(entity)) {
+            addGuiSlots();
+        }
+    }
+
+    @Override
+    public void removeFromEntity(Entity entity) {
+        super.removeFromEntity(entity);
+    }
+
+    private void addGuiSlots() {
+        assert guiButton == null;
+        StageIngame stage = (StageIngame) Gamestate.getStage();
+        guiButton = stage.addToolbarButton("icon-insert-storage", () -> stage.panelInventory.show(storage));
+    }
+
+    private void removeGuiSlots() {
+        assert guiButton != null;
+
+        guiButton.remove();
+        guiButton = null;
     }
 
     @Override

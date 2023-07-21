@@ -1,5 +1,6 @@
 package sonnicon.jade.gui.actors;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -26,6 +27,11 @@ public class TapButton extends Button {
             }
         };
         addListener(tapClickListener);
+    }
+
+    public TapButton(String style, Actor actor) {
+        this(style);
+        add(actor).grow();
     }
 
     public void setTapAction(Runnable action) {

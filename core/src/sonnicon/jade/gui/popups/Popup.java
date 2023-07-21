@@ -17,6 +17,7 @@ public abstract class Popup extends Table {
     }
 
     public void create() {
+        created = true;
         overlay = new WidgetGroup();
         overlay.debug();
 
@@ -41,7 +42,6 @@ public abstract class Popup extends Table {
     public void show(float x, float y) {
         if (!created) {
             create();
-            created = true;
         }
         recreate();
 
