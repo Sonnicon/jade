@@ -1,21 +1,26 @@
 package sonnicon.jade.gui;
 
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import sonnicon.jade.entity.Entity;
-import sonnicon.jade.entity.components.CharacterStorageComponent;
-import sonnicon.jade.entity.components.StorageComponent;
+import sonnicon.jade.entity.components.storage.CharacterStorageComponent;
+import sonnicon.jade.entity.components.storage.StorageComponent;
+import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.Textures;
+import sonnicon.jade.graphics.particles.TextParticle;
 import sonnicon.jade.gui.actors.InventoryHandButton;
 import sonnicon.jade.gui.actors.TapButton;
 import sonnicon.jade.gui.panels.InventoryDetailsPanel;
 import sonnicon.jade.gui.panels.InventoryPanel;
 import sonnicon.jade.gui.popups.InventoryMovePopup;
-import sonnicon.jade.gui.popups.TextPopup;
 
 import java.util.LinkedList;
 
@@ -56,7 +61,11 @@ public class StageIngame extends GuiStage {
         handTableRight = new Table();
 
         toolbarEntries = new LinkedList<>();
-        addToolbarButton("icon-arrow-right", () -> TextPopup.show("clicked!"));
+        addToolbarButton("icon-arrow-right", () -> {
+            Renderer.particles.createParticle(TextParticle.class, 0, 0).text = "tick";
+            //todo
+            Clock.tick(1f);
+        });
 
 
         // toolbarWrapper { toolbarPane { toolbarGroup } } }

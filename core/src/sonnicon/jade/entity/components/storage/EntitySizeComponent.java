@@ -1,6 +1,7 @@
-package sonnicon.jade.entity.components;
+package sonnicon.jade.entity.components.storage;
 
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.game.EntitySize;
 
 // mild abuse of the component system

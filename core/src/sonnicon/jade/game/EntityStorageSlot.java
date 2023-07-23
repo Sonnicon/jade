@@ -2,8 +2,8 @@ package sonnicon.jade.game;
 
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import sonnicon.jade.entity.Entity;
-import sonnicon.jade.entity.components.EntitySizeComponent;
-import sonnicon.jade.entity.components.StorageComponent;
+import sonnicon.jade.entity.components.storage.EntitySizeComponent;
+import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.actors.InventorySlotButton;
 import sonnicon.jade.util.DoubleLinkedList;

@@ -1,7 +1,6 @@
 package sonnicon.jade.entity;
 
 import sonnicon.jade.entity.components.Component;
-import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.util.Events;
 
 import java.util.*;

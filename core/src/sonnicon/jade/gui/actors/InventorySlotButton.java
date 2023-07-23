@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import sonnicon.jade.entity.components.StorableComponent;
+import sonnicon.jade.entity.components.storage.StorableComponent;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate.State;
 import sonnicon.jade.gui.Gui;

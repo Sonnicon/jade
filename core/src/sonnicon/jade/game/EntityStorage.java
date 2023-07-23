@@ -1,8 +1,8 @@
 package sonnicon.jade.game;
 
 import sonnicon.jade.entity.Entity;
-import sonnicon.jade.entity.components.EntitySizeComponent;
-import sonnicon.jade.entity.components.StorageComponent;
+import sonnicon.jade.entity.components.storage.EntitySizeComponent;
+import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.util.DoubleLinkedList;
 import sonnicon.jade.util.ICopyable;
 

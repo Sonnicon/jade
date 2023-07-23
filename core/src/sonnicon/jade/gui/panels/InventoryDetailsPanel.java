@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import sonnicon.jade.entity.components.StorableComponent;
+import sonnicon.jade.entity.components.storage.StorableComponent;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.Gui;

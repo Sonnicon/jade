@@ -1,11 +1,8 @@
 package sonnicon.jade.world;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import sonnicon.jade.graphics.IRenderable;
-import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.util.Direction;
 
-public class Chunk implements IRenderable {
+public class Chunk { //implements IRenderable {
     public static final short CHUNK_SIZE = 16;
     protected static final float CHUNK_TILE_SIZE = CHUNK_SIZE * Tile.TILE_SIZE;
 
@@ -34,7 +31,7 @@ public class Chunk implements IRenderable {
             tiles[i] = new Tile((short) (i % CHUNK_SIZE), (short) (i / CHUNK_SIZE), this);
         }
 
-        Renderer.renderList.add(this);
+        //Renderer.renderList.add(this);
     }
 
     public Tile getTile(short x, short y) {
@@ -50,10 +47,10 @@ public class Chunk implements IRenderable {
         return x << (Integer.SIZE / 2) | y;
     }
 
-    @Override
+    /*@Override
     public void render(SpriteBatch batch, float delta) {
         for (Tile tile : tiles) {
-            tile.renderAllEntities(batch, delta);
+            //tile.renderAllEntities(batch, delta);
         }
     }
 
@@ -65,5 +62,5 @@ public class Chunk implements IRenderable {
                 (drawX + CHUNK_TILE_SIZE) < Renderer.getCameraEdgeLeft() ||
                 drawY > Renderer.getCameraEdgeBottom() ||
                 (drawY + CHUNK_TILE_SIZE) < Renderer.getCameraEdgeTop();
-    }
+    }*/
 }

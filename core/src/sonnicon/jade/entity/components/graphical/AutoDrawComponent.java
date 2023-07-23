@@ -1,4 +1,4 @@
-package sonnicon.jade.entity.components;
+package sonnicon.jade.entity.components.graphical;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import sonnicon.jade.entity.Entity;
@@ -10,19 +10,19 @@ public class AutoDrawComponent extends TileDrawComponent {
 
     }
 
-    public AutoDrawComponent(TextureRegion region, float width, float height) {
-        super(region, width, height);
+    public AutoDrawComponent(TextureRegion region, float width, float height, Renderer.RenderLayer layer) {
+        super(region, width, height, layer);
     }
 
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
-        Renderer.renderList.add(this);
+        Renderer.addRenderable(this, layer);
     }
 
     @Override
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
-        Renderer.renderList.remove(this);
+        Renderer.removeRenderable(this);
     }
 }

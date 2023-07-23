@@ -1,7 +1,9 @@
-package sonnicon.jade.entity.components;
+package sonnicon.jade.entity.components.storage;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.Component;
+import sonnicon.jade.entity.components.PlayerControlComponent;
 import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;

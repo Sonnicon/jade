@@ -1,8 +1,8 @@
 package sonnicon.jade.gui.actors;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import sonnicon.jade.entity.components.StorableComponent;
-import sonnicon.jade.entity.components.StorageComponent;
+import sonnicon.jade.entity.components.storage.StorableComponent;
+import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.gui.StageIngame;

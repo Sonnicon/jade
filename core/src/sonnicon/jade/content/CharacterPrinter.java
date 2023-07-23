@@ -2,9 +2,12 @@ package sonnicon.jade.content;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.*;
+import sonnicon.jade.entity.components.graphical.AutoDrawComponent;
+import sonnicon.jade.entity.components.storage.CharacterStorageComponent;
 import sonnicon.jade.game.EntitySize;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.FixedSlotEntityStorage;
+import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.world.Tile;
 
@@ -26,7 +29,7 @@ public class CharacterPrinter {
 
 
         result.addComponents(new PositionComponent(location),
-                new AutoDrawComponent(Textures.atlasFindRegion("character-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE),
+                new AutoDrawComponent(Textures.atlasFindRegion("character-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE, Renderer.RenderLayer.characters),
                 storageComponent,
                 new KeyboardMovementComponent(),
                 new PlayerControlComponent());

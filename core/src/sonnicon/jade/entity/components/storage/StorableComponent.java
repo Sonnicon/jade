@@ -1,6 +1,7 @@
-package sonnicon.jade.entity.components;
+package sonnicon.jade.entity.components.storage;
 
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import sonnicon.jade.entity.components.Component;
 
 import java.util.Arrays;
 import java.util.Objects;

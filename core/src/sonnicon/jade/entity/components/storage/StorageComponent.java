@@ -1,5 +1,6 @@
-package sonnicon.jade.entity.components;
+package sonnicon.jade.entity.components.storage;
 
+import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.game.EntityStorage;
 
 public class StorageComponent extends Component {

@@ -27,4 +27,25 @@ public class Direction {
         amount = (byte) Math.floorMod(amount, 4);
         return (byte) ((byte) ((direction << amount) | (direction >> (4 - amount))) & 0b1111);
     }
+
+    public static byte flatten(byte direction) {
+        if ((direction & EAST) > 0 && (direction & WEST )> 0) {
+            direction ^= EAST | WEST;
+        }
+        if ((direction & NORTH) > 0 && (direction & SOUTH )> 0) {
+            direction ^= NORTH | SOUTH;
+        }
+        return direction;
+    }
+
+    public static byte encode(byte deltaX, byte deltaY) {
+        byte result = 0;
+        if (deltaX != 0) {
+            result |= deltaX > 0 ? Direction.EAST : Direction.WEST;
+        }
+        if (deltaY != 0) {
+            result |= deltaY > 0 ? Direction.NORTH : Direction.SOUTH;
+        }
+        return result;
+    }
 }

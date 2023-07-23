@@ -1,8 +1,10 @@
-package sonnicon.jade.entity.components;
+package sonnicon.jade.entity.components.graphical;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.Component;
+import sonnicon.jade.entity.components.PositionComponent;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 
@@ -14,19 +16,21 @@ public class TileDrawComponent extends Component implements IRenderable {
     protected float width;
     protected float height;
     protected PositionComponent positionComponent;
+    protected Renderer.RenderLayer layer;
 
     public TileDrawComponent() {
 
     }
 
-    public TileDrawComponent(TextureRegion region, float width, float height) {
-        setup(region, width, height);
+    public TileDrawComponent(TextureRegion region, float width, float height, Renderer.RenderLayer layer) {
+        setup(region, width, height, layer);
     }
 
-    private TileDrawComponent setup(TextureRegion region, float width, float height) {
+    private TileDrawComponent setup(TextureRegion region, float width, float height, Renderer.RenderLayer layer) {
         this.region = region;
         this.width = width;
         this.height = height;
+        this.layer = layer;
         return this;
     }
 
@@ -82,6 +86,6 @@ public class TileDrawComponent extends Component implements IRenderable {
 
     @Override
     public TileDrawComponent copy() {
-        return ((TileDrawComponent) super.copy()).setup(region, width, height);
+        return ((TileDrawComponent) super.copy()).setup(region, width, height, layer);
     }
 }

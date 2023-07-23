@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.graphics.particles.ParticleEngine;
 
 import java.util.LinkedList;
 
@@ -15,7 +16,8 @@ public class Renderer {
     public static SpriteBatch spriteBatch;
     public static Viewport viewport;
     public static OrthographicCamera camera;
-    public static LinkedList<IRenderable> renderList;
+    private static LinkedList<IRenderable> renderList;
+    public static ParticleEngine particles;
 
     public static float viewportScale = 0.25f;
 
@@ -29,8 +31,8 @@ public class Renderer {
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
 
-
         renderList = new LinkedList<>();
+        particles = new ParticleEngine();
     }
 
     public static void render(float delta) {
@@ -91,5 +93,43 @@ public class Renderer {
 
     public static float getCameraEdgeBottom() {
         return cameraEdgeBottom;
+    }
+
+    public static void addRenderable(IRenderable renderable, RenderLayer layer) {
+        int listIndex = 0;
+        boolean inserted = false;
+        for (RenderLayer listLayer : RenderLayer.values()) {
+            if (!inserted) {
+                if (listLayer == layer) {
+                    renderList.add(listIndex, renderable);
+                    inserted = true;
+                }
+                listIndex += listLayer.index;
+            } else {
+                listLayer.index++;
+            }
+        }
+    }
+
+    public static void removeRenderable(IRenderable renderable) {
+        int index = renderList.indexOf(renderable);
+        renderList.remove(index);
+        for (RenderLayer layer : RenderLayer.values()) {
+            if (layer.index > index) {
+                layer.index--;
+            }
+        }
+    }
+
+    public enum RenderLayer {
+        bottom,
+        floor,
+        terrain,
+        characters,
+        particles,
+        overlay,
+        top;
+
+        private int index = 0;
     }
 }
