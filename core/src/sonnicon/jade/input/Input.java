@@ -2,8 +2,8 @@ package sonnicon.jade.input;
 
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import sonnicon.jade.Jade;
 import sonnicon.jade.game.Gamestate;
-import sonnicon.jade.graphics.Renderer;
 
 public class Input implements InputProcessor {
     protected int lastScreenX, lastScreenY;
@@ -55,9 +55,9 @@ public class Input implements InputProcessor {
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         if (pointer == 0) {
-            Renderer.camera.translate(
-                    (lastScreenX - screenX) * Renderer.viewportScale,
-                    (screenY - lastScreenY) * Renderer.viewportScale);
+            Jade.renderer.camera.translate(
+                    (lastScreenX - screenX) * Jade.renderer.viewportScale,
+                    (screenY - lastScreenY) * Jade.renderer.viewportScale);
             lastScreenX = screenX;
             lastScreenY = screenY;
         }

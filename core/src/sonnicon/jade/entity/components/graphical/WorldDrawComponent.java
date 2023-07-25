@@ -11,32 +11,27 @@ import sonnicon.jade.graphics.Renderer;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class TileDrawComponent extends Component implements IRenderable {
+public abstract class WorldDrawComponent extends Component implements IRenderable {
     protected TextureRegion region;
     protected float width;
     protected float height;
     protected PositionComponent positionComponent;
     protected Renderer.RenderLayer layer;
 
-    public TileDrawComponent() {
+    public WorldDrawComponent() {
 
     }
 
-    public TileDrawComponent(TextureRegion region, float width, float height, Renderer.RenderLayer layer) {
+    public WorldDrawComponent(TextureRegion region, float width, float height, Renderer.RenderLayer layer) {
         setup(region, width, height, layer);
     }
 
-    private TileDrawComponent setup(TextureRegion region, float width, float height, Renderer.RenderLayer layer) {
+    private WorldDrawComponent setup(TextureRegion region, float width, float height, Renderer.RenderLayer layer) {
         this.region = region;
         this.width = width;
         this.height = height;
         this.layer = layer;
         return this;
-    }
-
-    @Override
-    public boolean canAddToEntity(Entity entity) {
-        return entity.components.containsKey(PositionComponent.class);
     }
 
     @Override
@@ -51,25 +46,10 @@ public class TileDrawComponent extends Component implements IRenderable {
     }
 
     @Override
-    public void render(SpriteBatch batch, float delta) {
+    public void render(SpriteBatch batch, float delta, Renderer.RenderLayer layer) {
         if (positionComponent != null && positionComponent.tile != null) {
             batch.draw(region, positionComponent.tile.getDrawX(), positionComponent.tile.getDrawY(), width, height);
         }
-    }
-
-    @Override
-    public boolean culled() {
-        if (positionComponent == null || positionComponent.tile == null) {
-            return false;
-        }
-
-        float drawX = positionComponent.tile.getDrawX();
-        float drawY = positionComponent.tile.getDrawY();
-
-        return drawX > Renderer.getCameraEdgeRight() ||
-                (drawX + width) < Renderer.getCameraEdgeLeft() ||
-                drawY > Renderer.getCameraEdgeBottom() ||
-                (drawY + height) < Renderer.getCameraEdgeTop();
     }
 
     @Override
@@ -77,15 +57,16 @@ public class TileDrawComponent extends Component implements IRenderable {
         if (other.getClass() != getClass()) {
             return false;
         }
-        TileDrawComponent comp = (TileDrawComponent) other;
+        WorldDrawComponent comp = (WorldDrawComponent) other;
         return region == comp.region &&
                 width == comp.width &&
                 height == comp.height &&
-                positionComponent.compare(((TileDrawComponent) other).positionComponent);
+                layer == comp.layer &&
+                positionComponent.compare(((WorldDrawComponent) other).positionComponent);
     }
 
     @Override
-    public TileDrawComponent copy() {
-        return ((TileDrawComponent) super.copy()).setup(region, width, height, layer);
+    public WorldDrawComponent copy() {
+        return ((WorldDrawComponent) super.copy()).setup(region, width, height, layer);
     }
 }

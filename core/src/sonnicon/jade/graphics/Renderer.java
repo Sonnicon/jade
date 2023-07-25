@@ -13,38 +13,59 @@ import sonnicon.jade.graphics.particles.ParticleEngine;
 import java.util.LinkedList;
 
 public class Renderer {
-    public static SpriteBatch spriteBatch;
-    public static Viewport viewport;
-    public static OrthographicCamera camera;
-    private static LinkedList<IRenderable> renderList;
-    public static ParticleEngine particles;
+    public SpriteBatch spriteBatch;
+    public Viewport viewport;
+    public OrthographicCamera camera;
+    public ParticleEngine particles;
 
-    public static float viewportScale = 0.25f;
+    public float viewportScale = 0.25f;
 
-    private static float cameraEdgeLeft;
-    private static float cameraEdgeRight;
-    private static float cameraEdgeTop;
-    private static float cameraEdgeBottom;
+    private float cameraEdgeLeft;
+    private float cameraEdgeRight;
+    private float cameraEdgeTop;
+    private float cameraEdgeBottom;
 
-    public static void init() {
+    private final LinkedList<IRenderable> renderFullList;
+    private final SubRenderer subRenderer;
+
+    public Renderer() {
+        subRenderer = new SubRenderer();
+        renderFullList = new LinkedList<>();
+
         spriteBatch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
-
-        renderList = new LinkedList<>();
-        particles = new ParticleEngine();
+        particles = new ParticleEngine(this);
     }
 
-    public static void render(float delta) {
+    public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if (Gamestate.getState() == Gamestate.State.menu) return;
 
         spriteBatch.begin();
-        for (IRenderable renderable : renderList) {
+
+        // We use our own algorithm, to inject all the renderFullList entries
+        RenderLayer layer = Renderer.RenderLayer.all()[0];
+        int index = 0, layerIndex = 0;
+        for (IRenderable renderable : subRenderer.renderList) {
+            while (index >= subRenderer.renderLayers[layerIndex]) {
+                for (IRenderable fullRenderable : renderFullList) {
+                    if (fullRenderable.culled()) continue;
+                    fullRenderable.render(spriteBatch, delta, layer);
+                }
+                layerIndex++;
+                if (layerIndex >= subRenderer.renderLayers.length) {
+                    return;
+                }
+                layer = RenderLayer.all()[layerIndex];
+            }
+
             if (renderable.culled()) continue;
-            renderable.render(spriteBatch, delta);
+            renderable.render(spriteBatch, delta, layer);
+            index++;
         }
+
         spriteBatch.end();
 
         //todo move this
@@ -63,12 +84,12 @@ public class Renderer {
         updateCamera();
     }
 
-    public static void resize(int width, int height) {
+    public void resize(int width, int height) {
         viewport.update(width, height);
         updateCamera();
     }
 
-    public static void updateCamera() {
+    public void updateCamera() {
         camera.zoom = viewportScale;
         viewport.apply();
         spriteBatch.setProjectionMatrix(camera.combined);
@@ -79,46 +100,32 @@ public class Renderer {
         cameraEdgeBottom = camera.position.y + camera.viewportHeight / 2;
     }
 
-    public static float getCameraEdgeLeft() {
+    public float getCameraEdgeLeft() {
         return cameraEdgeLeft;
     }
 
-    public static float getCameraEdgeRight() {
+    public float getCameraEdgeRight() {
         return cameraEdgeRight;
     }
 
-    public static float getCameraEdgeTop() {
+    public float getCameraEdgeTop() {
         return cameraEdgeTop;
     }
 
-    public static float getCameraEdgeBottom() {
+    public float getCameraEdgeBottom() {
         return cameraEdgeBottom;
     }
 
-    public static void addRenderable(IRenderable renderable, RenderLayer layer) {
-        int listIndex = 0;
-        boolean inserted = false;
-        for (RenderLayer listLayer : RenderLayer.values()) {
-            if (!inserted) {
-                if (listLayer == layer) {
-                    renderList.add(listIndex, renderable);
-                    inserted = true;
-                }
-                listIndex += listLayer.index;
-            } else {
-                listLayer.index++;
-            }
-        }
+    public void addRenderable(IRenderable renderable) {
+        renderFullList.add(renderable);
     }
 
-    public static void removeRenderable(IRenderable renderable) {
-        int index = renderList.indexOf(renderable);
-        renderList.remove(index);
-        for (RenderLayer layer : RenderLayer.values()) {
-            if (layer.index > index) {
-                layer.index--;
-            }
-        }
+    public void addRenderable(IRenderable renderable, RenderLayer layer) {
+        subRenderer.addRenderable(renderable, layer);
+    }
+
+    public boolean removeRenderable(IRenderable renderable) {
+        return renderFullList.remove(renderable) || subRenderer.removeRenderable(renderable);
     }
 
     public enum RenderLayer {
@@ -130,6 +137,10 @@ public class Renderer {
         overlay,
         top;
 
-        private int index = 0;
+        private static final RenderLayer[] all = values();
+
+        static RenderLayer[] all() {
+            return all;
+        }
     }
 }

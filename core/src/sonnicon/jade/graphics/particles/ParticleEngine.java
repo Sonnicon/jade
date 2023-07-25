@@ -1,25 +1,25 @@
 package sonnicon.jade.graphics.particles;
 
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Pools;
+import sonnicon.jade.Jade;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 public class ParticleEngine implements IRenderable, Clock.ITicking {
-    private final LinkedList<Particle> particles;
+    private final ArrayList<Particle> particles;
 
-    public ParticleEngine() {
-        particles = new LinkedList<>();
-        Renderer.addRenderable(this, Renderer.RenderLayer.particles);
+    public ParticleEngine(Renderer renderer) {
+        particles = new ArrayList<>();
+        renderer.addRenderable(this, Renderer.RenderLayer.particles);
     }
 
     @Override
-    public void render(SpriteBatch batch, float delta) {
+    public void render(SpriteBatch batch, float delta, Renderer.RenderLayer layer) {
         Iterator<Particle> iter = particles.iterator();
         while (iter.hasNext()) {
             Particle p = iter.next();
@@ -45,15 +45,15 @@ public class ParticleEngine implements IRenderable, Clock.ITicking {
     }
 
     public <T extends Particle> T createParticle(Class<T> type, float x, float y) {
-        Particle p = Pools.obtain(type);
+        T p = Pools.obtain(type);
         p.create(x, y);
         particles.add(p);
-        return (T) p;
+        return p;
     }
 
     public void dispose() {
         particles.forEach(Pools::free);
         particles.clear();
-        Renderer.removeRenderable(this);
+        Jade.renderer.removeRenderable(this);
     }
 }

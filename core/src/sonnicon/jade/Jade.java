@@ -11,11 +11,12 @@ import sonnicon.jade.gui.Gui;
 import sonnicon.jade.input.Input;
 
 public class Jade extends ApplicationAdapter {
+    public static Renderer renderer;
 
     @Override
     public void create() {
         Textures.init();
-        Renderer.init();
+        renderer = new Renderer();
         Input.init();
         Gui.init();
         Content.init();
@@ -28,13 +29,13 @@ public class Jade extends ApplicationAdapter {
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
         Clock.update(delta);
-        Renderer.render(delta);
+        Jade.renderer.render(delta);
         Gui.render(delta);
     }
 
     @Override
     public void resize(int width, int height) {
-        Renderer.resize(width, height);
+        Jade.renderer.resize(width, height);
         Gui.resize(width, height);
     }
 

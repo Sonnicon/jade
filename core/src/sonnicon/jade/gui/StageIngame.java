@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import sonnicon.jade.Jade;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.storage.CharacterStorageComponent;
 import sonnicon.jade.entity.components.storage.StorageComponent;
@@ -62,7 +63,7 @@ public class StageIngame extends GuiStage {
 
         toolbarEntries = new LinkedList<>();
         addToolbarButton("icon-arrow-right", () -> {
-            Renderer.particles.createParticle(TextParticle.class, 0, 0).text = "tick";
+            Jade.renderer.particles.createParticle(TextParticle.class, 0, 0).text = "tick";
             //todo
             Clock.tick(1f);
         });

@@ -1,8 +1,14 @@
 package sonnicon.jade.world;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import sonnicon.jade.graphics.IRenderable;
+import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.graphics.SubRenderer;
 import sonnicon.jade.util.Direction;
 
-public class Chunk { //implements IRenderable {
+import static sonnicon.jade.Jade.renderer;
+
+public class Chunk implements IRenderable {
     public static final short CHUNK_SIZE = 16;
     protected static final float CHUNK_TILE_SIZE = CHUNK_SIZE * Tile.TILE_SIZE;
 
@@ -11,11 +17,16 @@ public class Chunk { //implements IRenderable {
     public final Chunk[] nearbyChunks = new Chunk[4];
     public final World world;
 
+    private final SubRenderer subRenderer;
+
     public Chunk(short x, short y, World world) {
         this.x = x;
         this.y = y;
         this.world = world;
         world.chunks.put(hashCode(), this);
+
+        subRenderer = new SubRenderer();
+        renderer.addRenderable(this);
 
         for (short dir = 0; dir < 4; dir++) {
             short dirX = Direction.directionX((byte) (1 << dir));
@@ -30,8 +41,6 @@ public class Chunk { //implements IRenderable {
         for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE; i++) {
             tiles[i] = new Tile((short) (i % CHUNK_SIZE), (short) (i / CHUNK_SIZE), this);
         }
-
-        //Renderer.renderList.add(this);
     }
 
     public Tile getTile(short x, short y) {
@@ -47,20 +56,26 @@ public class Chunk { //implements IRenderable {
         return x << (Integer.SIZE / 2) | y;
     }
 
-    /*@Override
-    public void render(SpriteBatch batch, float delta) {
-        for (Tile tile : tiles) {
-            //tile.renderAllEntities(batch, delta);
-        }
+    @Override
+    public void render(SpriteBatch batch, float delta, Renderer.RenderLayer layer) {
+        subRenderer.renderRenderables(batch, delta, layer);
+    }
+
+    public void addRenderable(IRenderable renderable, Renderer.RenderLayer layer) {
+        subRenderer.addRenderable(renderable, layer);
+    }
+
+    public void removeRenderable(IRenderable renderable) {
+        subRenderer.removeRenderable(renderable);
     }
 
     @Override
     public boolean culled() {
         float drawX = x * CHUNK_TILE_SIZE;
         float drawY = y * CHUNK_TILE_SIZE;
-        return drawX > Renderer.getCameraEdgeRight() ||
-                (drawX + CHUNK_TILE_SIZE) < Renderer.getCameraEdgeLeft() ||
-                drawY > Renderer.getCameraEdgeBottom() ||
-                (drawY + CHUNK_TILE_SIZE) < Renderer.getCameraEdgeTop();
-    }*/
+        return drawX > renderer.getCameraEdgeRight() ||
+                (drawX + CHUNK_TILE_SIZE) < renderer.getCameraEdgeLeft() ||
+                drawY > renderer.getCameraEdgeBottom() ||
+                (drawY + CHUNK_TILE_SIZE) < renderer.getCameraEdgeTop();
+    }
 }

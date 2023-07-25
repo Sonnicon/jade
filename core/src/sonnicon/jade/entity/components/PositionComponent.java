@@ -45,6 +45,10 @@ public class PositionComponent extends Component {
     }
 
     public void moveToTile(Tile destination) {
+        if (entity == null) {
+            return;
+        }
+
         if (tile != null) {
             tile.entities.remove(entity);
         }
@@ -52,5 +56,9 @@ public class PositionComponent extends Component {
         if (destination != null) {
             destination.entities.add(entity);
         }
+        entity.events.handle(EntityMoveEvent.class, entity, destination);
+    }
+
+    public static final class EntityMoveEvent {
     }
 }
