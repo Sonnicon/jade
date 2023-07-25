@@ -15,7 +15,7 @@ public class ParticleEngine implements IRenderable, Clock.ITicking {
 
     public ParticleEngine(Renderer renderer) {
         particles = new ArrayList<>();
-        renderer.addRenderable(this, Renderer.RenderLayer.particles);
+        renderer.addRenderable(this, Renderer.RenderLayer.top);
     }
 
     @Override

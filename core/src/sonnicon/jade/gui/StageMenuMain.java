@@ -17,7 +17,7 @@ public class StageMenuMain extends GuiStage {
     }
 
     @Override
-    public void create() {
+    protected void setup() {
         tableMain = new Table(Gui.skin);
         tableMain.debug();
         tableMain.setFillParent(true);

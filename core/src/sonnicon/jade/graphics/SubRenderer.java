@@ -10,15 +10,13 @@ public class SubRenderer {
     protected final List<IRenderable> renderList = new ArrayList<>();
 
     public void addRenderable(IRenderable renderable, Renderer.RenderLayer layer) {
-        int listIndex = 0;
         boolean inserted = false;
         for (Renderer.RenderLayer listLayer : Renderer.RenderLayer.all()) {
             if (!inserted) {
                 if (listLayer == layer) {
-                    renderList.add(listIndex, renderable);
+                    renderList.add(renderLayers[listLayer.ordinal()], renderable);
                     inserted = true;
                 }
-                listIndex += renderLayers[listLayer.ordinal()];
             } else {
                 renderLayers[listLayer.ordinal()]++;
             }

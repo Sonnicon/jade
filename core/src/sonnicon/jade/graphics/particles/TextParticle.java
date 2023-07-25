@@ -1,24 +1,29 @@
 package sonnicon.jade.graphics.particles;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFontCache;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Pool;
 import sonnicon.jade.gui.Gui;
 
 public class TextParticle extends Particle implements Pool.Poolable {
-    public String text = "";
+    public BitmapFontCache cache = new BitmapFontCache(Gui.getFont());
 
     public TextParticle() {
 
+    }
+
+    public void setText(String string) {
+        cache.setText(string, 0f, 0f);
     }
 
     @Override
     public void render(SpriteBatch batch, float delta) {
         super.render(batch, delta);
 
-        x += delta;
-        y += delta * 8f;
-
-        Gui.getFont().setColor(1, 1, 1,  1f - life / lifetime);
-        Gui.getFont().draw(batch, text, x, y);
+        float drawX = (float) (x + 4f * Math.sin(life + System.currentTimeMillis() / 600.));
+        y += delta * 20f;
+        cache.setPosition(drawX, y);
+        cache.setAlphas(Math.max(1f - life / lifetime, 0f));
+        cache.draw(batch);
     }
 }

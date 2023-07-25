@@ -2,11 +2,14 @@ package sonnicon.jade.entity.components;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector3;
+import sonnicon.jade.Jade;
 import sonnicon.jade.content.ItemPrinter;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.graphics.particles.TextParticle;
 import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.util.Direction;
 import sonnicon.jade.util.Sets;
@@ -22,6 +25,8 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
 
     private boolean pPressed = false;
     private byte moveDirection = 0;
+
+    private static Vector3 tempVec = new Vector3();
 
     @Override
     public void addToEntity(Entity entity) {
@@ -59,8 +64,14 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
                 if (storageComponent.storage.addEntity(e)) {
                     if (e.getComponent(PositionComponent.class) != null) {
                         iter.remove();
-                        e.getComponent(PositionComponent.class).moveToTile(null);
-
+                        PositionComponent epc = e.getComponent(PositionComponent.class);
+                        Jade.renderer.camera.project(
+                                tempVec.set(
+                                        epc.tile.getDrawX() + Tile.TILE_SIZE / 2f,
+                                        epc.tile.getDrawY() + Tile.TILE_SIZE / 2f,
+                                        0f));
+                        Jade.renderer.particles.createParticle(TextParticle.class, tempVec.x, tempVec.y).setText("item!");
+                        epc.moveToTile(null);
                     }
                 }
             }

@@ -30,13 +30,11 @@ public class Jade extends ApplicationAdapter {
         float delta = Gdx.graphics.getDeltaTime();
         Clock.update(delta);
         Jade.renderer.render(delta);
-        Gui.render(delta);
     }
 
     @Override
     public void resize(int width, int height) {
         Jade.renderer.resize(width, height);
-        Gui.resize(width, height);
     }
 
     @Override

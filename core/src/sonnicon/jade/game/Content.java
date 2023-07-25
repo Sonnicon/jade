@@ -1,8 +1,10 @@
 package sonnicon.jade.game;
 
 import com.badlogic.gdx.Game;
+import sonnicon.jade.Jade;
 import sonnicon.jade.content.CharacterPrinter;
 import sonnicon.jade.content.ItemPrinter;
+import sonnicon.jade.graphics.particles.ParticleEngine;
 import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.World;
 
@@ -14,6 +16,7 @@ public class Content {
     }
 
     public static void create() {
+        Jade.renderer.particles = new ParticleEngine(Jade.renderer);
 
         World w = new World();
         for (int i = 0; i < 16; i++) {

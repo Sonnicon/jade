@@ -43,7 +43,7 @@ public class StageIngame extends GuiStage {
     protected LinkedList<Table> toolbarEntries;
 
     public StageIngame() {
-        super(new ScreenViewport());
+        super(new ScreenViewport(), Jade.renderer.guiBatch);
         ((InputMultiplexer) Gamestate.State.ingame.inputProcessor).addProcessor(0, this);
 
         panelInventory = new InventoryPanel();
@@ -52,7 +52,9 @@ public class StageIngame extends GuiStage {
     }
 
     @Override
-    public void create() {
+    protected void setup() {
+        Jade.renderer.addRenderable(this, Renderer.RenderLayer.gui);
+
         tableMain = new Table();
         tableMain.setFillParent(true);
         tableMain.align(Align.bottom);
@@ -63,7 +65,7 @@ public class StageIngame extends GuiStage {
 
         toolbarEntries = new LinkedList<>();
         addToolbarButton("icon-arrow-right", () -> {
-            Jade.renderer.particles.createParticle(TextParticle.class, 0, 0).text = "tick";
+            Jade.renderer.particles.createParticle(TextParticle.class, 100, 100).setText("tick");
             //todo
             Clock.tick(1f);
         });

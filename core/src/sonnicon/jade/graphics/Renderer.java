@@ -1,19 +1,23 @@
 package sonnicon.jade.graphics;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.graphics.particles.ParticleEngine;
+import sonnicon.jade.gui.Gui;
 
 import java.util.LinkedList;
 
 public class Renderer {
-    public SpriteBatch spriteBatch;
+    public SpriteBatch worldBatch, guiBatch;
     public Viewport viewport;
     public OrthographicCamera camera;
     public ParticleEngine particles;
@@ -32,41 +36,54 @@ public class Renderer {
         subRenderer = new SubRenderer();
         renderFullList = new LinkedList<>();
 
-        spriteBatch = new SpriteBatch();
+        worldBatch = new SpriteBatch();
+        guiBatch = new SpriteBatch();
+
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
-        particles = new ParticleEngine(this);
     }
 
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (Gamestate.getState() == Gamestate.State.menu) return;
+        if (Gamestate.getState() == Gamestate.State.menu) {
+            Gui.render(delta);
+            return;
+        }
 
-        spriteBatch.begin();
+        SpriteBatch batch = worldBatch;
+        batch.begin();
 
         // We use our own algorithm, to inject all the renderFullList entries
         RenderLayer layer = Renderer.RenderLayer.all()[0];
         int index = 0, layerIndex = 0;
         for (IRenderable renderable : subRenderer.renderList) {
-            while (index >= subRenderer.renderLayers[layerIndex]) {
+            while (index > subRenderer.renderLayers[layerIndex] ||
+                    (layerIndex < subRenderer.renderLayers.length - 1 &&
+                            subRenderer.renderLayers[layerIndex] == subRenderer.renderLayers[layerIndex + 1])) {
                 for (IRenderable fullRenderable : renderFullList) {
                     if (fullRenderable.culled()) continue;
-                    fullRenderable.render(spriteBatch, delta, layer);
+                    fullRenderable.render(worldBatch, delta, layer);
+                }
+
+                if (layerIndex + 1 >= subRenderer.renderLayers.length) {
+                    break;
                 }
                 layerIndex++;
-                if (layerIndex >= subRenderer.renderLayers.length) {
-                    return;
-                }
                 layer = RenderLayer.all()[layerIndex];
+                if (layer == RenderLayer.overlay) {
+                    batch.end();
+                    batch = guiBatch;
+                    batch.begin();
+                }
             }
 
             if (renderable.culled()) continue;
-            renderable.render(spriteBatch, delta, layer);
+            renderable.render(batch, delta, layer);
             index++;
         }
 
-        spriteBatch.end();
+        batch.end();
 
         //todo move this
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
@@ -87,12 +104,13 @@ public class Renderer {
     public void resize(int width, int height) {
         viewport.update(width, height);
         updateCamera();
+        Gui.resize(width, height);
     }
 
     public void updateCamera() {
         camera.zoom = viewportScale;
         viewport.apply();
-        spriteBatch.setProjectionMatrix(camera.combined);
+        worldBatch.setProjectionMatrix(camera.combined);
 
         cameraEdgeLeft = camera.position.x - camera.viewportWidth / 2;
         cameraEdgeRight = camera.position.x + camera.viewportWidth / 2;
@@ -135,6 +153,7 @@ public class Renderer {
         characters,
         particles,
         overlay,
+        gui,
         top;
 
         private static final RenderLayer[] all = values();
