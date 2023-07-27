@@ -6,11 +6,10 @@ import sonnicon.jade.entity.components.storage.EntitySizeComponent;
 import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.actors.InventorySlotButton;
+import sonnicon.jade.util.Consumer2;
 import sonnicon.jade.util.DoubleLinkedList;
 import sonnicon.jade.util.Events;
 import sonnicon.jade.util.Function3;
-
-import java.util.function.Consumer;
 
 public class EntityStorageSlot {
     // General data
@@ -224,7 +223,7 @@ public class EntityStorageSlot {
         this.node = null;
     }
 
-    public void registerEvent(EntityStorageChange key, Consumer<Object[]> handler) {
+    public void registerEvent(EntityStorageChange key, Consumer2<EntityStorageChange, Object[]> handler) {
         // Lazy create events when we need them
         if (events == null) {
             events = new Events<>();
@@ -232,7 +231,7 @@ public class EntityStorageSlot {
         events.register(key, handler);
     }
 
-    public void unregisterEvent(EntityStorageChange key, Consumer<Object[]> handler) {
+    public void unregisterEvent(EntityStorageChange key, Consumer2<EntityStorageChange, Object[]> handler) {
         if (events != null) {
             events.unregister(key, handler);
         }

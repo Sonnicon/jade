@@ -2,13 +2,13 @@ package sonnicon.jade.util;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.function.Consumer;
 
 public class Events<K> {
-    private final HashMap<K, LinkedList<Consumer<Object[]>>> handlers = new HashMap<>();
+    //todo I REALLY NEED TO MAKE THIS TYPED EVENT PARAMS
+    private final HashMap<K, LinkedList<Consumer2<K, Object[]>>> handlers = new HashMap<>();
 
-    public void register(K key, Consumer<Object[]> handler) {
-        LinkedList<Consumer<Object[]>> list = handlers.get(key);
+    public void register(K key, Consumer2<K, Object[]> handler) {
+        LinkedList<Consumer2<K, Object[]>> list = handlers.get(key);
         if (list != null) {
             list.add(handler);
         } else {
@@ -18,20 +18,24 @@ public class Events<K> {
         }
     }
 
-    public void unregister(K key, Consumer<Object[]> handler) {
-        LinkedList<Consumer<Object[]>> list = handlers.get(key);
+    public void unregister(K key, Consumer2<K, Object[]> handler) {
+        LinkedList<Consumer2<K, Object[]>> list = handlers.get(key);
         if (list != null) {
             list.remove(handler);
         }
     }
 
     public void handle(K key, Object... values) {
-        LinkedList<Consumer<Object[]>> list = handlers.get(key);
+        handle(key, key, values);
+    }
+
+    private void handle(K handleKey, K passKey, Object... values) {
+        LinkedList<Consumer2<K, Object[]>> list = handlers.get(handleKey);
         if (list != null) {
-            list.forEach(cons -> cons.accept(values));
+            list.forEach(cons -> cons.apply(passKey, values));
         }
-        if (key != null) {
-            handle(null, values);
+        if (handleKey != null) {
+            handle(null, passKey, values);
         }
     }
 }

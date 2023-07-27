@@ -3,7 +3,7 @@ package sonnicon.jade.entity.components.storage;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
-import sonnicon.jade.entity.components.PlayerControlComponent;
+import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class CharacterStorageComponent extends StorageComponent {
-    public ArrayList<EntityStorageSlot> hands = new ArrayList<>();
+    public final ArrayList<EntityStorageSlot> hands = new ArrayList<>();
     private Actor guiButton;
 
     public CharacterStorageComponent() {
@@ -50,8 +50,8 @@ public class CharacterStorageComponent extends StorageComponent {
         super.addToEntity(entity);
 
         // Handling changes in control
-        entity.events.register(PlayerControlComponent.EntityControlledEvent.class, ignored -> addGuiSlots());
-        entity.events.register(PlayerControlComponent.EntityUncontrolledEvent.class, ignored -> removeGuiSlots());
+        entity.events.register(PlayerControlComponent.EntityControlledEvent.class, (i1, i2) -> addGuiSlots());
+        entity.events.register(PlayerControlComponent.EntityUncontrolledEvent.class, (i1, i2) -> removeGuiSlots());
 
         // Adding to already controlled entity
         if (PlayerControlComponent.isControlled(entity)) {

@@ -2,7 +2,7 @@ package sonnicon.jade.content;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.KeyboardMovementComponent;
-import sonnicon.jade.entity.components.PlayerControlComponent;
+import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.entity.components.PositionComponent;
 import sonnicon.jade.entity.components.graphical.ChunkDrawComponent;
 import sonnicon.jade.entity.components.storage.CharacterStorageComponent;

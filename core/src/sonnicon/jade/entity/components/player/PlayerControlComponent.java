@@ -1,6 +1,7 @@
-package sonnicon.jade.entity.components;
+package sonnicon.jade.entity.components.player;
 
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.game.Gamestate.State;
 import sonnicon.jade.gui.StageIngame;
 
@@ -27,13 +28,16 @@ public class PlayerControlComponent extends Component {
 
     @Override
     public boolean compare(Component other) {
-        return other instanceof PlayerControlComponent && other.entity == entity;
+        return other instanceof PlayerControlComponent && ((PlayerControlComponent) other).entity == entity;
     }
 
     public static boolean isControlled(Entity entity) {
         return ((StageIngame) State.ingame.getStage()).getControlledEntity() == entity;
     }
 
-    public static final class EntityControlledEvent {}
-    public static final class EntityUncontrolledEvent {}
+    public static final class EntityControlledEvent {
+    }
+
+    public static final class EntityUncontrolledEvent {
+    }
 }

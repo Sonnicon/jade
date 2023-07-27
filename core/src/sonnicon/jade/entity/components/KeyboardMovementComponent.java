@@ -8,6 +8,7 @@ import sonnicon.jade.content.ItemPrinter;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.game.Clock;
+import sonnicon.jade.game.Content;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.graphics.particles.TextParticle;
 import sonnicon.jade.gui.StageIngame;
@@ -26,7 +27,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
     private boolean pPressed = false;
     private byte moveDirection = 0;
 
-    private static Vector3 tempVec = new Vector3();
+    private static final Vector3 TEMP_VEC = new Vector3();
 
     @Override
     public void addToEntity(Entity entity) {
@@ -65,12 +66,8 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
                     if (e.getComponent(PositionComponent.class) != null) {
                         iter.remove();
                         PositionComponent epc = e.getComponent(PositionComponent.class);
-                        Jade.renderer.camera.project(
-                                tempVec.set(
-                                        epc.tile.getDrawX() + Tile.TILE_SIZE / 2f,
-                                        epc.tile.getDrawY() + Tile.TILE_SIZE / 2f,
-                                        0f));
-                        Jade.renderer.particles.createParticle(TextParticle.class, tempVec.x, tempVec.y).setText("item!");
+                        Content.world.getTileScreenPosition(TEMP_VEC, epc.tile);
+                        Jade.renderer.particles.createParticle(TextParticle.class, TEMP_VEC.x, TEMP_VEC.y).setText("item!");
                         epc.moveToTile(null);
                     }
                 }

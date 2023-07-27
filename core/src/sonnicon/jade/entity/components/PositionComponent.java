@@ -22,7 +22,6 @@ public class PositionComponent extends Component {
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
-        // we can add the entity now
         moveToTile(tile);
     }
 
@@ -49,14 +48,24 @@ public class PositionComponent extends Component {
             return;
         }
 
-        if (tile != null) {
-            tile.entities.remove(entity);
-        }
+        Tile source = tile;
         tile = destination;
+
+        if (source != null) {
+            source.entities.remove(entity);
+        }
         if (destination != null) {
             destination.entities.add(entity);
         }
-        entity.events.handle(EntityMoveEvent.class, entity, destination);
+
+        // Ordering
+        if (source != null) {
+            source.events.handle(EntityMoveEvent.class, entity, source, destination);
+        }
+        if (destination != null) {
+            destination.events.handle(EntityMoveEvent.class, entity, source, destination);
+        }
+        entity.events.handle(EntityMoveEvent.class, entity, source, destination);
     }
 
     public static final class EntityMoveEvent {

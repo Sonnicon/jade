@@ -4,12 +4,11 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.gui.Gui;
-
-import java.util.function.Consumer;
+import sonnicon.jade.util.Consumer2;
 
 public class InventoryHandButton extends InventorySlotButton {
     public int handNumber;
-    private Consumer<Object[]> slotWatch;
+    private Consumer2<EntityStorageSlot.EntityStorageChange, Object[]> slotWatch;
 
     public InventoryHandButton(EntityStorageSlot slot, int handNumber) {
         super();
@@ -35,7 +34,7 @@ public class InventoryHandButton extends InventorySlotButton {
         if (slotWatch != null) {
             slot.unregisterEvent(null, slotWatch);
         }
-        slot.registerEvent(null, slotWatch = ignored -> recreate());
+        slot.registerEvent(null, slotWatch = (i1, i2) -> recreate());
         super.setParent(parent);
     }
 

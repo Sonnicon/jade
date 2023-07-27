@@ -7,6 +7,7 @@ import sonnicon.jade.game.Gamestate;
 
 public class Input implements InputProcessor {
     protected int lastScreenX, lastScreenY;
+    protected boolean draggingCamera = false;
 
     public static InputMultiplexer inputIngame;
 
@@ -40,29 +41,36 @@ public class Input implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (button == com.badlogic.gdx.Input.Buttons.LEFT || pointer == 0) {
+        if (button == com.badlogic.gdx.Input.Buttons.RIGHT && pointer == 0) {
             lastScreenX = screenX;
             lastScreenY = screenY;
+            draggingCamera = true;
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (button == com.badlogic.gdx.Input.Buttons.RIGHT && pointer == 0) {
+            draggingCamera = false;
+            return true;
+        }
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if (pointer == 0) {
+        if (draggingCamera && pointer == 0) {
             Jade.renderer.camera.translate(
                     (lastScreenX - screenX) * Jade.renderer.viewportScale,
                     (screenY - lastScreenY) * Jade.renderer.viewportScale);
             lastScreenX = screenX;
             lastScreenY = screenY;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     @Override

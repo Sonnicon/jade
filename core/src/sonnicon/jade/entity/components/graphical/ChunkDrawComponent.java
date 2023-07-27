@@ -5,20 +5,19 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.entity.components.PositionComponent;
 import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.util.Consumer2;
 import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.Tile;
-
-import java.util.function.Consumer;
 
 public class ChunkDrawComponent extends WorldDrawComponent {
 
     private transient Chunk currentChunk;
-    private final transient Consumer<Object[]> moveHandler = objs -> {
+    private final transient Consumer2<Class<?>, Object[]> moveHandler = (key, objs) -> {
         //todo make the event parameters typed
         Entity e = (Entity) objs[0];
         ChunkDrawComponent comp = e.getComponent(ChunkDrawComponent.class);
 
-        Tile destinationTile = (Tile) objs[1];
+        Tile destinationTile = (Tile) objs[2];
         Chunk c = destinationTile == null ? null : destinationTile.chunk;
 
         if (c != comp.currentChunk) {
