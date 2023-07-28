@@ -60,6 +60,11 @@ public class Input implements InputProcessor {
     }
 
     @Override
+    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         if (draggingCamera && pointer == 0) {
             Jade.renderer.camera.translate(
