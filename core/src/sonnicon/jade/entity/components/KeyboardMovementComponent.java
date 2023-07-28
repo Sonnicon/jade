@@ -13,6 +13,7 @@ import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.graphics.particles.TextParticle;
 import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.util.Direction;
+import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.Sets;
 import sonnicon.jade.world.Tile;
 
@@ -106,7 +107,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
     }
 
     @Override
-    public boolean compare(Component other) {
+    public boolean compare(IComparable other) {
         return false;
     }
 }

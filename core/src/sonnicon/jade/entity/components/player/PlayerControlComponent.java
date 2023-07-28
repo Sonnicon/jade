@@ -6,6 +6,7 @@ import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.game.Gamestate.State;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.gui.StageIngame;
+import sonnicon.jade.util.IComparable;
 
 @EventGenerator(id = "EntityControlled", param = {Entity.class}, label = {"entity"})
 @EventGenerator(id = "EntityUncontrolled", param = {Entity.class}, label = {"entity"})
@@ -31,7 +32,7 @@ public class PlayerControlComponent extends Component {
     }
 
     @Override
-    public boolean compare(Component other) {
+    public boolean compare(IComparable other) {
         return other instanceof PlayerControlComponent && ((PlayerControlComponent) other).entity == entity;
     }
 

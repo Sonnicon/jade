@@ -1,11 +1,12 @@
 package sonnicon.jade.entity.components;
 
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.ICopyable;
 
 import java.util.HashSet;
 
-public abstract class Component implements ICopyable {
+public abstract class Component implements ICopyable, IComparable {
     protected Entity entity;
 
     public boolean canAddToEntity(Entity entity) {
@@ -48,6 +49,4 @@ public abstract class Component implements ICopyable {
             throw new AssertionError();
         }
     }
-
-    public abstract boolean compare(Component other);
 }

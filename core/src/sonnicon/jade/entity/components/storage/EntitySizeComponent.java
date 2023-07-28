@@ -3,6 +3,7 @@ package sonnicon.jade.entity.components.storage;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.game.EntitySize;
+import sonnicon.jade.util.IComparable;
 
 // mild abuse of the component system
 public class EntitySizeComponent extends Component {
@@ -64,7 +65,7 @@ public class EntitySizeComponent extends Component {
     }
 
     @Override
-    public boolean compare(Component other) {
+    public boolean compare(IComparable other) {
         return this == other;
     }
 }

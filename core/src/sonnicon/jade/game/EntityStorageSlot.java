@@ -8,9 +8,7 @@ import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.actors.InventorySlotButton;
-import sonnicon.jade.util.DoubleLinkedList;
-import sonnicon.jade.util.Events;
-import sonnicon.jade.util.Function3;
+import sonnicon.jade.util.*;
 
 @EventGenerator(id = "StorageSlotSet", param = {EntityStorageSlot.class}, label = {"slot"})
 @EventGenerator(id = "StorageSlotAdd", param = {EntityStorageSlot.class, Integer.class}, label = {"slot", "amount"})
@@ -18,7 +16,7 @@ import sonnicon.jade.util.Function3;
 @EventGenerator(id = "StorageSlotClear", param = {EntityStorageSlot.class}, label = {"slot"})
 @EventGenerator(id = "StorageSlotAttach", param = {EntityStorageSlot.class}, label = {"slot"})
 @EventGenerator(id = "StorageSlotDetach", param = {EntityStorageSlot.class}, label = {"slot"})
-public class EntityStorageSlot {
+public class EntityStorageSlot implements ICopyable, IComparable {
     // General data
     private Entity entity;
     private int amount;
@@ -242,11 +240,13 @@ public class EntityStorageSlot {
         return slot;
     }
 
-    public boolean compare(EntityStorageSlot other) {
-        return (this == other) || (
-                other != null &&
-                        amount == other.amount &&
-                        (entity == other.entity || (entity != null && entity.compare(other.entity))));
+    @Override
+    public boolean compare(IComparable o) {
+        if (!(o instanceof EntityStorageSlot)) {
+            return false;
+        }
+        EntityStorageSlot other = (EntityStorageSlot) o;
+        return this == other || amount == other.amount && (entity == other.entity || entity != null && entity.compare(other.entity));
     }
 
     public enum InventoryMove {

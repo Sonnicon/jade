@@ -10,6 +10,7 @@ import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.game.Gamestate.State;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.gui.StageIngame;
+import sonnicon.jade.util.IComparable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -98,7 +99,7 @@ public class CharacterStorageComponent extends StorageComponent {
     }
 
     @Override
-    public boolean compare(Component other) {
+    public boolean compare(IComparable other) {
         return super.compare(other) &&
                 (other instanceof CharacterStorageComponent &&
                         ((CharacterStorageComponent) other).hands.size() == hands.size());

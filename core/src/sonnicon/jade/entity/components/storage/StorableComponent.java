@@ -2,6 +2,7 @@ package sonnicon.jade.entity.components.storage;
 
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import sonnicon.jade.entity.components.Component;
+import sonnicon.jade.util.IComparable;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -32,7 +33,7 @@ public class StorableComponent extends Component {
     }
 
     @Override
-    public boolean compare(Component other) {
+    public boolean compare(IComparable other) {
         if (other instanceof StorableComponent) {
             return Arrays.equals(icons, ((StorableComponent) other).icons) &&
                     Objects.equals(displayName, ((StorableComponent) other).displayName);

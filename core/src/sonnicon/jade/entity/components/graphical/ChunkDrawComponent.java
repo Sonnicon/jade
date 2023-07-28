@@ -2,9 +2,9 @@ package sonnicon.jade.entity.components.graphical;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import sonnicon.jade.entity.Entity;
-import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.util.IComparable;
 import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.Tile;
 
@@ -60,7 +60,7 @@ public class ChunkDrawComponent extends WorldDrawComponent {
     }
 
     @Override
-    public boolean compare(Component other) {
+    public boolean compare(IComparable other) {
         if (other.getClass() != getClass()) {
             return false;
         }

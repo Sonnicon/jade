@@ -4,12 +4,14 @@ import sonnicon.jade.EventGenerator;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.Events;
+import sonnicon.jade.util.IComparable;
+import sonnicon.jade.util.ICopyable;
 
 import java.util.*;
 
 @EventGenerator(id = "EntityComponentAdd", param = {Entity.class, Component.class}, label = {"entity", "component"})
 @EventGenerator(id = "EntityTraitAdd", param = {Entity.class, Trait.class}, label = {"entity", "trait"})
-public class Entity {
+public class Entity implements ICopyable, IComparable {
     public HashMap<Class<? extends Component>, Component> components;
     public HashSet<Trait> traits;
     public final int id;
@@ -67,6 +69,7 @@ public class Entity {
         return components.containsKey(type);
     }
 
+    @Override
     public Entity copy() {
         Entity newEntity = new Entity();
         newEntity.traits.addAll(traits);
@@ -114,7 +117,13 @@ public class Entity {
         return newEntity;
     }
 
-    public boolean compare(Entity other) {
+    @Override
+    public boolean compare(IComparable o) {
+        if (!(o instanceof Entity)) {
+            return false;
+        }
+        Entity other = (Entity) o;
+
         if (!traits.equals(other.traits) ||
                 components.size() != other.components.size()) {
             return false;

@@ -7,6 +7,7 @@ import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.entity.components.PositionComponent;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.util.IComparable;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -53,8 +54,8 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
     }
 
     @Override
-    public boolean compare(Component other) {
-        if (other.getClass() != getClass()) {
+    public boolean compare(IComparable other) {
+        if (!(other instanceof WorldDrawComponent)) {
             return false;
         }
         WorldDrawComponent comp = (WorldDrawComponent) other;

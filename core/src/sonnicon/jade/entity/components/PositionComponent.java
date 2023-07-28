@@ -3,6 +3,7 @@ package sonnicon.jade.entity.components;
 import sonnicon.jade.EventGenerator;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.generated.EventTypes;
+import sonnicon.jade.util.IComparable;
 import sonnicon.jade.world.Tile;
 
 @EventGenerator(id = "EntityMove", param = {Entity.class, Tile.class, Tile.class}, label = {"entity", "source", "destination"})
@@ -36,7 +37,7 @@ public class PositionComponent extends Component {
     }
 
     @Override
-    public boolean compare(Component other) {
+    public boolean compare(IComparable other) {
         // Checking if two entities are in the same place isn't really the goal of this function
         return true;
     }

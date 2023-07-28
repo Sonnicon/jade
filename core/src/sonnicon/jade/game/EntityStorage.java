@@ -4,11 +4,12 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.storage.EntitySizeComponent;
 import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.util.DoubleLinkedList;
+import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.ICopyable;
 
 import java.util.Iterator;
 
-public class EntityStorage implements ICopyable {
+public class EntityStorage implements ICopyable, IComparable {
     public final DoubleLinkedList<EntityStorageSlot> slots = new DoubleLinkedList<>();
     private int capacityUsed = 0;
 
@@ -163,14 +164,18 @@ public class EntityStorage implements ICopyable {
         return copy;
     }
 
-    public boolean compare(EntityStorage other) {
+    @Override
+    public boolean compare(IComparable o) {
+        if (!(o instanceof EntityStorage)) {
+            return false;
+        }
+        EntityStorage other = (EntityStorage) o;
+
         if (this == other) {
             return true;
         }
 
-        if (slots == null || other == null || other.slots == null ||
-                capacity != other.capacity || minimumSize != other.minimumSize || maximumSize != other.maximumSize ||
-                slots.size() != other.slots.size()) {
+        if (capacity != other.capacity || minimumSize != other.minimumSize || maximumSize != other.maximumSize || slots.size() != other.slots.size()) {
             return false;
         }
         for (int i = 0; i < slots.size(); i++) {
