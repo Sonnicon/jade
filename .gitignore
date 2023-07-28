@@ -1,4 +1,7 @@
 .gradle
 .idea
+annotations/build
+annotations/processor/build
+assets/sprites
 core/build
 desktop/build

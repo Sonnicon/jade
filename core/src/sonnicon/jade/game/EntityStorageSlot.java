@@ -1,16 +1,23 @@
 package sonnicon.jade.game;
 
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import sonnicon.jade.EventGenerator;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.storage.EntitySizeComponent;
 import sonnicon.jade.entity.components.storage.StorageComponent;
+import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.actors.InventorySlotButton;
-import sonnicon.jade.util.Consumer2;
 import sonnicon.jade.util.DoubleLinkedList;
 import sonnicon.jade.util.Events;
 import sonnicon.jade.util.Function3;
 
+@EventGenerator(id = "StorageSlotSet", param = {EntityStorageSlot.class}, label = {"slot"})
+@EventGenerator(id = "StorageSlotAdd", param = {EntityStorageSlot.class, Integer.class}, label = {"slot", "amount"})
+@EventGenerator(id = "StorageSlotRemove", param = {EntityStorageSlot.class, Integer.class}, label = {"slot", "amount"})
+@EventGenerator(id = "StorageSlotClear", param = {EntityStorageSlot.class}, label = {"slot"})
+@EventGenerator(id = "StorageSlotAttach", param = {EntityStorageSlot.class}, label = {"slot"})
+@EventGenerator(id = "StorageSlotDetach", param = {EntityStorageSlot.class}, label = {"slot"})
 public class EntityStorageSlot {
     // General data
     private Entity entity;
@@ -25,7 +32,7 @@ public class EntityStorageSlot {
     public Function3<EntityStorageSlot, Entity, Integer, Integer> restriction = null;
 
     // Events
-    private Events<EntityStorageChange> events;
+    public final Events events = new Events();
 
     public EntityStorageSlot() {
     }
@@ -97,10 +104,10 @@ public class EntityStorageSlot {
         if (isEmpty()) {
             this.entity = entity;
             this.amount = amount;
-            handleEvent(EntityStorageChange.set);
+            EventTypes.StorageSlotSetEvent.handle(events, this);
         } else {
             this.amount += amount;
-            handleEvent(EntityStorageChange.add, this, amount);
+            EventTypes.StorageSlotAddEvent.handle(events, this, amount);
         }
 
         storage.onSlotChanged(this, entity, this.amount - amount, amount);
@@ -118,7 +125,7 @@ public class EntityStorageSlot {
             return amount;
         } else {
             this.amount -= amount;
-            handleEvent(EntityStorageChange.remove, this, amount);
+            EventTypes.StorageSlotRemoveEvent.handle(events, this, amount);
         }
         storage.onSlotChanged(this, entity, this.amount + amount, amount);
         return amount;
@@ -200,7 +207,7 @@ public class EntityStorageSlot {
     public void empty() {
         storage.onSlotChanged(this, entity, amount, amount = 0);
         entity = null;
-        handleEvent(EntityStorageChange.clear, this);
+        EventTypes.StorageSlotClearEvent.handle(events, this);
     }
 
     public void attach(EntityStorage storage, DoubleLinkedList.DoubleLinkedListNode<EntityStorageSlot> node) {
@@ -212,35 +219,15 @@ public class EntityStorageSlot {
         this.node = node;
 
         storage.onSlotChanged(this, entity, 0, amount);
-        handleEvent(EntityStorageChange.attach, this);
+        EventTypes.StorageSlotAttachEvent.handle(events, this);
     }
 
     protected void disconnect() {
         storage.onSlotDisconnected(this);
-        handleEvent(EntityStorageChange.detach);
+        EventTypes.StorageSlotDetachEvent.handle(events, this);
         storage.slots.removeNode(node);
         this.storage = null;
         this.node = null;
-    }
-
-    public void registerEvent(EntityStorageChange key, Consumer2<EntityStorageChange, Object[]> handler) {
-        // Lazy create events when we need them
-        if (events == null) {
-            events = new Events<>();
-        }
-        events.register(key, handler);
-    }
-
-    public void unregisterEvent(EntityStorageChange key, Consumer2<EntityStorageChange, Object[]> handler) {
-        if (events != null) {
-            events.unregister(key, handler);
-        }
-    }
-
-    protected void handleEvent(EntityStorageChange key, Object... values) {
-        if (events != null) {
-            events.handle(key, values);
-        }
     }
 
     public EntityStorageSlot copy() {
@@ -276,14 +263,5 @@ public class EntityStorageSlot {
         InventoryMove(String key) {
             this.icon = Textures.atlasFindDrawable(key);
         }
-    }
-
-    public enum EntityStorageChange {
-        set,
-        add,
-        remove,
-        clear,
-        attach,
-        detach
     }
 }

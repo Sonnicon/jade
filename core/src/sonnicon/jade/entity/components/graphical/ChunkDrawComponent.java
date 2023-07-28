@@ -3,33 +3,29 @@ package sonnicon.jade.entity.components.graphical;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
-import sonnicon.jade.entity.components.PositionComponent;
+import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.Renderer;
-import sonnicon.jade.util.Consumer2;
 import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.Tile;
 
 public class ChunkDrawComponent extends WorldDrawComponent {
 
     private transient Chunk currentChunk;
-    private final transient Consumer2<Class<?>, Object[]> moveHandler = (key, objs) -> {
-        //todo make the event parameters typed
-        Entity e = (Entity) objs[0];
-        ChunkDrawComponent comp = e.getComponent(ChunkDrawComponent.class);
+    private static final EventTypes.EntityMoveEvent moveHandler =
+            (Entity entity, Tile source, Tile destination) -> {
+                ChunkDrawComponent comp = entity.getComponent(ChunkDrawComponent.class);
+                Chunk c = destination == null ? null : destination.chunk;
 
-        Tile destinationTile = (Tile) objs[2];
-        Chunk c = destinationTile == null ? null : destinationTile.chunk;
+                if (c != comp.currentChunk) {
+                    if (comp.currentChunk != null) {
+                        comp.removeFromChunk();
+                    }
 
-        if (c != comp.currentChunk) {
-            if (currentChunk != null) {
-                comp.removeFromChunk();
-            }
-
-            if (c != null) {
-                comp.addToChunk(c);
-            }
-        }
-    };
+                    if (c != null) {
+                        comp.addToChunk(c);
+                    }
+                }
+            };
 
     public ChunkDrawComponent() {
 
@@ -42,7 +38,7 @@ public class ChunkDrawComponent extends WorldDrawComponent {
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
-        entity.events.register(PositionComponent.EntityMoveEvent.class, moveHandler);
+        entity.events.register(EventTypes.EntityMoveEvent.class, moveHandler);
         if (positionComponent.tile != null && positionComponent.tile.chunk != null) {
             addToChunk(positionComponent.tile.chunk);
         }
@@ -51,7 +47,7 @@ public class ChunkDrawComponent extends WorldDrawComponent {
     @Override
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
-        entity.events.unregister(PositionComponent.EntityMoveEvent.class, moveHandler);
+        entity.events.unregister(EventTypes.EntityMoveEvent.class, moveHandler);
     }
 
     protected void addToChunk(Chunk chunk) {

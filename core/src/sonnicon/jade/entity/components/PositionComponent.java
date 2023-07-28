@@ -1,8 +1,11 @@
 package sonnicon.jade.entity.components;
 
+import sonnicon.jade.EventGenerator;
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.world.Tile;
 
+@EventGenerator(id = "EntityMove", param = {Entity.class, Tile.class, Tile.class}, label = {"entity", "source", "destination"})
 public class PositionComponent extends Component {
     public Tile tile;
 
@@ -60,14 +63,11 @@ public class PositionComponent extends Component {
 
         // Ordering
         if (source != null) {
-            source.events.handle(EntityMoveEvent.class, entity, source, destination);
+            EventTypes.EntityMoveEvent.handle(source.events, entity, source, destination);
         }
         if (destination != null) {
-            destination.events.handle(EntityMoveEvent.class, entity, source, destination);
+            EventTypes.EntityMoveEvent.handle(destination.events, entity, source, destination);
         }
-        entity.events.handle(EntityMoveEvent.class, entity, source, destination);
-    }
-
-    public static final class EntityMoveEvent {
+        EventTypes.EntityMoveEvent.handle(entity.events, entity, source, destination);
     }
 }

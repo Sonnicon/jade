@@ -8,6 +8,7 @@ import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.game.Gamestate.State;
+import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.gui.StageIngame;
 
 import java.util.ArrayList;
@@ -50,8 +51,8 @@ public class CharacterStorageComponent extends StorageComponent {
         super.addToEntity(entity);
 
         // Handling changes in control
-        entity.events.register(PlayerControlComponent.EntityControlledEvent.class, (i1, i2) -> addGuiSlots());
-        entity.events.register(PlayerControlComponent.EntityUncontrolledEvent.class, (i1, i2) -> removeGuiSlots());
+        entity.events.register(EventTypes.EntityControlledEvent.class, (EventTypes.EntityControlledEvent) e -> addGuiSlots());
+        entity.events.register(EventTypes.EntityUncontrolledEvent.class, (EventTypes.EntityUncontrolledEvent) e -> removeGuiSlots());
 
         // Adding to already controlled entity
         if (PlayerControlComponent.isControlled(entity)) {

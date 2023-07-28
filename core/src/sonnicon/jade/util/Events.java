@@ -1,14 +1,15 @@
 package sonnicon.jade.util;
 
+import sonnicon.jade.EventHandler;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class Events<K> {
-    //todo I REALLY NEED TO MAKE THIS TYPED EVENT PARAMS
-    private final HashMap<K, LinkedList<Consumer2<K, Object[]>>> handlers = new HashMap<>();
+public class Events {
+    private final HashMap<Class<? extends EventHandler>, LinkedList<EventHandler>> handlers = new HashMap<>();
 
-    public void register(K key, Consumer2<K, Object[]> handler) {
-        LinkedList<Consumer2<K, Object[]>> list = handlers.get(key);
+    public void register(Class<? extends EventHandler> key, EventHandler handler) {
+        LinkedList<EventHandler> list = handlers.get(key);
         if (list != null) {
             list.add(handler);
         } else {
@@ -18,21 +19,21 @@ public class Events<K> {
         }
     }
 
-    public void unregister(K key, Consumer2<K, Object[]> handler) {
-        LinkedList<Consumer2<K, Object[]>> list = handlers.get(key);
+    public void unregister(Class<? extends EventHandler> key, EventHandler handler) {
+        LinkedList<EventHandler> list = handlers.get(key);
         if (list != null) {
             list.remove(handler);
         }
     }
 
-    public void handle(K key, Object... values) {
+    public void handle(Class<? extends EventHandler> key, Object... values) {
         handle(key, key, values);
     }
 
-    private void handle(K handleKey, K passKey, Object... values) {
-        LinkedList<Consumer2<K, Object[]>> list = handlers.get(handleKey);
+    private void handle(Class<? extends EventHandler> handleKey, Class<? extends EventHandler> passKey, Object... values) {
+        LinkedList<EventHandler> list = handlers.get(handleKey);
         if (list != null) {
-            list.forEach(cons -> cons.apply(passKey, values));
+            list.forEach(cons -> cons.applyInternal(passKey, values));
         }
         if (handleKey != null) {
             handle(null, passKey, values);

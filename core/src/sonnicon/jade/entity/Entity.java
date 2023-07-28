@@ -1,17 +1,21 @@
 package sonnicon.jade.entity;
 
+import sonnicon.jade.EventGenerator;
 import sonnicon.jade.entity.components.Component;
+import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.Events;
 
 import java.util.*;
 
+@EventGenerator(id = "EntityComponentAdd", param = {Entity.class, Component.class}, label = {"entity", "component"})
+@EventGenerator(id = "EntityTraitAdd", param = {Entity.class, Trait.class}, label = {"entity", "trait"})
 public class Entity {
     public HashMap<Class<? extends Component>, Component> components;
     public HashSet<Trait> traits;
     public final int id;
     private static int nextId = 1;
 
-    public final Events<Class<?>> events = new Events<>();
+    public final Events events = new Events();
 
     public Entity() {
         components = new HashMap<>();
@@ -28,7 +32,7 @@ public class Entity {
 
     public void addTrait(Trait trait) {
         traits.add(trait);
-        events.handle(EntityTraitAddEvent.class, this, trait);
+        EventTypes.EntityTraitAddEvent.handle(events, this, trait);
     }
 
     public Entity addTraits(Trait... traits) {
@@ -51,7 +55,7 @@ public class Entity {
         }
         components.put(component.getKeyClass(), component);
         component.addToEntity(this);
-        events.handle(EntityComponentAddEvent.class, this, component);
+        EventTypes.EntityComponentAddEvent.handle(events, this, component);
         return true;
     }
 
@@ -124,7 +128,4 @@ public class Entity {
         }
         return true;
     }
-
-    public static final class EntityComponentAddEvent {}
-    public static final class EntityTraitAddEvent {}
 }

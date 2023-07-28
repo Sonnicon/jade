@@ -1,10 +1,8 @@
-import com.badlogic.gdx.tools.texturepacker.TexturePacker
-import com.badlogic.gdx.tools.hiero.Hiero
-
 buildscript {
     ext {
         appName = "jade"
         gdxVersion = '1.11.0'
+        autoServiceVersion = '1.1.1'
     }
 
     repositories {
@@ -18,7 +16,9 @@ buildscript {
 }
 
 allprojects {
-    version = '1.0'
+    group = 'sonnicon'
+
+    apply plugin: "java-library"
 
     repositories {
         mavenLocal()
@@ -31,23 +31,13 @@ allprojects {
     }
 }
 
-project(":desktop") {
-    apply plugin: "java-library"
-
-    dependencies {
-        implementation project(":core")
-        api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-    }
+subprojects {
+    sourceCompatibility = 1.8
+    sourceSets.main.java.srcDirs = ["src/"]
 }
 
-project(":core") {
-    apply plugin: "java-library"
 
-    dependencies {
-        api "com.badlogicgames.gdx:gdx:$gdxVersion"
-    }
-}
+import com.badlogic.gdx.tools.texturepacker.TexturePacker
 
 abstract class PackSpritesTask extends DefaultTask {
     @TaskAction

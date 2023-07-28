@@ -3,6 +3,7 @@ package sonnicon.jade.game;
 import sonnicon.jade.Jade;
 import sonnicon.jade.content.CharacterPrinter;
 import sonnicon.jade.content.ItemPrinter;
+import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.particles.ParticleEngine;
 import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.World;
@@ -11,8 +12,14 @@ public class Content {
     public static World world;
     //todo this is temporary
 
+    private static final EventTypes.StateSetEvent stateChangeListener = (Gamestate.State state) -> {
+        if (state == Gamestate.State.ingame) {
+            create();
+        }
+    };
+
     public static void init() {
-        Gamestate.events.register(Gamestate.State.ingame, (i1, i2) -> create());
+        Gamestate.events.register(EventTypes.StateSetEvent.class, stateChangeListener);
     }
 
     public static void create() {

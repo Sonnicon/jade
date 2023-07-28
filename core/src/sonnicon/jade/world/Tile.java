@@ -11,7 +11,7 @@ public class Tile {
     public final short x, y;
     public final Chunk chunk;
     public final HashSet<Entity> entities;
-    public final Events<Class<?>> events;
+    public final Events events;
 
     public static final int TILE_SIZE = 32;
 
@@ -23,7 +23,7 @@ public class Tile {
         this.y = y;
         this.chunk = chunk;
         this.entities = new HashSet<>();
-        this.events = new Events<>();
+        this.events = new Events();
 
         updatePositions();
         WorldPrinter.printFloorEntity(this);
@@ -100,7 +100,7 @@ public class Tile {
                 index = 1;
             } else if (dChunkX == -1) {
                 index = 3;
-            } else if (dChunkY == 1) {
+            } else if (dChunkY == -1) {
                 index = 2;
             }
             c = chunk.nearbyChunks[index];
