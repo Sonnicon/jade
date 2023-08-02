@@ -1,6 +1,6 @@
 package sonnicon.jade.graphics;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,17 +24,20 @@ public class SubRenderer {
     }
 
     public boolean removeRenderable(IRenderable renderable) {
-        int index = renderList.indexOf(renderable);
-        boolean result = renderList.remove(index) != null;
-        for (int i = 0; i < renderLayers.length; i++) {
-            if (renderLayers[i] > index) {
-                renderLayers[i]--;
+        int index;
+        boolean result = false;
+        while ((index = renderList.indexOf(renderable)) != -1) {
+            result = renderList.remove(index) != null || result;
+            for (int i = 0; i < renderLayers.length; i++) {
+                if (renderLayers[i] > index) {
+                    renderLayers[i]--;
+                }
             }
         }
         return result;
     }
 
-    public void renderRenderables(SpriteBatch batch, float delta, Renderer.RenderLayer layer) {
+    public void renderRenderables(Batch batch, float delta, Renderer.RenderLayer layer) {
         if (layer != null) {
             int end;
             if (layer.ordinal() < renderLayers.length - 1) {

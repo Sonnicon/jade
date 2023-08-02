@@ -4,17 +4,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.graphics.draw.DarknessBatch;
+import sonnicon.jade.graphics.draw.TerrainSpriteBatch;
 import sonnicon.jade.graphics.particles.ParticleEngine;
 import sonnicon.jade.gui.Gui;
 
 import java.util.LinkedList;
 
 public class Renderer {
-    public SpriteBatch worldBatch, guiBatch;
+    public Batch worldBatch, guiBatch, darknessBatch;
     public Viewport viewport;
     public OrthographicCamera camera;
     public ParticleEngine particles;
@@ -33,8 +36,9 @@ public class Renderer {
         subRenderer = new SubRenderer();
         renderFullList = new LinkedList<>();
 
-        worldBatch = new SpriteBatch();
+        worldBatch = new TerrainSpriteBatch();
         guiBatch = new SpriteBatch();
+        darknessBatch = new DarknessBatch();
 
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
@@ -48,7 +52,7 @@ public class Renderer {
             return;
         }
 
-        SpriteBatch batch = worldBatch;
+        Batch batch = worldBatch;
         batch.begin();
 
         // We use our own algorithm, to inject all the renderFullList entries
@@ -59,8 +63,8 @@ public class Renderer {
                     (layerIndex < subRenderer.renderLayers.length - 1 &&
                             subRenderer.renderLayers[layerIndex] == subRenderer.renderLayers[layerIndex + 1])) {
                 for (IRenderable fullRenderable : renderFullList) {
-                    if (fullRenderable.culled()) continue;
-                    fullRenderable.render(worldBatch, delta, layer);
+                    if (fullRenderable.culled(layer)) continue;
+                    fullRenderable.render(batch, delta, layer);
                 }
 
                 if (layerIndex + 1 >= subRenderer.renderLayers.length) {
@@ -68,14 +72,15 @@ public class Renderer {
                 }
                 layerIndex++;
                 layer = RenderLayer.all()[layerIndex];
-                if (layer == RenderLayer.overlay) {
+                //todo
+                if (layer == RenderLayer.darkness || layer == RenderLayer.overlay) {
                     batch.end();
-                    batch = guiBatch;
+                    batch = (layer == RenderLayer.darkness) ? darknessBatch : guiBatch;
                     batch.begin();
                 }
             }
 
-            if (renderable.culled()) continue;
+            if (renderable.culled(layer)) continue;
             renderable.render(batch, delta, layer);
             index++;
         }
@@ -108,6 +113,7 @@ public class Renderer {
         camera.zoom = viewportScale;
         viewport.apply();
         worldBatch.setProjectionMatrix(camera.combined);
+        darknessBatch.setProjectionMatrix(camera.combined);
 
         cameraEdgeLeft = camera.position.x - camera.viewportWidth / 2;
         cameraEdgeRight = camera.position.x + camera.viewportWidth / 2;
@@ -149,6 +155,7 @@ public class Renderer {
         terrain,
         characters,
         particles,
+        darkness,
         overlay,
         gui,
         top;

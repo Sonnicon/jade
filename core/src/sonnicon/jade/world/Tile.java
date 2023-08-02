@@ -2,6 +2,8 @@ package sonnicon.jade.world;
 
 import sonnicon.jade.content.WorldPrinter;
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.Traits;
+import sonnicon.jade.util.Consumer2;
 import sonnicon.jade.util.Direction;
 import sonnicon.jade.util.Events;
 
@@ -11,22 +13,38 @@ public class Tile {
     public final short x, y;
     public final Chunk chunk;
     public final HashSet<Entity> entities;
+    public final Traits traits;
     public final Events events;
 
     public static final int TILE_SIZE = 32;
+    public static final int HALF_TILE_SIZE = TILE_SIZE / 2;
 
     protected int globalX, globalY;
-    protected int drawX, drawY;
+    protected int drawX, drawY, drawMiddleX, drawMiddleY;
 
     public Tile(short x, short y, Chunk chunk) {
         this.x = x;
         this.y = y;
         this.chunk = chunk;
         this.entities = new HashSet<>();
+        this.traits = new Traits();
         this.events = new Events();
 
         updatePositions();
+        //todo move this
+        //if (Math.random() < 0.8f) {
         WorldPrinter.printFloorEntity(this);
+        //} else {
+        //WorldPrinter.printWallEntity(this);
+        //}
+    }
+
+    public void addEntity(Entity entity) {
+
+    }
+
+    public void removeEntity(Entity entity) {
+
     }
 
     protected void updatePositions() {
@@ -34,6 +52,8 @@ public class Tile {
         globalY = chunk.y * Chunk.CHUNK_SIZE + y;
         drawX = globalX * TILE_SIZE;
         drawY = globalY * TILE_SIZE;
+        drawMiddleX = (int) (drawX + TILE_SIZE * .5f);
+        drawMiddleY = (int) (drawY + TILE_SIZE * .5f);
     }
 
     public int getGlobalX() {
@@ -50,6 +70,14 @@ public class Tile {
 
     public float getDrawY() {
         return drawY;
+    }
+
+    public float getDrawMiddleX() {
+        return drawMiddleX;
+    }
+
+    public float getDrawMiddleY() {
+        return drawMiddleY;
     }
 
     public Tile getNearby(byte direction) {
@@ -113,5 +141,14 @@ public class Tile {
             return c.getTile(targetX, targetY);
         }
         return null;
+    }
+
+    public void allNearby(Consumer2<Tile, Byte> cons) {
+        Direction.cardinals((Byte dir) -> {
+            Tile other = getNearby(dir);
+            if (other != null) {
+                cons.apply(other, dir);
+            }
+        });
     }
 }

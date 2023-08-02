@@ -34,15 +34,14 @@ public class CharacterStorageComponent extends StorageComponent {
 
     public void addHand(EntityStorageSlot slot) {
         hands.add(slot);
-        if (entity != null && Gamestate.State.ingame.isActive() &&
-                ((StageIngame) State.ingame.getStage()).getControlledEntity() == entity) {
+        if (entity != null && Gamestate.State.ingame.isActive() && PlayerControlComponent.isControlled(entity)) {
             ((StageIngame) State.ingame.getStage()).addHand(slot);
         }
     }
 
     public void removeHand(EntityStorageSlot slot) {
         hands.remove(slot);
-        if (Gamestate.State.ingame.isActive() && ((StageIngame) State.ingame.getStage()).getControlledEntity() == entity) {
+        if (Gamestate.State.ingame.isActive() && PlayerControlComponent.isControlled(entity)) {
             ((StageIngame) State.ingame.getStage()).recreateHands();
         }
     }

@@ -1,7 +1,7 @@
 package sonnicon.jade.graphics.particles;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFontCache;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Pool;
 import sonnicon.jade.gui.Gui;
 
@@ -17,7 +17,7 @@ public class TextParticle extends Particle implements Pool.Poolable {
     }
 
     @Override
-    public void render(SpriteBatch batch, float delta) {
+    public void render(Batch batch, float delta) {
         super.render(batch, delta);
 
         float drawX = (float) (x + 4f * Math.sin(life + System.currentTimeMillis() / 600.));

@@ -2,15 +2,15 @@ package sonnicon.jade.content;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.KeyboardMovementComponent;
-import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.entity.components.PositionComponent;
 import sonnicon.jade.entity.components.graphical.ChunkDrawComponent;
+import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.entity.components.storage.CharacterStorageComponent;
 import sonnicon.jade.game.EntitySize;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.FixedSlotEntityStorage;
 import sonnicon.jade.graphics.Renderer;
-import sonnicon.jade.graphics.Textures;
+import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.world.Tile;
 
 public class CharacterPrinter {
@@ -31,7 +31,7 @@ public class CharacterPrinter {
 
 
         result.addComponents(new PositionComponent(location),
-                new ChunkDrawComponent(Textures.atlasFindRegion("character-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE, Renderer.RenderLayer.characters),
+                new ChunkDrawComponent(new TextureSet("character-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE, Renderer.RenderLayer.characters),
                 storageComponent,
                 new KeyboardMovementComponent(),
                 new PlayerControlComponent());

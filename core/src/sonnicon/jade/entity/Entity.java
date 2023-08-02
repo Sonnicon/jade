@@ -10,10 +10,10 @@ import sonnicon.jade.util.ICopyable;
 import java.util.*;
 
 @EventGenerator(id = "EntityComponentAdd", param = {Entity.class, Component.class}, label = {"entity", "component"})
-@EventGenerator(id = "EntityTraitAdd", param = {Entity.class, Trait.class}, label = {"entity", "trait"})
+@EventGenerator(id = "EntityTraitAdd", param = {Entity.class, Traits.Trait.class}, label = {"entity", "trait"})
 public class Entity implements ICopyable, IComparable {
     public HashMap<Class<? extends Component>, Component> components;
-    public HashSet<Trait> traits;
+    public Traits traits;
     public final int id;
     private static int nextId = 1;
 
@@ -21,7 +21,7 @@ public class Entity implements ICopyable, IComparable {
 
     public Entity() {
         components = new HashMap<>();
-        traits = new HashSet<>();
+        traits = new Traits();
         id = nextId++;
     }
 
@@ -32,13 +32,13 @@ public class Entity implements ICopyable, IComparable {
         return this;
     }
 
-    public void addTrait(Trait trait) {
-        traits.add(trait);
+    public void addTrait(Traits.Trait trait) {
+        traits.addTrait(trait);
         EventTypes.EntityTraitAddEvent.handle(events, this, trait);
     }
 
-    public Entity addTraits(Trait... traits) {
-        for (Trait trait : traits) {
+    public Entity addTraits(Traits.Trait... traits) {
+        for (Traits.Trait trait : traits) {
             addTrait(trait);
         }
         return this;
@@ -72,7 +72,6 @@ public class Entity implements ICopyable, IComparable {
     @Override
     public Entity copy() {
         Entity newEntity = new Entity();
-        newEntity.traits.addAll(traits);
 
         // Component dependency order resolution
 
@@ -113,6 +112,8 @@ public class Entity implements ICopyable, IComparable {
         }
 
         ordered.descendingIterator().forEachRemaining(comp -> newEntity.addComponent(components.get(comp).copy()));
+
+        traits.copyTo(newEntity.traits);
 
         return newEntity;
     }

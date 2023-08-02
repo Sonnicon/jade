@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.entity.components.storage.CharacterStorageComponent;
 import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.game.EntityStorage;
@@ -167,7 +168,7 @@ public class InventoryPanel extends Panel {
 
         if (State.ingame.isActive()) {
             StorageComponent storageComponent =
-                    ((StageIngame) State.ingame.getStage()).getControlledEntity().getComponent(StorageComponent.class);
+                    PlayerControlComponent.getControlledEntity().getComponent(StorageComponent.class);
             if (storageComponent instanceof CharacterStorageComponent) {
                 int handIndex = ((CharacterStorageComponent) storageComponent).hands.indexOf(slot);
                 if (handIndex != -1) {

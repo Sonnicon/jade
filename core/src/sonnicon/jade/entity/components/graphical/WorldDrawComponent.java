@@ -1,19 +1,19 @@
 package sonnicon.jade.entity.components.graphical;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.entity.components.PositionComponent;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.util.IComparable;
 
 import java.util.Collections;
 import java.util.HashSet;
 
 public abstract class WorldDrawComponent extends Component implements IRenderable {
-    protected TextureRegion region;
+    protected TextureSet textures;
     protected float width;
     protected float height;
     protected PositionComponent positionComponent;
@@ -23,12 +23,12 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
 
     }
 
-    public WorldDrawComponent(TextureRegion region, float width, float height, Renderer.RenderLayer layer) {
-        setup(region, width, height, layer);
+    public WorldDrawComponent(TextureSet textures, float width, float height, Renderer.RenderLayer layer) {
+        setup(textures, width, height, layer);
     }
 
-    private WorldDrawComponent setup(TextureRegion region, float width, float height, Renderer.RenderLayer layer) {
-        this.region = region;
+    private WorldDrawComponent setup(TextureSet textures, float width, float height, Renderer.RenderLayer layer) {
+        this.textures = textures;
         this.width = width;
         this.height = height;
         this.layer = layer;
@@ -47,9 +47,9 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
     }
 
     @Override
-    public void render(SpriteBatch batch, float delta, Renderer.RenderLayer layer) {
+    public void render(Batch batch, float delta, Renderer.RenderLayer layer) {
         if (positionComponent != null && positionComponent.tile != null) {
-            batch.draw(region, positionComponent.tile.getDrawX(), positionComponent.tile.getDrawY(), width, height);
+            textures.getDrawable().draw(batch, positionComponent.tile.getDrawX(), positionComponent.tile.getDrawY(), width, height);
         }
     }
 
@@ -59,7 +59,7 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
             return false;
         }
         WorldDrawComponent comp = (WorldDrawComponent) other;
-        return region == comp.region &&
+        return textures == ((WorldDrawComponent) other).textures &&
                 width == comp.width &&
                 height == comp.height &&
                 layer == comp.layer &&
@@ -68,6 +68,6 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
 
     @Override
     public WorldDrawComponent copy() {
-        return ((WorldDrawComponent) super.copy()).setup(region, width, height, layer);
+        return ((WorldDrawComponent) super.copy()).setup(textures, width, height, layer);
     }
 }

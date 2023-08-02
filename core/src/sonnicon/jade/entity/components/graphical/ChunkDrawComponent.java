@@ -1,9 +1,9 @@
 package sonnicon.jade.entity.components.graphical;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.util.IComparable;
 import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.Tile;
@@ -31,8 +31,8 @@ public class ChunkDrawComponent extends WorldDrawComponent {
 
     }
 
-    public ChunkDrawComponent(TextureRegion region, float width, float height, Renderer.RenderLayer layer) {
-        super(region, width, height, layer);
+    public ChunkDrawComponent(TextureSet textures, float width, float height, Renderer.RenderLayer layer) {
+        super(textures, width, height, layer);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ChunkDrawComponent extends WorldDrawComponent {
             return false;
         }
         ChunkDrawComponent comp = (ChunkDrawComponent) other;
-        return region == comp.region &&
+        return textures == comp.textures &&
                 width == comp.width &&
                 height == comp.height &&
                 layer == comp.layer &&

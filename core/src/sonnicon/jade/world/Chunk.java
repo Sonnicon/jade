@@ -1,6 +1,6 @@
 package sonnicon.jade.world;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.SubRenderer;
@@ -57,7 +57,7 @@ public class Chunk implements IRenderable {
     }
 
     @Override
-    public void render(SpriteBatch batch, float delta, Renderer.RenderLayer layer) {
+    public void render(Batch batch, float delta, Renderer.RenderLayer layer) {
         subRenderer.renderRenderables(batch, delta, layer);
     }
 
@@ -70,7 +70,7 @@ public class Chunk implements IRenderable {
     }
 
     @Override
-    public boolean culled() {
+    public boolean culled(Renderer.RenderLayer layer) {
         float drawX = x * CHUNK_TILE_SIZE;
         float drawY = y * CHUNK_TILE_SIZE;
         return drawX > renderer.getCameraEdgeRight() ||

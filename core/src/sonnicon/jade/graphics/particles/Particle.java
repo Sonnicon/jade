@@ -1,6 +1,6 @@
 package sonnicon.jade.graphics.particles;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Pool;
 
 public abstract class Particle implements Pool.Poolable {
@@ -18,7 +18,7 @@ public abstract class Particle implements Pool.Poolable {
         destroy = false;
     }
 
-    public void render(SpriteBatch batch, float delta) {
+    public void render(Batch batch, float delta) {
         advanceLife(delta);
     }
 

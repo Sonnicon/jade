@@ -6,6 +6,8 @@ public class Clock {
     protected static LinkedList<ITicking> ticking = new LinkedList<>();
     protected static LinkedList<IUpdate> updating = new LinkedList<>();
 
+    private static float tickNum = 0f, updateNum = 0f;
+
     //todo make this nicer
     public static void register(IClocked target) {
         if (target instanceof ITicking) {
@@ -26,11 +28,21 @@ public class Clock {
     }
 
     public static void tick(float delta) {
+        tickNum += delta;
         ticking.forEach(t -> t.tick(delta));
     }
 
     public static void update(float delta) {
+        updateNum += delta;
         updating.forEach(t -> t.update(delta));
+    }
+
+    public static float getTickNum() {
+        return tickNum;
+    }
+
+    public static float getUpdateNum() {
+        return updateNum;
     }
 
     private interface IClocked {
@@ -41,7 +53,7 @@ public class Clock {
         void tick(float delta);
     }
 
-    public interface IUpdate extends IClocked{
+    public interface IUpdate extends IClocked {
         void update(float delta);
     }
 }

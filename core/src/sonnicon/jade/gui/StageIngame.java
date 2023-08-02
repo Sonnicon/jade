@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import sonnicon.jade.Jade;
-import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.entity.components.storage.CharacterStorageComponent;
 import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.game.Clock;
@@ -27,7 +27,7 @@ import java.util.LinkedList;
 
 public class StageIngame extends GuiStage {
     // Entity that this player is controlling
-    protected Entity controlledEntity;
+    //protected Entity controlledEntity;
 
     // GUI elements
     protected Table tableMain;
@@ -52,7 +52,7 @@ public class StageIngame extends GuiStage {
     }
 
     @Override
-    protected void setup() {
+    public void setup() {
         Jade.renderer.addRenderable(this, Renderer.RenderLayer.gui);
 
         tableMain = new Table();
@@ -103,11 +103,11 @@ public class StageIngame extends GuiStage {
 
     public void recreate() {
         tableMain.clearChildren();
-        if (controlledEntity == null) {
+        if (PlayerControlComponent.isControlled(null)) {
             return;
         }
 
-        CharacterStorageComponent storageComponent = (CharacterStorageComponent) controlledEntity.getComponent(StorageComponent.class);
+        CharacterStorageComponent storageComponent = (CharacterStorageComponent) PlayerControlComponent.getControlledEntity().getComponent(StorageComponent.class);
         if (storageComponent != null) {
             tableMain.add(handTableLeft).width(96f).left().bottom();
             tableMain.add(toolbarWrapper).growX().align(Align.bottomLeft).pad(0f, -4f, 0f, -4f).height(80f);
@@ -127,11 +127,11 @@ public class StageIngame extends GuiStage {
 
         handTableLeft.clearChildren();
         handTableRight.clearChildren();
-        if (controlledEntity == null) {
+        if (PlayerControlComponent.isControlled(null)) {
             return;
         }
 
-        CharacterStorageComponent storageComponent = (CharacterStorageComponent) controlledEntity.getComponent(StorageComponent.class);
+        CharacterStorageComponent storageComponent = (CharacterStorageComponent) PlayerControlComponent.getControlledEntity().getComponent(StorageComponent.class);
         if (storageComponent != null) {
             nextHandIndex = 0;
             for (EntityStorageSlot hand : storageComponent.hands) {
@@ -156,12 +156,12 @@ public class StageIngame extends GuiStage {
         panelInventory.resize();
     }
 
-    public void setControlledEntity(Entity entity) {
+    /*public void setControlledEntity(Entity entity) {
         this.controlledEntity = entity;
         recreate();
     }
 
     public Entity getControlledEntity() {
         return this.controlledEntity;
-    }
+    }*/
 }

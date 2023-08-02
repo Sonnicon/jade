@@ -9,6 +9,7 @@ public class Events {
     private final HashMap<Class<? extends EventHandler>, LinkedList<EventHandler>> handlers = new HashMap<>();
 
     public void register(Class<? extends EventHandler> key, EventHandler handler) {
+        //todo remove key
         LinkedList<EventHandler> list = handlers.get(key);
         if (list != null) {
             list.add(handler);

@@ -1,7 +1,6 @@
 package sonnicon.jade.gui;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import sonnicon.jade.graphics.IRenderable;
@@ -37,12 +36,12 @@ public abstract class GuiStage extends Stage implements IRenderable {
     protected abstract void setup();
 
     @Override
-    public void render(SpriteBatch batch, float delta, Renderer.RenderLayer layer) {
+    public void render(Batch batch, float delta, Renderer.RenderLayer layer) {
         getRoot().draw(batch, 1.0F);
     }
 
     @Override
-    public boolean culled() {
+    public boolean culled(Renderer.RenderLayer layer) {
         return !getRoot().isVisible();
     }
 }

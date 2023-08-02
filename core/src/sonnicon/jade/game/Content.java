@@ -30,9 +30,6 @@ public class Content {
             new Chunk((short) (i / 4), (short) (i % 4), world);
         }
         CharacterPrinter.printCharacterPlayer(world.chunks.get(0).tiles[0]);
-        ItemPrinter.printItemDebug(world.chunks.get(1).tiles[155]);
-        ItemPrinter.printItemDebug(world.chunks.get(2).tiles[22]);
-        ItemPrinter.printItemDebug(world.chunks.get(1).tiles[55]);
         ItemPrinter.printItemDebug(world.chunks.get(0).tiles[55]);
         ItemPrinter.printItemDebug(world.chunks.get(0).tiles[129]);
     }

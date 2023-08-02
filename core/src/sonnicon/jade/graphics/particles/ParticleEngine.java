@@ -1,6 +1,6 @@
 package sonnicon.jade.graphics.particles;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Pools;
 import sonnicon.jade.Jade;
 import sonnicon.jade.game.Clock;
@@ -19,7 +19,7 @@ public class ParticleEngine implements IRenderable, Clock.ITicking {
     }
 
     @Override
-    public void render(SpriteBatch batch, float delta, Renderer.RenderLayer layer) {
+    public void render(Batch batch, float delta, Renderer.RenderLayer layer) {
         Iterator<Particle> iter = particles.iterator();
         while (iter.hasNext()) {
             Particle p = iter.next();

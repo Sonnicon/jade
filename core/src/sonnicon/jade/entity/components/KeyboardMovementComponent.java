@@ -25,7 +25,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
     protected PositionComponent positionComponent;
     protected StorageComponent storageComponent;
 
-    private boolean pPressed = false;
+    private boolean pPressed = false, spacePressed = false;
     private byte moveDirection = 0;
 
     private static final Vector3 TEMP_VEC = new Vector3();
@@ -103,6 +103,13 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
         } else if (!pPressed && Gdx.input.isKeyPressed(Input.Keys.P)) {
             pPressed = true;
             storageComponent.storage.addEntity(ItemPrinter.printItemDebug(null));
+        }
+
+        if (spacePressed && !Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            spacePressed = false;
+        } else if (!spacePressed && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            spacePressed = true;
+            Clock.tick(1f);
         }
     }
 

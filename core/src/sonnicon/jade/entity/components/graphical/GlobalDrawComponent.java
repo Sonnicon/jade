@@ -1,9 +1,9 @@
 package sonnicon.jade.entity.components.graphical;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import sonnicon.jade.Jade;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.graphics.TextureSet;
 
 public class GlobalDrawComponent extends WorldDrawComponent {
 
@@ -11,8 +11,8 @@ public class GlobalDrawComponent extends WorldDrawComponent {
 
     }
 
-    public GlobalDrawComponent(TextureRegion region, float width, float height, Renderer.RenderLayer layer) {
-        super(region, width, height, layer);
+    public GlobalDrawComponent(TextureSet textures, float width, float height, Renderer.RenderLayer layer) {
+        super(textures, width, height, layer);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class GlobalDrawComponent extends WorldDrawComponent {
 
 
     @Override
-    public boolean culled() {
+    public boolean culled(Renderer.RenderLayer layer) {
         if (positionComponent == null || positionComponent.tile == null) {
             return false;
         }
