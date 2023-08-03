@@ -1,9 +1,9 @@
 package sonnicon.jade.world;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.SubRenderer;
+import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.util.Direction;
 
 import static sonnicon.jade.Jade.renderer;
@@ -57,7 +57,7 @@ public class Chunk implements IRenderable {
     }
 
     @Override
-    public void render(Batch batch, float delta, Renderer.RenderLayer layer) {
+    public void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
         subRenderer.renderRenderables(batch, delta, layer);
     }
 

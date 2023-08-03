@@ -1,12 +1,13 @@
 package sonnicon.jade.entity.components.graphical;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.entity.components.PositionComponent;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
+import sonnicon.jade.graphics.draw.GraphicsBatch;
+import sonnicon.jade.graphics.draw.TerrainSpriteBatch;
 import sonnicon.jade.util.IComparable;
 
 import java.util.Collections;
@@ -47,9 +48,10 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
     }
 
     @Override
-    public void render(Batch batch, float delta, Renderer.RenderLayer layer) {
+    public void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
         if (positionComponent != null && positionComponent.tile != null) {
-            textures.getDrawable().draw(batch, positionComponent.tile.getDrawX(), positionComponent.tile.getDrawY(), width, height);
+            TerrainSpriteBatch terrainSpriteBatch = (TerrainSpriteBatch) batch;
+            terrainSpriteBatch.draw(textures.getDrawable().getRegion(), positionComponent.tile.getDrawX(), positionComponent.tile.getDrawY(), width, height);
         }
     }
 

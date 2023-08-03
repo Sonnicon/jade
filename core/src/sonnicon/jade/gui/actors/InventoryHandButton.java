@@ -2,13 +2,13 @@ package sonnicon.jade.gui.actors;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import sonnicon.jade.EventHandler;
 import sonnicon.jade.game.EntityStorageSlot;
+import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.gui.Gui;
 
 public class InventoryHandButton extends InventorySlotButton {
     public int handNumber;
-    private EventHandler slotWatch;
+    private EventTypes.AnyEvent slotWatch;
 
     public InventoryHandButton(EntityStorageSlot slot, int handNumber) {
         super();
@@ -32,15 +32,15 @@ public class InventoryHandButton extends InventorySlotButton {
     @Override
     protected void setParent(Group parent) {
         if (slotWatch != null) {
-            slot.events.unregister(null, slotWatch);
+            slot.events.unregister(slotWatch);
         }
-        slot.events.register(null, slotWatch = (type, objs) -> recreate());
+        slot.events.register(slotWatch = (type) -> recreate());
         super.setParent(parent);
     }
 
     @Override
     public boolean remove() {
-        slot.events.unregister(null, slotWatch);
+        slot.events.unregister(slotWatch);
         slotWatch = null;
         return super.remove();
     }

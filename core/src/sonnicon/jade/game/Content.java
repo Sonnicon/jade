@@ -19,7 +19,7 @@ public class Content {
     };
 
     public static void init() {
-        Gamestate.events.register(EventTypes.StateSetEvent.class, stateChangeListener);
+        Gamestate.events.register(stateChangeListener);
     }
 
     public static void create() {

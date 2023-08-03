@@ -1,7 +1,5 @@
 package sonnicon.jade.entity.components.graphical;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import sonnicon.jade.EventGenerator;
 import sonnicon.jade.entity.Entity;
@@ -13,6 +11,7 @@ import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.graphics.draw.DarknessBatch;
+import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.graphics.draw.TerrainSpriteBatch;
 import sonnicon.jade.util.Direction;
 import sonnicon.jade.world.Chunk;
@@ -23,9 +22,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
     private byte direction = 0;
 
     private static final float VIEW_BIG_DISTANCE = 500f;
-
     private static final float[] ROTATE_1 = new float[]{-Tile.HALF_TILE_SIZE, Tile.HALF_TILE_SIZE, Tile.HALF_TILE_SIZE, -Tile.HALF_TILE_SIZE};
-    private static final float[] ROTATE_2 = new float[]{Tile.HALF_TILE_SIZE, VIEW_BIG_DISTANCE, -Tile.HALF_TILE_SIZE, -VIEW_BIG_DISTANCE};
 
     private static final EventTypes.EntityMoveEvent moveEvent = (Entity ent, Tile source, Tile dest) -> {
         WallDrawComponent wdc = ent.getComponent(WallDrawComponent.class);
@@ -36,9 +33,6 @@ public class WallDrawComponent extends ChunkDrawComponent {
             wdc.addNearbyWalls(dest);
         }
     };
-
-    private static final Vector2 TEMP_VEC_1 = new Vector2();
-    private static final Vector2 TEMP_VEC_2 = new Vector2();
 
     public WallDrawComponent() {
 
@@ -52,7 +46,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
-        entity.events.register(EventTypes.EntityMoveEvent.class, moveEvent);
+        entity.events.register(moveEvent);
         Tile tile = entity.getComponent(PositionComponent.class).tile;
         if (tile != null) {
             addNearbyWalls(tile);
@@ -62,7 +56,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
     @Override
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
-        entity.events.unregister(EventTypes.EntityMoveEvent.class, moveEvent);
+        entity.events.unregister(moveEvent);
 
         Tile tile = entity.getComponent(PositionComponent.class).tile;
         if (tile != null) {
@@ -111,7 +105,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
     }
 
     @Override
-    public void render(Batch b, float delta, Renderer.RenderLayer layer) {
+    public void render(GraphicsBatch b, float delta, Renderer.RenderLayer layer) {
         if (positionComponent == null || positionComponent.tile == null) {
             return;
         }

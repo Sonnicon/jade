@@ -18,7 +18,7 @@ public class PlayerControlComponent extends Component {
     static {
         final EventTypes.EntityControlledEvent controlledHandler =
                 (Entity e) -> ((StageIngame) Gamestate.State.ingame.getStage()).recreate();
-        events.register(EventTypes.EntityControlledEvent.class, controlledHandler);
+        events.register(controlledHandler);
     }
 
     @Override

@@ -51,8 +51,8 @@ public class CharacterStorageComponent extends StorageComponent {
         super.addToEntity(entity);
 
         // Handling changes in control
-        entity.events.register(EventTypes.EntityControlledEvent.class, (EventTypes.EntityControlledEvent) e -> addGuiSlots());
-        entity.events.register(EventTypes.EntityUncontrolledEvent.class, (EventTypes.EntityUncontrolledEvent) e -> removeGuiSlots());
+        entity.events.register((EventTypes.EntityControlledEvent) e -> addGuiSlots());
+        entity.events.register((EventTypes.EntityUncontrolledEvent) e -> removeGuiSlots());
 
         // Adding to already controlled entity
         if (PlayerControlComponent.isControlled(entity)) {

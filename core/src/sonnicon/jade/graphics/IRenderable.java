@@ -1,9 +1,9 @@
 package sonnicon.jade.graphics;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
+import sonnicon.jade.graphics.draw.GraphicsBatch;
 
 public interface IRenderable {
-    void render(Batch batch, float delta, Renderer.RenderLayer layer);
+    void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer);
 
     default boolean culled(Renderer.RenderLayer layer) {
         return false;

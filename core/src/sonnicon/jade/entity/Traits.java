@@ -29,6 +29,9 @@ public class Traits {
     }
 
     public void copyTo(Traits other) {
+        if (traits == null) {
+            return;
+        }
         traits.forEach((Trait t, Integer c) -> {
             other.traits.replace(t, c);
         });

@@ -16,6 +16,7 @@ import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.Textures;
+import sonnicon.jade.graphics.draw.SpriteBatch;
 import sonnicon.jade.graphics.particles.TextParticle;
 import sonnicon.jade.gui.actors.InventoryHandButton;
 import sonnicon.jade.gui.actors.TapButton;
@@ -26,9 +27,6 @@ import sonnicon.jade.gui.popups.InventoryMovePopup;
 import java.util.LinkedList;
 
 public class StageIngame extends GuiStage {
-    // Entity that this player is controlling
-    //protected Entity controlledEntity;
-
     // GUI elements
     protected Table tableMain;
     public InventoryPanel panelInventory;
@@ -43,7 +41,7 @@ public class StageIngame extends GuiStage {
     protected LinkedList<Table> toolbarEntries;
 
     public StageIngame() {
-        super(new ScreenViewport(), Jade.renderer.guiBatch);
+        super(new ScreenViewport(), (SpriteBatch) Jade.renderer.guiBatch);
         ((InputMultiplexer) Gamestate.State.ingame.inputProcessor).addProcessor(0, this);
 
         panelInventory = new InventoryPanel();

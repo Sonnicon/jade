@@ -38,7 +38,7 @@ public class ChunkDrawComponent extends WorldDrawComponent {
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
-        entity.events.register(EventTypes.EntityMoveEvent.class, moveHandler);
+        entity.events.register(moveHandler);
         if (positionComponent.tile != null && positionComponent.tile.chunk != null) {
             addToChunk(positionComponent.tile.chunk);
         }
@@ -47,7 +47,7 @@ public class ChunkDrawComponent extends WorldDrawComponent {
     @Override
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
-        entity.events.unregister(EventTypes.EntityMoveEvent.class, moveHandler);
+        entity.events.unregister(moveHandler);
     }
 
     protected void addToChunk(Chunk chunk) {

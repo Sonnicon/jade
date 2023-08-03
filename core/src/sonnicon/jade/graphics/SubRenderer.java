@@ -1,6 +1,6 @@
 package sonnicon.jade.graphics;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
+import sonnicon.jade.graphics.draw.GraphicsBatch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class SubRenderer {
         return result;
     }
 
-    public void renderRenderables(Batch batch, float delta, Renderer.RenderLayer layer) {
+    public void renderRenderables(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
         if (layer != null) {
             int end;
             if (layer.ordinal() < renderLayers.length - 1) {

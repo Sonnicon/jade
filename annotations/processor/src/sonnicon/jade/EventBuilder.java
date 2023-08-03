@@ -45,11 +45,20 @@ public class EventBuilder {
                                 + generator.id() + "Event.class, " + String.join(", ", generator.label()) + ");",
                         sonnicon.jade.EventHandler.class);
 
+        MethodSpec.Builder typeMethodBuilder = MethodSpec.methodBuilder("getType")
+                .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
+                .returns(ParameterizedTypeName.get(
+                        ClassName.get(Class.class),
+                        WildcardTypeName.subtypeOf(ClassName.get(EventHandler.class))))
+                .addAnnotation(Override.class)
+                .addCode("return $T.class;", ClassName.get("", generator.id() + "Event"));
+
         for (int i = 0; i < params.length; i++) {
             handleMethodBuilder.addParameter(ClassName.get(params[i]), generator.label()[i]);
         }
 
         classBuilder.addMethod(handleMethodBuilder.build());
+        classBuilder.addMethod(typeMethodBuilder.build());
         outerBuilder.addType(classBuilder.build());
         return true;
     }
@@ -64,13 +73,11 @@ public class EventBuilder {
 
         TypeSpec.Builder genericClassBuilder = TypeSpec.interfaceBuilder("EventHandler" + num)
                 .addModifiers(Modifier.PUBLIC)
-                .addSuperinterface(ClassName.get(EventHandler.class))
-                .addAnnotation(FunctionalInterface.class);
+                .addSuperinterface(ClassName.get(EventHandler.class));
 
         MethodSpec.Builder applyInternalMethodBuilder = MethodSpec.methodBuilder("applyInternal")
                 .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
                 .returns(void.class)
-                .addParameter(Class.class, "type")
                 .addParameter(Object[].class, "objs")
                 .varargs()
                 .addAnnotation(Override.class);

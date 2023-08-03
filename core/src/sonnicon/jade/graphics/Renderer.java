@@ -4,12 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.graphics.draw.DarknessBatch;
+import sonnicon.jade.graphics.draw.GraphicsBatch;
+import sonnicon.jade.graphics.draw.SpriteBatch;
 import sonnicon.jade.graphics.draw.TerrainSpriteBatch;
 import sonnicon.jade.graphics.particles.ParticleEngine;
 import sonnicon.jade.gui.Gui;
@@ -17,7 +17,7 @@ import sonnicon.jade.gui.Gui;
 import java.util.LinkedList;
 
 public class Renderer {
-    public Batch worldBatch, guiBatch, darknessBatch;
+    public GraphicsBatch worldBatch, guiBatch, darknessBatch;
     public Viewport viewport;
     public OrthographicCamera camera;
     public ParticleEngine particles;
@@ -52,7 +52,7 @@ public class Renderer {
             return;
         }
 
-        Batch batch = worldBatch;
+        GraphicsBatch batch = worldBatch;
         batch.begin();
 
         // We use our own algorithm, to inject all the renderFullList entries
