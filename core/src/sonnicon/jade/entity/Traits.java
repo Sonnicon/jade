@@ -32,9 +32,7 @@ public class Traits {
         if (traits == null) {
             return;
         }
-        traits.forEach((Trait t, Integer c) -> {
-            other.traits.replace(t, c);
-        });
+        traits.forEach((Trait t, Integer c) -> other.traits.replace(t, c));
     }
 
     public enum Trait {

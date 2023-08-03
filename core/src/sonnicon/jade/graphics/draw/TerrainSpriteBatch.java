@@ -76,6 +76,7 @@ public class TerrainSpriteBatch extends DrawBatch {
     public void draw(TextureRegion region, float x, float y, float width, float height, byte rotation) {
         if ((rotation & 1) > 0) {
             float intermediate = width;
+            //noinspection SuspiciousNameCombination
             width = height;
             height = intermediate;
         }
@@ -118,11 +119,10 @@ public class TerrainSpriteBatch extends DrawBatch {
     }
 
     public void draw(TextureRegion region, int x, int y, byte rotation) {
-        // We don't need to do +2x becasue inaccuracies will push it over
         draw(region, x * Tile.TILE_SIZE - PIXEL_FIXER,
                 y * Tile.TILE_SIZE - PIXEL_FIXER,
-                Tile.TILE_SIZE + PIXEL_FIXER,
-                Tile.TILE_SIZE + PIXEL_FIXER, rotation);
+                Tile.TILE_SIZE + PIXEL_FIXER_XL,
+                Tile.TILE_SIZE + PIXEL_FIXER_XL, rotation);
     }
 
     @Override

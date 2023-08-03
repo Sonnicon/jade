@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Matrix4;
 
 public abstract class DrawBatch implements GraphicsBatch {
     protected static final float PIXEL_FIXER = 0.001f;
+    protected static final float PIXEL_FIXER_XL = PIXEL_FIXER * 2;
 
     protected Mesh mesh;
     protected ShaderProgram shader;

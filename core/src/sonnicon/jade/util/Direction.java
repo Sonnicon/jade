@@ -66,6 +66,6 @@ public class Direction {
     }
 
     public static byte relate(Tile from, Tile to) {
-        return relate(from.x, from.y, to.x, to.y);
+        return relate(from.getGlobalX(), from.getGlobalY(), to.getGlobalX(), to.getGlobalY());
     }
 }

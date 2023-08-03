@@ -32,11 +32,11 @@ public class Tile {
 
         updatePositions();
         //todo move this
-        //if (Math.random() < 0.8f) {
-        WorldPrinter.printFloorEntity(this);
-        //} else {
-        //WorldPrinter.printWallEntity(this);
-        //}
+        if (Math.random() < .9f) {
+            WorldPrinter.printFloorEntity(this);
+        } else {
+            WorldPrinter.printWallEntity(this);
+        }
     }
 
     public void addEntity(Entity entity) {

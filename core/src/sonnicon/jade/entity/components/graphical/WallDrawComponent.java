@@ -124,6 +124,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
 
         boolean playerCardinal = ((playerDir & (playerDir - 1)) == 0);
 
+        //todo refactor to new component, adjacent merging
         if (layer == this.layer) {
             TerrainSpriteBatch batch = (TerrainSpriteBatch) b;
             boolean reverseShift = (playerDir & direction) == playerDir;
@@ -138,10 +139,10 @@ public class WallDrawComponent extends ChunkDrawComponent {
                 //todo fix sprites, normal maps
                 if (directCorner) {
                     batch.draw(wtx.getDrawable(WallTextureType.outer).getRegion(),
-                            drawTile.x, drawTile.y, i);
+                            drawTile.getGlobalX(), drawTile.getGlobalY(), i);
                 } else {
                     batch.draw(wtx.getDrawable(WallTextureType.inner).getRegion(),
-                            drawTile.x, drawTile.y, (byte) ((i + 2) % 4));
+                            drawTile.getGlobalX(), drawTile.getGlobalY(), (byte) ((i + 2) % 4));
                 }
                 return;
             }
@@ -149,17 +150,17 @@ public class WallDrawComponent extends ChunkDrawComponent {
             byte flatEdge = (byte) (playerDir & (direction ^ Direction.ALL));
             for (byte i = 0; i < 4; i++) {
                 if ((flatEdge & (1 << i)) > 0) {
-                    batch.draw(wtx.getDrawable(WallTextureType.middle).getRegion(), drawTile.x, drawTile.y, (byte) (i + 1));
+                    batch.draw(wtx.getDrawable(WallTextureType.middle).getRegion(), drawTile.getGlobalX(), drawTile.getGlobalY(), (byte) (i + 1));
                     return;
                 }
             }
-        } else if (layer == Renderer.RenderLayer.darkness) {
+        } else if (layer == Renderer.RenderLayer.darkness && drawTile != playerTile) {
             DarknessBatch batch = (DarknessBatch) b;
             // Tile centers
             float[] dm = new float[]{drawTile.getDrawMiddleX(), drawTile.getDrawMiddleY()};
             float[] pm = new float[]{playerTile.getDrawMiddleX(), playerTile.getDrawMiddleY()};
 
-            if (playerCardinal && drawTile != playerTile) {
+            if (playerCardinal) {
                 // Cardinal shadows
 
                 // Directions and rotate offset
@@ -181,19 +182,19 @@ public class WallDrawComponent extends ChunkDrawComponent {
 
                 float x1 = dm[sonx] - VIEW_BIG_DISTANCE * dp[sonx];
                 float x2 = dm[sonx] - of[sonx];
+                float x3 = dm[sonx] + r1[sonx];
                 float x4 = dm[sonx] - r1[sonx];
                 float x5 = dm[sonx] + of[sonx];
                 float x6 = dm[sonx] + VIEW_BIG_DISTANCE * dp[sonx];
                 float y1 = dm[sony] + VIEW_BIG_DISTANCE * dp[sony];
                 float y2 = dm[sony] + r1[sony];
                 float y3 = dm[sony] - r1[sony];
-
                 if (drawLeftTriangle && drawRightTriangle) {
-                    batch.drawCShadowTwo(x1, x2, dm[sonx] + r1[sonx], x4, x5, x6, y1, y2, y3, shadowOnX);
-                } else if (drawLeftTriangle || drawRightTriangle) {
-                    batch.drawCShadowOne(x1, x2,
-                            dm[sonx] + r1[sonx] * (drawLeftTriangle ? 1 : -1),
-                            x5, x6, y1, y2, y3, drawLeftTriangle, shadowOnX);
+                    batch.drawCShadowTwo(x1, x3, x4, x6, y1, y2, y3, shadowOnX);
+                } else if (drawLeftTriangle) {
+                    batch.drawCShadowOne(x1, x3, x5, x6, y1, y2, y3, shadowOnX);
+                } else if (drawRightTriangle) {
+                    batch.drawCShadowOne(x6, x4, x2, x1, y1, y2, y3, shadowOnX);
                 } else {
                     batch.drawCShadowZero(x1, x2, x5, x6, y1, y2, shadowOnX);
                 }
@@ -229,48 +230,33 @@ public class WallDrawComponent extends ChunkDrawComponent {
 
                 boolean shadowLeft = (direction & (1 << shadowLeftIndex)) == 0;
                 shadowLeft |= (direction & (1 << ((shadowLeftIndex + 3) % 4))) > 0;
-
                 boolean shadowRight = (direction & (1 << shadowRightIndex)) == 0;
                 shadowRight |= (direction & (1 << ((shadowRightIndex + 1) % 4))) > 0;
 
+                float x2 = dm[sony] + c2[sony];
+                float x4 = dm[sony] + fc1[sony];
+                float x5 = dm[sony] + fc2[sony];
+                float y2 = dm[sonx] + c2[sonx];
+                float y4 = dm[sonx] + fc1[sonx];
+                float y5 = dm[sonx] + fc2[sonx];
+
                 if (shadowLeft && shadowRight) {
                     batch.drawDShadowTwo(
-                            dm[sony] + c3[sony],
-                            dm[sony] + c2[sony],
-                            dm[sony] + of1[sony],
-                            dm[sony] + fc1[sony],
-                            dm[sony] + fc2[sony],
-                            dm[sonx] + c1[sonx],
-                            dm[sonx] + c2[sonx],
-                            dm[sonx] + of2[sonx],
-                            dm[sonx] + fc1[sonx],
-                            dm[sonx] + fc2[sonx],
-
+                            dm[sony] + c3[sony], x2, x4, x5,
+                            dm[sonx] + c1[sonx], y2, y4, y5,
                             !shadowOnX
                     );
                 } else if (shadowLeft || shadowRight) {
                     batch.drawDShadowOne(
-                            dm[sony] + c2[sony],
-                            dm[sony] + of1[sony],
-                            dm[sony] + fc1[sony],
-                            dm[sony] + fc2[sony],
-                            dm[sonx] + c2[sonx],
-                            dm[sonx] + of2[sonx],
-                            dm[sonx] + fc1[sonx],
-                            dm[sonx] + fc2[sonx],
+                            x2, dm[sony] + of1[sony], x4, x5,
+                            y2, dm[sonx] + of2[sonx], y4, y5,
                             shadowLeft ? dm[sonx] + c1[sonx] : dm[sony] + c3[sony],
                             !shadowOnX, shadowLeft
                     );
                 } else {
                     batch.drawDShadowZero(
-                            dm[sony] + c2[sony],
-                            dm[sony] + of1[sony],
-                            dm[sony] + fc1[sony],
-                            dm[sony] + fc2[sony],
-                            dm[sonx] + c2[sonx],
-                            dm[sonx] + of2[sonx],
-                            dm[sonx] + fc1[sonx],
-                            dm[sonx] + fc2[sonx],
+                            x2, dm[sony] + of1[sony], x4, x5,
+                            y2, dm[sonx] + of2[sonx], y4, y5,
                             !shadowOnX
                     );
                 }
