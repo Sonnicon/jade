@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 public enum Shaders {
     normal("normal"),
-    darkness("darkness");
+    fow("fow");
 
     private final String name;
     private ShaderProgram program;

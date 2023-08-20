@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import sonnicon.jade.game.Gamestate;
-import sonnicon.jade.graphics.draw.DarknessBatch;
+import sonnicon.jade.graphics.draw.FowBatch;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.graphics.draw.SpriteBatch;
 import sonnicon.jade.graphics.draw.TerrainSpriteBatch;
@@ -38,7 +38,7 @@ public class Renderer {
 
         worldBatch = new TerrainSpriteBatch();
         guiBatch = new SpriteBatch();
-        darknessBatch = new DarknessBatch();
+        darknessBatch = new FowBatch();
 
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
@@ -73,9 +73,9 @@ public class Renderer {
                 layerIndex++;
                 layer = RenderLayer.all()[layerIndex];
                 //todo
-                if (layer == RenderLayer.darkness || layer == RenderLayer.overlay) {
+                if (layer == RenderLayer.fow || layer == RenderLayer.overlay) {
                     batch.end();
-                    batch = (layer == RenderLayer.darkness) ? darknessBatch : guiBatch;
+                    batch = (layer == RenderLayer.fow) ? darknessBatch : guiBatch;
                     batch.begin();
                 }
             }
@@ -155,7 +155,7 @@ public class Renderer {
         terrain,
         characters,
         particles,
-        darkness,
+        fow,
         overlay,
         gui,
         top;

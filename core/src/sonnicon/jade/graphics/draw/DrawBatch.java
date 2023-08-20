@@ -17,7 +17,7 @@ public abstract class DrawBatch implements GraphicsBatch {
 
     protected final Matrix4 projectionMatrix = new Matrix4();
     protected final Matrix4 transformMatrix = new Matrix4();
-    protected final Matrix4 combinedMatrix = new Matrix4();
+    public Matrix4 combinedMatrix = new Matrix4();
 
     protected static final Mesh.VertexDataType vertexDataType;
 

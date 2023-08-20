@@ -65,6 +65,19 @@ public class Entity implements ICopyable, IComparable {
         return (T) components.getOrDefault(type, null);
     }
 
+    public <T extends Component> T getComponentFuzzy(Class<T> type) {
+        T comp = getComponent(type);
+        if (comp != null) {
+            return comp;
+        }
+        Optional<T> opt = components.entrySet().stream()
+                .filter(entry -> type.isAssignableFrom(entry.getKey()))
+                .map(entry -> (T) entry.getValue())
+                .findAny();
+
+        return opt.orElse(null);
+    }
+
     public boolean hasComponent(Class<? extends Component> type) {
         return components.containsKey(type);
     }

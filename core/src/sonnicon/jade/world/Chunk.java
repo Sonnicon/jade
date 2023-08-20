@@ -9,15 +9,15 @@ import sonnicon.jade.util.Direction;
 import static sonnicon.jade.Jade.renderer;
 
 public class Chunk implements IRenderable {
-    public static final short CHUNK_SIZE = 16;
-    protected static final float CHUNK_TILE_SIZE = CHUNK_SIZE * Tile.TILE_SIZE;
-
-    public final Tile[] tiles = new Tile[CHUNK_SIZE * CHUNK_SIZE];
     public final short x, y;
-    public final Chunk[] nearbyChunks = new Chunk[4];
     public final World world;
 
+    private final Tile[] tiles = new Tile[CHUNK_SIZE * CHUNK_SIZE];
+    private final Chunk[] nearbyChunks = new Chunk[4];
     private final SubRenderer subRenderer;
+
+    public static final short CHUNK_SIZE = 16;
+    public static final float CHUNK_TILE_SIZE = CHUNK_SIZE * Tile.TILE_SIZE;
 
     public Chunk(short x, short y, World world) {
         this.x = x;
@@ -29,9 +29,9 @@ public class Chunk implements IRenderable {
         renderer.addRenderable(this);
 
         for (short dir = 0; dir < 4; dir++) {
-            short dirX = Direction.directionX((byte) (1 << dir));
-            short dirY = Direction.directionY((byte) (1 << dir));
-            Chunk other = world.chunks.getOrDefault(getHashcode((short) (x + dirX), (short) (y + dirY)), null);
+            Chunk other = world.chunks.getOrDefault(getHashcode(
+                    (short) (x + Direction.directionX((byte) (1 << dir))),
+                    (short) (y + Direction.directionY((byte) (1 << dir)))), null);
             if (other != null) {
                 nearbyChunks[dir] = other;
                 other.nearbyChunks[(dir + 2) % 4] = this;
@@ -45,6 +45,10 @@ public class Chunk implements IRenderable {
 
     public Tile getTile(short x, short y) {
         return tiles[x + y * CHUNK_SIZE];
+    }
+
+    public Chunk getNearby(int index) {
+        return nearbyChunks[index];
     }
 
     @Override

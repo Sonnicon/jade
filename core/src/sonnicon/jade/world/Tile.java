@@ -10,58 +10,57 @@ import sonnicon.jade.util.Events;
 import java.util.HashSet;
 
 public class Tile {
-    public final short x, y;
+    private final short x, y;
     public final Chunk chunk;
     public final HashSet<Entity> entities;
     public final Traits traits;
     public final Events events;
 
+    private final int globalX, globalY;
+    private final int drawX, drawY;
+    private final int drawMiddleX, drawMiddleY;
+
     public static final int TILE_SIZE = 32;
     public static final int HALF_TILE_SIZE = TILE_SIZE / 2;
-
-    protected int globalX, globalY;
-    protected int drawX, drawY, drawMiddleX, drawMiddleY;
 
     public Tile(short x, short y, Chunk chunk) {
         this.x = x;
         this.y = y;
         this.chunk = chunk;
+
+        this.globalX = chunk.x * Chunk.CHUNK_SIZE + x;
+        this.globalY = chunk.y * Chunk.CHUNK_SIZE + y;
+        this.drawX = globalX * TILE_SIZE;
+        this.drawY = globalY * TILE_SIZE;
+        this.drawMiddleX = (int) (drawX + TILE_SIZE * .5f);
+        this.drawMiddleY = (int) (drawY + TILE_SIZE * .5f);
+
         this.entities = new HashSet<>();
         this.traits = new Traits();
         this.events = new Events();
 
-        updatePositions();
         //todo move this
-        if (Math.random() < .9f) {
-            WorldPrinter.printFloorEntity(this);
-        } else {
-            WorldPrinter.printWallEntity(this);
-        }
+        //if (Math.random() < .9f) {
+        WorldPrinter.printFloorEntity(this);
+        //} else {
+        //    WorldPrinter.printWallEntity(this);
+        //}
     }
 
-    public void addEntity(Entity entity) {
-
-    }
-
-    public void removeEntity(Entity entity) {
-
-    }
-
-    protected void updatePositions() {
-        globalX = chunk.x * Chunk.CHUNK_SIZE + x;
-        globalY = chunk.y * Chunk.CHUNK_SIZE + y;
-        drawX = globalX * TILE_SIZE;
-        drawY = globalY * TILE_SIZE;
-        drawMiddleX = (int) (drawX + TILE_SIZE * .5f);
-        drawMiddleY = (int) (drawY + TILE_SIZE * .5f);
-    }
-
-    public int getGlobalX() {
+    public int getX() {
         return globalX;
     }
 
-    public int getGlobalY() {
+    public int getY() {
         return globalY;
+    }
+
+    public int getLocalX() {
+        return x;
+    }
+
+    public int getLocalY() {
+        return y;
     }
 
     public float getDrawX() {
@@ -131,7 +130,7 @@ public class Tile {
             } else if (dChunkY == -1) {
                 index = 2;
             }
-            c = chunk.nearbyChunks[index];
+            c = chunk.getNearby(index);
         } else {
             // Moving multiple chunks
             c = chunk.world.chunks.get(Chunk.getHashcode((short) (chunk.x + dChunkX), (short) (chunk.y + dChunkY)));

@@ -13,7 +13,7 @@ public class ChunkDrawComponent extends WorldDrawComponent {
     private transient Chunk currentChunk;
     private static final EventTypes.EntityMoveEvent moveHandler =
             (Entity entity, Tile source, Tile destination) -> {
-                ChunkDrawComponent comp = entity.getComponent(ChunkDrawComponent.class);
+                ChunkDrawComponent comp = entity.getComponentFuzzy(ChunkDrawComponent.class);
                 Chunk c = destination == null ? null : destination.chunk;
 
                 if (c != comp.currentChunk) {
@@ -39,7 +39,7 @@ public class ChunkDrawComponent extends WorldDrawComponent {
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
         entity.events.register(moveHandler);
-        if (positionComponent.tile != null && positionComponent.tile.chunk != null) {
+        if (positionComponent.tile != null) {
             addToChunk(positionComponent.tile.chunk);
         }
     }
@@ -48,6 +48,9 @@ public class ChunkDrawComponent extends WorldDrawComponent {
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
         entity.events.unregister(moveHandler);
+        if (currentChunk != null) {
+            removeFromChunk();
+        }
     }
 
     protected void addToChunk(Chunk chunk) {

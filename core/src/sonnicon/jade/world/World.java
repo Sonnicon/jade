@@ -7,7 +7,7 @@ import sonnicon.jade.input.WorldInput;
 import java.util.HashMap;
 
 public class World {
-    public HashMap<Integer, Chunk> chunks = new HashMap<>();
+    public final HashMap<Integer, Chunk> chunks = new HashMap<>();
 
     private static final Vector3 TEMP_VEC = new Vector3();
 

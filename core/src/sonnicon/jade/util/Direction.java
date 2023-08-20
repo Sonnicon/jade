@@ -9,7 +9,10 @@ public class Direction {
     public static final byte EAST = 1 << 1;
     public static final byte SOUTH = 1 << 2;
     public static final byte WEST = 1 << 3;
+
     public static final byte ALL = NORTH | EAST | SOUTH | WEST;
+    public static final byte HORIZONTAL = EAST | WEST;
+    public static final byte VERTICAL = NORTH | SOUTH;
 
     public static void cardinals(Consumer2<Integer, Integer> cons) {
         cons.apply(0, 1);
@@ -66,6 +69,6 @@ public class Direction {
     }
 
     public static byte relate(Tile from, Tile to) {
-        return relate(from.getGlobalX(), from.getGlobalY(), to.getGlobalX(), to.getGlobalY());
+        return relate(from.getX(), from.getY(), to.getX(), to.getY());
     }
 }

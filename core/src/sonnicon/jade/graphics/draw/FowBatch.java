@@ -7,15 +7,15 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
-public class DarknessBatch extends DrawBatch {
+public class FowBatch extends DrawBatch {
     private int indicesIndex = 0;
     protected short[] triangleArray;
 
-    public DarknessBatch() {
+    public FowBatch() {
         this(1000);
     }
 
-    public DarknessBatch(int size) {
+    public FowBatch(int size) {
         int numVertices = size * 3;
         if (numVertices > (1 << 16)) {
             throw new IndexOutOfBoundsException();
@@ -27,7 +27,7 @@ public class DarknessBatch extends DrawBatch {
         vArray = new float[numVertices * 2];
         triangleArray = new short[numVertices * 3];
 
-        shader = Shaders.darkness.getProgram();
+        shader = Shaders.fow.getProgram();
     }
 
     public void drawCShadowZero(float x1, float x2, float x5, float x6,
@@ -131,34 +131,38 @@ public class DarknessBatch extends DrawBatch {
         indicesIndex += 12;
     }
 
-    public void drawDShadowZero(float x2, float x3, float x4, float x5,
-                                float y2, float y3, float y4, float y5,
-                                boolean swap) {
-        // warning: changing things here will break the other drawDShadow functions
+    private int diagVIndex;
+    private boolean diagSwap;
+
+    public void drawDiag(float x0, float x2, float x5, float x6,
+                         float y0, float y2, float y5, float y6,
+                         boolean swap) {
         int s = swap ? 1 : 0;
         short vertdiv = (short) (vIndex / 2);
 
-        vArray[vIndex + s] = x2; // 0
-        vArray[vIndex - s + 1] = y2;
-        vArray[vIndex + s + 2] = x3; // 1
-        vArray[vIndex - s + 3] = y2;
-        vArray[vIndex + s + 4] = x4; // 2
-        vArray[vIndex - s + 5] = y4;
-        vArray[vIndex + s + 6] = x5; // 3
-        vArray[vIndex - s + 7] = y5;
-        vArray[vIndex + s + 8] = x2; // 4
-        vArray[vIndex - s + 9] = y3;
+        diagVIndex = vIndex;
+        diagSwap = swap;
 
-        // Left triangle
+        vArray[vIndex + s] = x2; // 0
+        vArray[vIndex - s + 1] = y0;
+        vArray[vIndex + s + 2] = x5; // 1
+        vArray[vIndex - s + 3] = y5;
+        vArray[vIndex + s + 4] = x2; // 2
+        vArray[vIndex - s + 5] = y2;
+        vArray[vIndex + s + 6] = x6; // 3
+        vArray[vIndex - s + 7] = y6;
+        vArray[vIndex + s + 8] = x0; // 4
+        vArray[vIndex - s + 9] = y2;
+
         triangleArray[indicesIndex] = vertdiv;
         triangleArray[indicesIndex + 1] = (short) (vertdiv + 1);
         triangleArray[indicesIndex + 2] = (short) (vertdiv + 2);
-        // Middle triangle
-        triangleArray[indicesIndex + 3] = vertdiv;
+
+        triangleArray[indicesIndex + 3] = (short) (vertdiv + 1);
         triangleArray[indicesIndex + 4] = (short) (vertdiv + 2);
         triangleArray[indicesIndex + 5] = (short) (vertdiv + 3);
-        // Right triangle
-        triangleArray[indicesIndex + 6] = vertdiv;
+
+        triangleArray[indicesIndex + 6] = (short) (vertdiv + 2);
         triangleArray[indicesIndex + 7] = (short) (vertdiv + 3);
         triangleArray[indicesIndex + 8] = (short) (vertdiv + 4);
 
@@ -166,31 +170,50 @@ public class DarknessBatch extends DrawBatch {
         indicesIndex += 9;
     }
 
-    public void drawDShadowOne(float x2, float x3, float x4, float x5,
-                               float y2, float y3, float y4, float y5,
-                               float f,
-                               boolean swap, boolean left) {
-        int s = swap ? 1 : 0;
-        int ovi = vIndex;
+    public void drawDiagLeftShallow(float x3, float y1) {
+        int s = diagSwap ? 1 : 0;
 
-        if (left) {
-            drawDShadowZero(x2, x2, x4, x5, y2, y3, y4, y5, swap);
-            vArray[ovi - s + 3] = f;
-        } else {
-            drawDShadowZero(x2, x3, x4, x5, y2, y2, y4, y5, swap);
-            vArray[ovi + s + 8] = f;
-        }
+        vArray[vIndex + s] = x3;
+        vArray[vIndex - s + 1] = y1;
+
+        vArray[diagVIndex - s + 1] = y1;
+
+        triangleArray[indicesIndex] = (short) (diagVIndex / 2);
+        triangleArray[indicesIndex + 1] = (short) (diagVIndex / 2 + 1);
+        triangleArray[indicesIndex + 2] = (short) (vIndex / 2);
+
+        vIndex += 2;
+        indicesIndex += 3;
     }
 
-    public void drawDShadowTwo(float x1, float x2, float x4, float x5,
-                               float y1, float y2, float y4, float y5,
-                               boolean swap) {
-        int s = swap ? 1 : 0;
-        int ovi = vIndex;
+    public void drawDiagLeftDeep(float x4) {
+        int s = diagSwap ? 1 : 0;
 
-        drawDShadowZero(x2, x2, x4, x5, y2, y2, y4, y5, swap);
-        vArray[ovi - s + 3] = y1;
-        vArray[ovi + s + 8] = x1;
+        vArray[diagVIndex + s] = x4; // 5
+        vArray[diagVIndex - s + 1] = vArray[diagVIndex - s + 5];
+    }
+
+    public void drawDiagRightShallow(float x1, float y3) {
+        int s = diagSwap ? 1 : 0;
+
+        vArray[vIndex + s] = x1;
+        vArray[vIndex - s + 1] = y3;
+
+        vArray[diagVIndex + s + 8] = x1;
+
+        triangleArray[indicesIndex] = (short) (diagVIndex / 2 + 3);
+        triangleArray[indicesIndex + 1] = (short) (diagVIndex / 2 + 4);
+        triangleArray[indicesIndex + 2] = (short) (vIndex / 2);
+
+        vIndex += 2;
+        indicesIndex += 3;
+    }
+
+    public void drawDiagRightDeep(float y4) {
+        int s = diagSwap ? 1 : 0;
+
+        vArray[diagVIndex + s + 8] = vArray[diagVIndex + s + 4];
+        vArray[diagVIndex - s + 9] = y4;
     }
 
     @Override

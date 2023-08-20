@@ -4,6 +4,7 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
 import sonnicon.jade.entity.components.PositionComponent;
 import sonnicon.jade.entity.components.graphical.ChunkDrawComponent;
+import sonnicon.jade.entity.components.graphical.FowDrawComponent;
 import sonnicon.jade.entity.components.graphical.WallDrawComponent;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
@@ -24,7 +25,8 @@ public class WorldPrinter {
         Entity wallEntity = new Entity();
         wallEntity.addComponents(
                 new PositionComponent(location),
-                new WallDrawComponent(wallTextures, Renderer.RenderLayer.terrain)
+                new WallDrawComponent(wallTextures, Renderer.RenderLayer.terrain),
+                new FowDrawComponent()
         ).addTrait(Traits.Trait.opaque);
         return wallEntity;
     }
