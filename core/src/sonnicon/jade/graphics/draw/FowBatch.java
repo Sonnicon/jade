@@ -7,25 +7,22 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
-public class FowBatch extends DrawBatch {
-    private int indicesIndex = 0;
-    protected short[] triangleArray;
+public class FowBatch extends CachedIndexedDrawBatch {
 
     public FowBatch() {
         this(1000);
     }
 
     public FowBatch(int size) {
+        super(size * 3, size * 3);
+
         int numVertices = size * 3;
         if (numVertices > (1 << 16)) {
             throw new IndexOutOfBoundsException();
         }
 
-        mesh = new Mesh(vertexDataType, false, numVertices, numVertices,
+        mesh = new Mesh(vertexDataType, true, numVertices, numVertices,
                 new VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE));
-
-        vArray = new float[numVertices * 2];
-        triangleArray = new short[numVertices * 3];
 
         shader = Shaders.fow.getProgram();
     }
@@ -45,15 +42,15 @@ public class FowBatch extends DrawBatch {
         vArray[vIndex + s + 6] = x5; // 3
         vArray[vIndex - s + 7] = y2;
 
-        triangleArray[indicesIndex] = vertdiv; // 0
-        triangleArray[indicesIndex + 1] = (short) (vertdiv + 1);
-        triangleArray[indicesIndex + 2] = (short) (vertdiv + 2);
-        triangleArray[indicesIndex + 3] = (short) (vertdiv + 1); // 1
-        triangleArray[indicesIndex + 4] = (short) (vertdiv + 2);
-        triangleArray[indicesIndex + 5] = (short) (vertdiv + 3);
+        iArray[iIndex] = vertdiv; // 0
+        iArray[iIndex + 1] = (short) (vertdiv + 1);
+        iArray[iIndex + 2] = (short) (vertdiv + 2);
+        iArray[iIndex + 3] = (short) (vertdiv + 1); // 1
+        iArray[iIndex + 4] = (short) (vertdiv + 2);
+        iArray[iIndex + 5] = (short) (vertdiv + 3);
 
         vIndex += 8;
-        indicesIndex += 6;
+        iIndex += 6;
     }
 
     // x1, xf: shadowed side
@@ -77,18 +74,18 @@ public class FowBatch extends DrawBatch {
         vArray[vIndex + s + 10] = xf; // 5
         vArray[vIndex - s + 11] = y3;
 
-        triangleArray[indicesIndex] = vertdiv; // 0
-        triangleArray[indicesIndex + 1] = (short) (vertdiv + 1);
-        triangleArray[indicesIndex + 2] = (short) (vertdiv + 5);
-        triangleArray[indicesIndex + 3] = (short) (vertdiv + 1); // 1
-        triangleArray[indicesIndex + 4] = (short) (vertdiv + 2);
-        triangleArray[indicesIndex + 5] = (short) (vertdiv + 3);
-        triangleArray[indicesIndex + 6] = (short) (vertdiv + 2); // 2
-        triangleArray[indicesIndex + 7] = (short) (vertdiv + 3);
-        triangleArray[indicesIndex + 8] = (short) (vertdiv + 4);
+        iArray[iIndex] = vertdiv; // 0
+        iArray[iIndex + 1] = (short) (vertdiv + 1);
+        iArray[iIndex + 2] = (short) (vertdiv + 5);
+        iArray[iIndex + 3] = (short) (vertdiv + 1); // 1
+        iArray[iIndex + 4] = (short) (vertdiv + 2);
+        iArray[iIndex + 5] = (short) (vertdiv + 3);
+        iArray[iIndex + 6] = (short) (vertdiv + 2); // 2
+        iArray[iIndex + 7] = (short) (vertdiv + 3);
+        iArray[iIndex + 8] = (short) (vertdiv + 4);
 
         vIndex += 12;
-        indicesIndex += 9;
+        iIndex += 9;
     }
 
     public void drawCShadowTwo(float x1, float x3, float x4, float x6,
@@ -114,21 +111,21 @@ public class FowBatch extends DrawBatch {
         vArray[vIndex + s + 14] = x4; // 7
         vArray[vIndex - s + 15] = y3;
 
-        triangleArray[indicesIndex] = vertdiv; // 0
-        triangleArray[indicesIndex + 1] = (short) (vertdiv + 1);
-        triangleArray[indicesIndex + 2] = (short) (vertdiv + 6);
-        triangleArray[indicesIndex + 3] = (short) (vertdiv + 1); // 1
-        triangleArray[indicesIndex + 4] = (short) (vertdiv + 2);
-        triangleArray[indicesIndex + 5] = (short) (vertdiv + 4);
-        triangleArray[indicesIndex + 6] = (short) (vertdiv + 2); // 2
-        triangleArray[indicesIndex + 7] = (short) (vertdiv + 4);
-        triangleArray[indicesIndex + 8] = (short) (vertdiv + 5);
-        triangleArray[indicesIndex + 9] = (short) (vertdiv + 2); // 3
-        triangleArray[indicesIndex + 10] = (short) (vertdiv + 3);
-        triangleArray[indicesIndex + 11] = (short) (vertdiv + 7);
+        iArray[iIndex] = vertdiv; // 0
+        iArray[iIndex + 1] = (short) (vertdiv + 1);
+        iArray[iIndex + 2] = (short) (vertdiv + 6);
+        iArray[iIndex + 3] = (short) (vertdiv + 1); // 1
+        iArray[iIndex + 4] = (short) (vertdiv + 2);
+        iArray[iIndex + 5] = (short) (vertdiv + 4);
+        iArray[iIndex + 6] = (short) (vertdiv + 2); // 2
+        iArray[iIndex + 7] = (short) (vertdiv + 4);
+        iArray[iIndex + 8] = (short) (vertdiv + 5);
+        iArray[iIndex + 9] = (short) (vertdiv + 2); // 3
+        iArray[iIndex + 10] = (short) (vertdiv + 3);
+        iArray[iIndex + 11] = (short) (vertdiv + 7);
 
         vIndex += 16;
-        indicesIndex += 12;
+        iIndex += 12;
     }
 
     private int diagVIndex;
@@ -154,20 +151,20 @@ public class FowBatch extends DrawBatch {
         vArray[vIndex + s + 8] = x0; // 4
         vArray[vIndex - s + 9] = y2;
 
-        triangleArray[indicesIndex] = vertdiv;
-        triangleArray[indicesIndex + 1] = (short) (vertdiv + 1);
-        triangleArray[indicesIndex + 2] = (short) (vertdiv + 2);
+        iArray[iIndex] = vertdiv;
+        iArray[iIndex + 1] = (short) (vertdiv + 1);
+        iArray[iIndex + 2] = (short) (vertdiv + 2);
 
-        triangleArray[indicesIndex + 3] = (short) (vertdiv + 1);
-        triangleArray[indicesIndex + 4] = (short) (vertdiv + 2);
-        triangleArray[indicesIndex + 5] = (short) (vertdiv + 3);
+        iArray[iIndex + 3] = (short) (vertdiv + 1);
+        iArray[iIndex + 4] = (short) (vertdiv + 2);
+        iArray[iIndex + 5] = (short) (vertdiv + 3);
 
-        triangleArray[indicesIndex + 6] = (short) (vertdiv + 2);
-        triangleArray[indicesIndex + 7] = (short) (vertdiv + 3);
-        triangleArray[indicesIndex + 8] = (short) (vertdiv + 4);
+        iArray[iIndex + 6] = (short) (vertdiv + 2);
+        iArray[iIndex + 7] = (short) (vertdiv + 3);
+        iArray[iIndex + 8] = (short) (vertdiv + 4);
 
         vIndex += 10;
-        indicesIndex += 9;
+        iIndex += 9;
     }
 
     public void drawDiagLeftShallow(float x3, float y1) {
@@ -178,12 +175,12 @@ public class FowBatch extends DrawBatch {
 
         vArray[diagVIndex - s + 1] = y1;
 
-        triangleArray[indicesIndex] = (short) (diagVIndex / 2);
-        triangleArray[indicesIndex + 1] = (short) (diagVIndex / 2 + 1);
-        triangleArray[indicesIndex + 2] = (short) (vIndex / 2);
+        iArray[iIndex] = (short) (diagVIndex / 2);
+        iArray[iIndex + 1] = (short) (diagVIndex / 2 + 1);
+        iArray[iIndex + 2] = (short) (vIndex / 2);
 
         vIndex += 2;
-        indicesIndex += 3;
+        iIndex += 3;
     }
 
     public void drawDiagLeftDeep(float x4) {
@@ -201,12 +198,12 @@ public class FowBatch extends DrawBatch {
 
         vArray[diagVIndex + s + 8] = x1;
 
-        triangleArray[indicesIndex] = (short) (diagVIndex / 2 + 3);
-        triangleArray[indicesIndex + 1] = (short) (diagVIndex / 2 + 4);
-        triangleArray[indicesIndex + 2] = (short) (vIndex / 2);
+        iArray[iIndex] = (short) (diagVIndex / 2 + 3);
+        iArray[iIndex + 1] = (short) (diagVIndex / 2 + 4);
+        iArray[iIndex + 2] = (short) (vIndex / 2);
 
         vIndex += 2;
-        indicesIndex += 3;
+        iIndex += 3;
     }
 
     public void drawDiagRightDeep(float y4) {
@@ -217,20 +214,8 @@ public class FowBatch extends DrawBatch {
     }
 
     @Override
-    public void flush() {
-        if (indicesIndex == 0) {
-            return;
-        }
-        super.flush();
-    }
-
-    @Override
     public void internalFlush() {
-        mesh.setIndices(triangleArray, 0, indicesIndex);
         Gdx.gl.glDisable(GL20.GL_BLEND);
-
-        mesh.render(shader, GL20.GL_TRIANGLES, 0, indicesIndex);
-
-        indicesIndex = 0;
+        mesh.render(shader, GL20.GL_TRIANGLES, 0, iIndex);
     }
 }

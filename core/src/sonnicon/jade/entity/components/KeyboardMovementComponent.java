@@ -10,6 +10,9 @@ import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.Content;
 import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.generated.EventTypes;
+import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.graphics.draw.CachedDrawBatch;
 import sonnicon.jade.graphics.particles.TextParticle;
 import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.util.Direction;
@@ -30,18 +33,27 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
 
     private static final Vector3 TEMP_VEC = new Vector3();
 
+    private static final EventTypes.EntityMoveEvent onMove = (i1, i2, i3) -> {
+        ((CachedDrawBatch) Renderer.Batch.dynamicTerrain.batch).invalidate();
+        ((CachedDrawBatch) Renderer.Batch.fow.batch).invalidate();
+    };
+
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
         Clock.register(this);
         positionComponent = entity.getComponent(PositionComponent.class);
         storageComponent = entity.getComponent(StorageComponent.class);
+
+        entity.events.register(onMove);
     }
 
     @Override
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
         Clock.unregister(this);
+
+        entity.events.unregister(onMove);
     }
 
     @Override

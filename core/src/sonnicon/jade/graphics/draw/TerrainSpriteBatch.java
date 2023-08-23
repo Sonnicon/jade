@@ -12,12 +12,13 @@ import sonnicon.jade.world.Tile;
 
 import java.nio.Buffer;
 
-public class TerrainSpriteBatch extends DrawBatch {
+public class TerrainSpriteBatch extends CachedDrawBatch implements IRegularDraw {
     public TerrainSpriteBatch() {
         this(10000);
     }
 
     public TerrainSpriteBatch(int size) {
+        super(size * 16);
         if (size * 4 > (1 << 16)) {
             throw new IndexOutOfBoundsException();
         }
@@ -38,8 +39,11 @@ public class TerrainSpriteBatch extends DrawBatch {
             indices[i + 5] = (short) j;
         }
         mesh.setIndices(indices);
+    }
 
-        vArray = new float[size * 16];
+    @Override
+    public void draw(TextureRegion region, float x, float y) {
+        draw(region, x, y, region.getRegionWidth(), region.getRegionHeight());
     }
 
     public void draw(TextureRegion region, float x, float y, float width, float height) {

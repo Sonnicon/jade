@@ -7,7 +7,7 @@ import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
-import sonnicon.jade.graphics.draw.TerrainSpriteBatch;
+import sonnicon.jade.graphics.draw.IRegularDraw;
 import sonnicon.jade.util.IComparable;
 
 import java.util.Collections;
@@ -50,8 +50,8 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
     @Override
     public void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
         if (positionComponent != null && positionComponent.tile != null) {
-            TerrainSpriteBatch terrainSpriteBatch = (TerrainSpriteBatch) batch;
-            terrainSpriteBatch.draw(textures.getDrawable().getRegion(), positionComponent.tile.getDrawX(), positionComponent.tile.getDrawY(), width, height);
+            IRegularDraw b = (IRegularDraw) batch;
+            b.draw(textures.getDrawable().getRegion(), positionComponent.tile.getDrawX(), positionComponent.tile.getDrawY(), width, height);
         }
     }
 

@@ -7,6 +7,7 @@ import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.graphics.draw.CachedDrawBatch;
 import sonnicon.jade.graphics.draw.FowBatch;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.util.Direction;
@@ -65,6 +66,8 @@ public class FowDrawComponent extends Component implements IRenderable {
                 if (dest != null) {
                     comp.addNearbyFows();
                 }
+
+                ((CachedDrawBatch) Renderer.Batch.fow.batch).invalidate();
             };
 
     public FowDrawComponent() {

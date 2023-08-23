@@ -10,6 +10,7 @@ import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.graphics.Textures;
+import sonnicon.jade.graphics.draw.CachedDrawBatch;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.graphics.draw.TerrainSpriteBatch;
 import sonnicon.jade.util.Direction;
@@ -29,6 +30,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
         if (dest != null) {
             wdc.addNearbyWalls(dest);
         }
+        ((CachedDrawBatch) Renderer.Batch.dynamicTerrain.batch).invalidate();
     };
 
     public WallDrawComponent() {
@@ -44,21 +46,14 @@ public class WallDrawComponent extends ChunkDrawComponent {
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
         entity.events.register(moveEvent);
-        Tile tile = entity.getComponent(PositionComponent.class).tile;
-        if (tile != null) {
-            addNearbyWalls(tile);
-        }
+        moveEvent.apply(entity, null, entity.getComponent(PositionComponent.class).tile);
     }
 
     @Override
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
         entity.events.unregister(moveEvent);
-
-        Tile tile = entity.getComponent(PositionComponent.class).tile;
-        if (tile != null) {
-            removeNearbyWalls(tile);
-        }
+        moveEvent.apply(entity, entity.getComponent(PositionComponent.class).tile, null);
     }
 
     @Override

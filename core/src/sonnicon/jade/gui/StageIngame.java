@@ -41,7 +41,7 @@ public class StageIngame extends GuiStage {
     protected LinkedList<Table> toolbarEntries;
 
     public StageIngame() {
-        super(new ScreenViewport(), (SpriteBatch) Jade.renderer.guiBatch);
+        super(new ScreenViewport(), (SpriteBatch) Renderer.Batch.gui.batch);
         ((InputMultiplexer) Gamestate.State.ingame.inputProcessor).addProcessor(0, this);
 
         panelInventory = new InventoryPanel();
@@ -153,13 +153,4 @@ public class StageIngame extends GuiStage {
         super.resize(width, height);
         panelInventory.resize();
     }
-
-    /*public void setControlledEntity(Entity entity) {
-        this.controlledEntity = entity;
-        recreate();
-    }
-
-    public Entity getControlledEntity() {
-        return this.controlledEntity;
-    }*/
 }

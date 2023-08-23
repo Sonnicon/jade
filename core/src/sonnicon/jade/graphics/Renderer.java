@@ -2,22 +2,18 @@ package sonnicon.jade.graphics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import sonnicon.jade.game.Gamestate;
-import sonnicon.jade.graphics.draw.FowBatch;
-import sonnicon.jade.graphics.draw.GraphicsBatch;
-import sonnicon.jade.graphics.draw.SpriteBatch;
-import sonnicon.jade.graphics.draw.TerrainSpriteBatch;
+import sonnicon.jade.graphics.draw.*;
 import sonnicon.jade.graphics.particles.ParticleEngine;
 import sonnicon.jade.gui.Gui;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public class Renderer {
-    public GraphicsBatch worldBatch, guiBatch, darknessBatch;
     public Viewport viewport;
     public OrthographicCamera camera;
     public ParticleEngine particles;
@@ -36,56 +32,66 @@ public class Renderer {
         subRenderer = new SubRenderer();
         renderFullList = new LinkedList<>();
 
-        worldBatch = new TerrainSpriteBatch();
-        guiBatch = new SpriteBatch();
-        darknessBatch = new FowBatch();
+        Batch.terrain.batch = new TerrainSpriteBatch();
+        Batch.dynamicTerrain.batch = new TerrainSpriteBatch();
+        Batch.world.batch = new SpriteBatch();
+        Batch.gui.batch = new SpriteBatch();
+        Batch.fow.batch = new FowBatch();
 
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
     }
 
     public void render(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 
         if (Gamestate.getState() == Gamestate.State.menu) {
             Gui.render(delta);
             return;
         }
 
-        GraphicsBatch batch = worldBatch;
-        batch.begin();
+        GraphicsBatch batch = null;
+        for (RenderLayer layer : RenderLayer.all) {
+            if (layer.batchType != null) {
+                if (batch != null) {
 
-        // We use our own algorithm, to inject all the renderFullList entries
-        RenderLayer layer = Renderer.RenderLayer.all()[0];
-        int index = 0, layerIndex = 0;
-        for (IRenderable renderable : subRenderer.renderList) {
-            while (index > subRenderer.renderLayers[layerIndex] ||
-                    (layerIndex < subRenderer.renderLayers.length - 1 &&
-                            subRenderer.renderLayers[layerIndex] == subRenderer.renderLayers[layerIndex + 1])) {
-                for (IRenderable fullRenderable : renderFullList) {
-                    if (fullRenderable.culled(layer)) continue;
-                    fullRenderable.render(batch, delta, layer);
+                    if (batch instanceof CachedDrawBatch && (!((CachedDrawBatch) batch).invalidated)) {
+                        batch.flush();
+                    } else {
+                        batch.end();
+                    }
                 }
-
-                if (layerIndex + 1 >= subRenderer.renderLayers.length) {
-                    break;
+                batch = layer.batchType.batch;
+                if (batch instanceof CachedDrawBatch && (!((CachedDrawBatch) batch).invalidated)) {
+                    continue;
                 }
-                layerIndex++;
-                layer = RenderLayer.all()[layerIndex];
-                //todo
-                if (layer == RenderLayer.fow || layer == RenderLayer.overlay) {
-                    batch.end();
-                    batch = (layer == RenderLayer.fow) ? darknessBatch : guiBatch;
-                    batch.begin();
-                }
+                batch.begin();
             }
 
-            if (renderable.culled(layer)) continue;
-            renderable.render(batch, delta, layer);
-            index++;
+            if (batch == null) {
+                throw new EnumConstantNotPresentException(RenderLayer.class, layer.name() + ".batchType.batch");
+            }
+
+            if (batch instanceof CachedDrawBatch && !((CachedDrawBatch) batch).invalidated) {
+                continue;
+            }
+
+            subRenderer.renderRenderables(batch, delta, layer);
+
+            for (IRenderable r : renderFullList) {
+                if (!r.culled(layer)) {
+                    r.render(batch, delta, layer);
+                }
+            }
         }
 
-        batch.end();
+        if (batch != null) {
+            if (batch instanceof CachedDrawBatch && (!((CachedDrawBatch) batch).invalidated)) {
+                batch.flush();
+            } else {
+                batch.end();
+            }
+        }
 
         //todo move this
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
@@ -112,8 +118,10 @@ public class Renderer {
     public void updateCamera() {
         camera.zoom = viewportScale;
         viewport.apply();
-        worldBatch.setProjectionMatrix(camera.combined);
-        darknessBatch.setProjectionMatrix(camera.combined);
+
+        for (Batch batch : Batch.allFollowing) {
+            batch.batch.setProjectionMatrix(camera.combined);
+        }
 
         cameraEdgeLeft = camera.position.x - camera.viewportWidth / 2;
         cameraEdgeRight = camera.position.x + camera.viewportWidth / 2;
@@ -149,18 +157,58 @@ public class Renderer {
         return renderFullList.remove(renderable) || subRenderer.removeRenderable(renderable);
     }
 
-    public enum RenderLayer {
-        bottom,
-        floor,
+    public enum Batch {
         terrain,
-        characters,
+        dynamicTerrain,
+        world,
+        gui(false),
+        fow;
+
+        public GraphicsBatch batch;
+        public final boolean followCamera;
+
+        Batch() {
+            this(true);
+        }
+
+        Batch(boolean followCamera) {
+            this.followCamera = followCamera;
+        }
+
+
+        public static final Batch[] all = values();
+        public static final Batch[] allFollowing = Arrays.stream(values()).filter(b -> b.followCamera).toArray(Batch[]::new);
+    }
+
+    public enum RenderLayer {
+        bottom(Batch.terrain),
+        floor,
+        terrain(Batch.dynamicTerrain),
+        characters(Batch.world),
         particles,
-        fow,
-        overlay,
+        fow(Batch.fow),
+        overlay(Batch.gui),
         gui,
         top;
 
+        public final Batch batchType;
+
         private static final RenderLayer[] all = values();
+
+        RenderLayer() {
+            this.batchType = null;
+        }
+
+        RenderLayer(Batch batchType) {
+            this.batchType = batchType;
+        }
+
+        RenderLayer next() {
+            if (ordinal() == all().length - 1) {
+                return null;
+            }
+            return all()[ordinal() + 1];
+        }
 
         static RenderLayer[] all() {
             return all;
