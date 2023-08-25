@@ -38,13 +38,6 @@ public class Tile {
         this.entities = new HashSet<>();
         this.traits = new Traits();
         this.events = new Events();
-
-        //todo move this
-        //if (Math.random() < .9f) {
-        WorldPrinter.printFloorEntity(this);
-        //} else {
-        //    WorldPrinter.printWallEntity(this);
-        //}
     }
 
     public int getX() {

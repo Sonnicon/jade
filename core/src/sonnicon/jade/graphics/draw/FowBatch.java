@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 public class FowBatch extends CachedIndexedDrawBatch {
 
     public FowBatch() {
-        this(1000);
+        this(4000);
     }
 
     public FowBatch(int size) {

@@ -3,6 +3,7 @@ package sonnicon.jade.world;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.SubRenderer;
+import sonnicon.jade.graphics.draw.CachedDrawBatch;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.util.Direction;
 
@@ -15,6 +16,7 @@ public class Chunk implements IRenderable {
     private final Tile[] tiles = new Tile[CHUNK_SIZE * CHUNK_SIZE];
     private final Chunk[] nearbyChunks = new Chunk[4];
     private final SubRenderer subRenderer;
+    private boolean culled = true;
 
     public static final short CHUNK_SIZE = 16;
     public static final float CHUNK_TILE_SIZE = CHUNK_SIZE * Tile.TILE_SIZE;
@@ -75,11 +77,24 @@ public class Chunk implements IRenderable {
 
     @Override
     public boolean culled(Renderer.RenderLayer layer) {
+        return culled;
+    }
+
+    public void updateCulled() {
         float drawX = x * CHUNK_TILE_SIZE;
         float drawY = y * CHUNK_TILE_SIZE;
-        return drawX > renderer.getCameraEdgeRight() ||
+        boolean newValue = drawX > renderer.getCameraEdgeRight() ||
                 (drawX + CHUNK_TILE_SIZE) < renderer.getCameraEdgeLeft() ||
                 drawY > renderer.getCameraEdgeBottom() ||
                 (drawY + CHUNK_TILE_SIZE) < renderer.getCameraEdgeTop();
+
+        if (newValue != culled) {
+            culled = newValue;
+            for (Renderer.Batch b : Renderer.Batch.allFollowing) {
+                if (b.batch instanceof CachedDrawBatch) {
+                    ((CachedDrawBatch) b.batch).invalidate();
+                }
+            }
+        }
     }
 }

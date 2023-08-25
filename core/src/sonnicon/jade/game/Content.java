@@ -3,9 +3,12 @@ package sonnicon.jade.game;
 import sonnicon.jade.Jade;
 import sonnicon.jade.content.CharacterPrinter;
 import sonnicon.jade.content.ItemPrinter;
+import sonnicon.jade.content.WorldPrinter;
+import sonnicon.jade.entity.components.graphical.WallDrawComponent;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.particles.ParticleEngine;
 import sonnicon.jade.world.Chunk;
+import sonnicon.jade.world.Tile;
 import sonnicon.jade.world.World;
 
 public class Content {
@@ -26,10 +29,62 @@ public class Content {
         Jade.renderer.particles = new ParticleEngine(Jade.renderer);
 
         world = new World();
-        for (int i = 0; i < 16; i++) {
-            new Chunk((short) (i / 4), (short) (i % 4), world);
+        for (int i = 0; i < 4; i++) {
+            Chunk c = new Chunk((short) (i / 2), (short) (i % 2), world);
+            for (int j = 0; j < 16 * 16; j++) {
+                WorldPrinter.printFloorEntity(c.getTile((short) (j / 16), (short) (j % 16)));
+            }
         }
-        CharacterPrinter.printCharacterPlayer(world.chunks.get(0).getTile((short) 0, (short) 0));
+        CharacterPrinter.printCharacterPlayer(world.chunks.get(0).getTile((short) 4, (short) 4));
+
+        for (short i = 0; i < 32 * 4; i++) {
+            if (i % 5 == 0) continue;
+            short c = 0;
+            switch (i / 32) {
+                case 0:
+                    c = 0;
+                    break;
+                case 1:
+                    c = 7;
+                    break;
+                case 2:
+                    c = 15;
+                    break;
+                case 3:
+                    c = 31;
+                    break;
+            }
+            final short r = (short) (i % 32);
+
+            WorldPrinter.printWallEntity(world.getTile(c, r));
+        }
+
+        for (short i = 0; i < 32 * 4; i++) {
+            if (i % 5 == 0) continue;
+            short c = 0;
+            switch (i / 32) {
+                case 0:
+                    c = 0;
+                    break;
+                case 1:
+                    c = 7;
+                    break;
+                case 2:
+                    c = 15;
+                    break;
+                case 3:
+                    c = 31;
+                    break;
+            }
+            final short r = (short) (i % 32);
+
+            Tile t = world.getTile(r, c);
+            if (t.entities.stream().anyMatch(e -> e.hasComponent(WallDrawComponent.class))) {
+                continue;
+            }
+            WorldPrinter.printWallEntity(t);
+        }
+
         ItemPrinter.printItemDebug(world.chunks.get(0).getTile((short) 5, (short) 6));
         ItemPrinter.printItemDebug(world.chunks.get(0).getTile((short) 10, (short) 8));
     }

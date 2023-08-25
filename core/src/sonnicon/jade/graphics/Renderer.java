@@ -5,10 +5,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import sonnicon.jade.game.Content;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.graphics.draw.*;
 import sonnicon.jade.graphics.particles.ParticleEngine;
 import sonnicon.jade.gui.Gui;
+import sonnicon.jade.world.Chunk;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -27,6 +29,8 @@ public class Renderer {
 
     private final LinkedList<IRenderable> renderFullList;
     private final SubRenderer subRenderer;
+
+    private boolean cameraMoved = true;
 
     public Renderer() {
         subRenderer = new SubRenderer();
@@ -93,20 +97,27 @@ public class Renderer {
             }
         }
 
+        boolean cameraMoved = false;
         //todo move this
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             camera.translate(-3, 0, 0);
+            cameraMoved = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             camera.translate(3, 0, 0);
+            cameraMoved = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             camera.translate(0, -3, 0);
+            cameraMoved = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             camera.translate(0, 3, 0);
+            cameraMoved = true;
         }
-        updateCamera();
+        if (cameraMoved) {
+            updateCamera();
+        }
     }
 
     public void resize(int width, int height) {
@@ -127,6 +138,10 @@ public class Renderer {
         cameraEdgeRight = camera.position.x + camera.viewportWidth / 2;
         cameraEdgeTop = camera.position.y - camera.viewportHeight / 2;
         cameraEdgeBottom = camera.position.y + camera.viewportHeight / 2;
+
+        if (Content.world != null) {
+            Content.world.chunks.values().forEach(Chunk::updateCulled);
+        }
     }
 
     public float getCameraEdgeLeft() {

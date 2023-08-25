@@ -72,6 +72,7 @@ public class Input implements InputProcessor {
                     (screenY - lastScreenY) * Jade.renderer.viewportScale);
             lastScreenX = screenX;
             lastScreenY = screenY;
+            Jade.renderer.updateCamera();
             return true;
         }
 
