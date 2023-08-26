@@ -17,7 +17,7 @@ import sonnicon.jade.graphics.particles.TextParticle;
 import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.util.Direction;
 import sonnicon.jade.util.IComparable;
-import sonnicon.jade.util.Sets;
+import sonnicon.jade.util.Structs;
 import sonnicon.jade.world.Tile;
 
 import java.util.HashSet;
@@ -58,7 +58,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
 
     @Override
     public HashSet<Class<? extends Component>> getDependencies() {
-        return Sets.from(PositionComponent.class, StorageComponent.class);
+        return Structs.setFrom(PositionComponent.class, StorageComponent.class);
     }
 
     @Override

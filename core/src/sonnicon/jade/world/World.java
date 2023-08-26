@@ -3,10 +3,13 @@ package sonnicon.jade.world;
 import com.badlogic.gdx.math.Vector3;
 import sonnicon.jade.Jade;
 import sonnicon.jade.input.WorldInput;
+import sonnicon.jade.util.IDebuggable;
+import sonnicon.jade.util.Structs;
 
 import java.util.HashMap;
+import java.util.Map;
 
-public class World {
+public class World implements IDebuggable {
     public final HashMap<Integer, Chunk> chunks = new HashMap<>();
 
     private static final Vector3 TEMP_VEC = new Vector3();
@@ -37,5 +40,10 @@ public class World {
             return null;
         }
         return chunk.getTile((short) (x % Chunk.CHUNK_SIZE), (short) (y % Chunk.CHUNK_SIZE));
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Structs.mapFrom("chunks", chunks);
     }
 }

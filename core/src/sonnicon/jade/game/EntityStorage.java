@@ -3,13 +3,12 @@ package sonnicon.jade.game;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.storage.EntitySizeComponent;
 import sonnicon.jade.entity.components.storage.StorageComponent;
-import sonnicon.jade.util.DoubleLinkedList;
-import sonnicon.jade.util.IComparable;
-import sonnicon.jade.util.ICopyable;
+import sonnicon.jade.util.*;
 
 import java.util.Iterator;
+import java.util.Map;
 
-public class EntityStorage implements ICopyable, IComparable {
+public class EntityStorage implements ICopyable, IComparable, IDebuggable {
     public final DoubleLinkedList<EntityStorageSlot> slots = new DoubleLinkedList<>();
     private int capacityUsed = 0;
 
@@ -184,5 +183,10 @@ public class EntityStorage implements ICopyable, IComparable {
             }
         }
         return true;
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Structs.mapFrom("slots", slots, "capacityUsed", capacityUsed, "capacity", capacity, "minSize", minimumSize, "maxSize", maximumSize);
     }
 }

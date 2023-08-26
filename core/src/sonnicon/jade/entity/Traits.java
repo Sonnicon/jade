@@ -1,8 +1,11 @@
 package sonnicon.jade.entity;
 
-import java.util.HashMap;
+import sonnicon.jade.util.IDebuggable;
 
-public class Traits {
+import java.util.HashMap;
+import java.util.Map;
+
+public class Traits implements IDebuggable {
     private HashMap<Trait, Integer> traits;
 
     public void addTrait(Trait trait) {
@@ -35,8 +38,13 @@ public class Traits {
         traits.forEach((Trait t, Integer c) -> other.traits.replace(t, c));
     }
 
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return IDebuggable.debugProperties(traits);
+    }
+
+
     public enum Trait {
         opaque
     }
-
 }

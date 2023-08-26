@@ -1,15 +1,13 @@
 package sonnicon.jade.world;
 
-import sonnicon.jade.content.WorldPrinter;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
-import sonnicon.jade.util.Consumer2;
-import sonnicon.jade.util.Direction;
-import sonnicon.jade.util.Events;
+import sonnicon.jade.util.*;
 
 import java.util.HashSet;
+import java.util.Map;
 
-public class Tile {
+public class Tile implements IDebuggable {
     private final short x, y;
     public final Chunk chunk;
     public final HashSet<Entity> entities;
@@ -142,5 +140,10 @@ public class Tile {
                 cons.apply(other, dir);
             }
         });
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Structs.mapFrom("x", x, "y", y, "chunk", chunk, "entities", entities, "traits", traits);
     }
 }

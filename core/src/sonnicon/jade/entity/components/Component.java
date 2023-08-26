@@ -3,10 +3,13 @@ package sonnicon.jade.entity.components;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.ICopyable;
+import sonnicon.jade.util.IDebuggable;
+import sonnicon.jade.util.Structs;
 
 import java.util.HashSet;
+import java.util.Map;
 
-public abstract class Component implements ICopyable, IComparable {
+public abstract class Component implements ICopyable, IComparable, IDebuggable {
     protected Entity entity;
 
     public boolean canAddToEntity(Entity entity) {
@@ -48,5 +51,10 @@ public abstract class Component implements ICopyable, IComparable {
         } catch (InstantiationException | IllegalAccessException ex) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Structs.mapFrom("entity", entity);
     }
 }

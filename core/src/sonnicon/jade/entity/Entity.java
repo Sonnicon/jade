@@ -3,15 +3,13 @@ package sonnicon.jade.entity;
 import sonnicon.jade.EventGenerator;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.generated.EventTypes;
-import sonnicon.jade.util.Events;
-import sonnicon.jade.util.IComparable;
-import sonnicon.jade.util.ICopyable;
+import sonnicon.jade.util.*;
 
 import java.util.*;
 
 @EventGenerator(id = "EntityComponentAdd", param = {Entity.class, Component.class}, label = {"entity", "component"})
 @EventGenerator(id = "EntityTraitAdd", param = {Entity.class, Traits.Trait.class}, label = {"entity", "trait"})
-public class Entity implements ICopyable, IComparable {
+public class Entity implements ICopyable, IComparable, IDebuggable {
     public HashMap<Class<? extends Component>, Component> components;
     public Traits traits;
     public final int id;
@@ -82,6 +80,14 @@ public class Entity implements ICopyable, IComparable {
         return components.containsKey(type);
     }
 
+    public boolean hasComponentFuzzy(Class<? extends Component> type) {
+        if (hasComponent(type)) {
+            return true;
+        } else {
+            return components.entrySet().stream().anyMatch(entry -> type.isAssignableFrom(entry.getKey()));
+        }
+    }
+
     @Override
     public Entity copy() {
         Entity newEntity = new Entity();
@@ -150,5 +156,10 @@ public class Entity implements ICopyable, IComparable {
             }
         }
         return true;
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Structs.mapFrom("components", components, "traits", traits, "id", id);
     }
 }

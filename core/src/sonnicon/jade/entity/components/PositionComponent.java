@@ -4,7 +4,10 @@ import sonnicon.jade.EventGenerator;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.IComparable;
+import sonnicon.jade.util.Structs;
 import sonnicon.jade.world.Tile;
+
+import java.util.Map;
 
 @EventGenerator(id = "EntityMove", param = {Entity.class, Tile.class, Tile.class}, label = {"entity", "source", "destination"})
 public class PositionComponent extends Component {
@@ -70,5 +73,10 @@ public class PositionComponent extends Component {
             EventTypes.EntityMoveEvent.handle(destination.events, entity, source, destination);
         }
         EventTypes.EntityMoveEvent.handle(entity.events, entity, source, destination);
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Structs.mapExtendFrom(super.debugProperties(), "tile", tile);
     }
 }

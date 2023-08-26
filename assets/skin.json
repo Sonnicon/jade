@@ -137,5 +137,10 @@
       up: button-inventory-2-9p
       imageUp: icon-cross
     }
+
+    imagebutton-inventorycontent-back: {
+      up: button-inventory-2-9p
+      imageUp: icon-arrow-right
+    }
   }
 }

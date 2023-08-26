@@ -20,6 +20,7 @@ import sonnicon.jade.graphics.draw.SpriteBatch;
 import sonnicon.jade.graphics.particles.TextParticle;
 import sonnicon.jade.gui.actors.InventoryHandButton;
 import sonnicon.jade.gui.actors.TapButton;
+import sonnicon.jade.gui.panels.DebugPanel;
 import sonnicon.jade.gui.panels.InventoryDetailsPanel;
 import sonnicon.jade.gui.panels.InventoryPanel;
 import sonnicon.jade.gui.popups.InventoryMovePopup;
@@ -31,6 +32,7 @@ public class StageIngame extends GuiStage {
     protected Table tableMain;
     public InventoryPanel panelInventory;
     public InventoryDetailsPanel panelInventoryDetails;
+    public DebugPanel panelDebug;
 
     public InventoryMovePopup popupInventoryMove;
 
@@ -47,6 +49,7 @@ public class StageIngame extends GuiStage {
         panelInventory = new InventoryPanel();
         panelInventoryDetails = new InventoryDetailsPanel();
         popupInventoryMove = new InventoryMovePopup();
+        panelDebug = new DebugPanel();
     }
 
     @Override

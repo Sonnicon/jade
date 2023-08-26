@@ -11,7 +11,7 @@ import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.world.Tile;
 
 public class WorldPrinter {
-    private static WallDrawComponent.WallTextureSet wallTextures = new WallDrawComponent.WallTextureSet("wall", 1);
+    private static final WallDrawComponent.WallTextureSet wallTextures = new WallDrawComponent.WallTextureSet("wall", 1);
 
     public static Entity printFloorEntity(Tile location) {
         Entity floorEntity = new Entity();

@@ -5,6 +5,8 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.PositionComponent;
 import sonnicon.jade.entity.components.graphical.WallDrawComponent;
 import sonnicon.jade.game.Content;
+import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.world.Tile;
 
 import java.util.Optional;
@@ -21,6 +23,8 @@ public class WorldInput extends InputInterpreter {
 
         if (tile == null) {
             return false;
+        } else if (button == com.badlogic.gdx.Input.Buttons.MIDDLE) {
+            ((StageIngame) Gamestate.State.ingame.getStage()).panelDebug.show(tile);
         } else {
             Optional<Entity> e = tile.entities.stream().filter(f -> f.hasComponent(WallDrawComponent.class)).findAny();
             if (e.isPresent()) {
@@ -29,7 +33,7 @@ public class WorldInput extends InputInterpreter {
                 WorldPrinter.printWallEntity(tile);
             }
             //ItemPrinter.printItemDebug(tile);
-            return true;
         }
+        return true;
     }
 }

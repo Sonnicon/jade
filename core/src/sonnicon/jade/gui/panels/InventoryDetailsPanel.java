@@ -47,7 +47,6 @@ public class InventoryDetailsPanel extends Panel {
                 hide();
             }
         });
-        tableTitle.add(buttonClose);
 
         add(buttonClose).top().right().row();
 

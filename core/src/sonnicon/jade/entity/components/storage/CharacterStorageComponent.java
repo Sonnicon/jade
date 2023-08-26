@@ -11,9 +11,11 @@ import sonnicon.jade.game.Gamestate.State;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.util.IComparable;
+import sonnicon.jade.util.Structs;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 public class CharacterStorageComponent extends StorageComponent {
     public final ArrayList<EntityStorageSlot> hands = new ArrayList<>();
@@ -102,5 +104,10 @@ public class CharacterStorageComponent extends StorageComponent {
         return super.compare(other) &&
                 (other instanceof CharacterStorageComponent &&
                         ((CharacterStorageComponent) other).hands.size() == hands.size());
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Structs.mapExtendFrom(super.debugProperties(), "hands", hands);
     }
 }

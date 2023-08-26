@@ -10,13 +10,15 @@ import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.actors.InventorySlotButton;
 import sonnicon.jade.util.*;
 
+import java.util.Map;
+
 @EventGenerator(id = "StorageSlotSet", param = {EntityStorageSlot.class}, label = {"slot"})
 @EventGenerator(id = "StorageSlotAdd", param = {EntityStorageSlot.class, Integer.class}, label = {"slot", "amount"})
 @EventGenerator(id = "StorageSlotRemove", param = {EntityStorageSlot.class, Integer.class}, label = {"slot", "amount"})
 @EventGenerator(id = "StorageSlotClear", param = {EntityStorageSlot.class}, label = {"slot"})
 @EventGenerator(id = "StorageSlotAttach", param = {EntityStorageSlot.class}, label = {"slot"})
 @EventGenerator(id = "StorageSlotDetach", param = {EntityStorageSlot.class}, label = {"slot"})
-public class EntityStorageSlot implements ICopyable, IComparable {
+public class EntityStorageSlot implements ICopyable, IComparable, IDebuggable {
     // General data
     private Entity entity;
     private int amount;
@@ -247,6 +249,11 @@ public class EntityStorageSlot implements ICopyable, IComparable {
         }
         EntityStorageSlot other = (EntityStorageSlot) o;
         return this == other || amount == other.amount && (entity == other.entity || entity != null && entity.compare(other.entity));
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Structs.mapFrom("entity", entity, "amount", amount, "minSize", minimumSize, "maxSize", maximumSize, "maxAmount", maximumAmount, "restricted", restriction != null);
     }
 
     public enum InventoryMove {

@@ -30,8 +30,6 @@ public class Renderer {
     private final LinkedList<IRenderable> renderFullList;
     private final SubRenderer subRenderer;
 
-    private boolean cameraMoved = true;
-
     public Renderer() {
         subRenderer = new SubRenderer();
         renderFullList = new LinkedList<>();
@@ -47,10 +45,8 @@ public class Renderer {
     }
 
     public void render(float delta) {
-
-
+        Gui.render(delta);
         if (Gamestate.getState() == Gamestate.State.menu) {
-            Gui.render(delta);
             return;
         }
 
