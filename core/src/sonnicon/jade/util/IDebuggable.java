@@ -1,5 +1,6 @@
 package sonnicon.jade.util;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -34,9 +35,9 @@ public interface IDebuggable {
             for (int i = 0; iter.hasNext(); i++) {
                 result.put(String.valueOf(i), iter.next());
             }
-        } else if (target instanceof Object[]) {
-            for (int i = 0; i < ((Object[]) target).length; i++) {
-                result.put(String.valueOf(i), ((Object[]) target)[i]);
+        } else if (target.getClass().isArray()) {
+            for (int i = 0; i < Array.getLength(target); i++) {
+                result.put(String.valueOf(i), Array.get(target, i));
             }
         }
 

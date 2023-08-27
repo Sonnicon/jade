@@ -12,11 +12,13 @@ import sonnicon.jade.graphics.draw.FowBatch;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.util.Direction;
 import sonnicon.jade.util.IComparable;
+import sonnicon.jade.util.Structs;
 import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.Tile;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 
 //todo stop using == for float comparison
 //todo optimise the conditions
@@ -89,6 +91,7 @@ public class FowDrawComponent extends Component implements IRenderable {
                 directionCounts[dirIndex] = (short) (comp.directionCounts[dirIndex] + 1);
                 directionEdges |= comp.directionEdges & (1 << dirIndex);
                 NEARBY_FOWS[dirIndex] = comp;
+                endFows[dirIndex] = comp.endFows[dirIndex];
             }
         }
         for (byte dirIndex = 0; dirIndex < 4; dirIndex++) {
@@ -103,7 +106,7 @@ public class FowDrawComponent extends Component implements IRenderable {
                 backComp = this;
             }
 
-            endFows[dirIndex] = otherComp.propagateNearbyFows(dirIndex, dirBackIndex,
+            otherComp.propagateNearbyFows(dirIndex, dirBackIndex,
                     (short) (directionCounts[dirBackIndex] + 1),
                     (directionEdges & (1 << dirBackIndex)) > 0,
                     backComp);
@@ -131,7 +134,7 @@ public class FowDrawComponent extends Component implements IRenderable {
         }
         directionCounts[dirBackIndex] += dcount;
         directionEdges = (byte) ((edge ? (1 << dirBackIndex) : 0) | (((1 << dirBackIndex) ^ Direction.ALL) & directionEdges));
-        endFows[dirBackIndex] = source;
+        endFows[dirBackIndex] = source.endFows[dirBackIndex];
 
         if (directionCounts[dirIndex] > 0) {
             FowDrawComponent comp = getFowInDirection(positionComponent.tile, dirIndex);
@@ -457,5 +460,10 @@ public class FowDrawComponent extends Component implements IRenderable {
     @Override
     public FowDrawComponent copy() {
         return (FowDrawComponent) super.copy();
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Structs.mapExtendFrom(super.debugProperties(), "directionCounts", directionCounts, "directionEdges", directionEdges, "endFows", endFows);
     }
 }
