@@ -11,13 +11,14 @@ import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.world.Tile;
 
 public class WorldPrinter {
-    private static final WallDrawComponent.WallTextureSet wallTextures = new WallDrawComponent.WallTextureSet("wall", 1);
+    private static final TextureSet wallTextures = new TextureSet("wall1");
+    private static final TextureSet floorTextures = new TextureSet("floor1");
 
     public static Entity printFloorEntity(Tile location) {
         Entity floorEntity = new Entity();
         floorEntity.addComponents(
                 new PositionComponent(location),
-                new ChunkDrawComponent(new TextureSet("floor1"), Tile.TILE_SIZE, Tile.TILE_SIZE, Renderer.RenderLayer.floor));
+                new ChunkDrawComponent(floorTextures, Tile.TILE_SIZE, Tile.TILE_SIZE, Renderer.RenderLayer.floor));
         return floorEntity;
     }
 
@@ -25,7 +26,7 @@ public class WorldPrinter {
         Entity wallEntity = new Entity();
         wallEntity.addComponents(
                 new PositionComponent(location),
-                new WallDrawComponent(wallTextures, Renderer.RenderLayer.terrain),
+                new WallDrawComponent(wallTextures),
                 new FowDrawComponent()
         ).addTrait(Traits.Trait.opaque);
         return wallEntity;

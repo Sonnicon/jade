@@ -130,10 +130,12 @@ public class FowDrawComponent extends Component implements IRenderable {
     private FowDrawComponent propagateNearbyFows(byte dirIndex, byte dirBackIndex, short dcount, boolean edge, FowDrawComponent source) {
         if (source == null) {
             source = this;
+            endFows[dirBackIndex] = this;
+        } else {
+            endFows[dirBackIndex] = source.endFows[dirBackIndex];
         }
         directionCounts[dirBackIndex] += dcount;
         directionEdges = (byte) ((edge ? (1 << dirBackIndex) : 0) | (((1 << dirBackIndex) ^ Direction.ALL) & directionEdges));
-        endFows[dirBackIndex] = source.endFows[dirBackIndex];
 
         if (directionCounts[dirIndex] > 0) {
             FowDrawComponent comp = getFowInDirection(positionComponent.tile, dirIndex);

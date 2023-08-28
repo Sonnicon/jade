@@ -2,6 +2,7 @@ package sonnicon.jade.input;
 
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.math.MathUtils;
 import sonnicon.jade.Jade;
 import sonnicon.jade.game.Gamestate;
 
@@ -10,6 +11,10 @@ public class Input implements InputProcessor {
     protected boolean draggingCamera = false;
 
     public static InputMultiplexer inputIngame;
+
+    public static final float CAMERA_ZOOM_MIN = 0.25f;
+    public static final float CAMERA_ZOOM_MAX = 0.75f;
+
 
     static {
         inputIngame = new InputMultiplexer();
@@ -86,6 +91,9 @@ public class Input implements InputProcessor {
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
-        return false;
+        Jade.renderer.viewportScale = MathUtils.clamp(
+                Jade.renderer.viewportScale + amountY / 100f, CAMERA_ZOOM_MIN, CAMERA_ZOOM_MAX);
+        Jade.renderer.updateCamera();
+        return true;
     }
 }
