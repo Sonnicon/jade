@@ -11,7 +11,7 @@ import sonnicon.jade.world.Tile;
 public class ChunkDrawComponent extends WorldDrawComponent {
 
     private transient Chunk currentChunk;
-    private static final EventTypes.EntityMoveEvent moveHandler =
+    private static final EventTypes.EntityMoveTileEvent moveHandler =
             (Entity entity, Tile source, Tile destination) -> {
                 ChunkDrawComponent comp = entity.getComponentFuzzy(ChunkDrawComponent.class);
                 Chunk c = destination == null ? null : destination.chunk;

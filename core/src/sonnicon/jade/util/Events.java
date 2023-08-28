@@ -11,21 +11,25 @@ import java.util.LinkedList;
 public class Events {
     private final HashMap<Class<? extends EventHandler>, LinkedList<EventHandler>> handlers = new HashMap<>();
 
-    public void register(EventHandler handler) {
-        LinkedList<EventHandler> list = handlers.get(handler.getType());
-        if (list != null) {
-            list.add(handler);
-        } else {
-            list = new LinkedList<>();
-            list.add(handler);
-            handlers.put(handler.getType(), list);
+    public void register(EventHandler... handles) {
+        for (EventHandler handler : handles) {
+            LinkedList<EventHandler> list = handlers.get(handler.getType());
+            if (list != null) {
+                list.add(handler);
+            } else {
+                list = new LinkedList<>();
+                list.add(handler);
+                handlers.put(handler.getType(), list);
+            }
         }
     }
 
-    public void unregister(EventHandler handler) {
-        LinkedList<EventHandler> list = handlers.get(handler.getType());
-        if (list != null) {
-            list.remove(handler);
+    public void unregister(EventHandler... handles) {
+        for (EventHandler handler : handles) {
+            LinkedList<EventHandler> list = handlers.get(handler.getType());
+            if (list != null) {
+                list.remove(handler);
+            }
         }
     }
 

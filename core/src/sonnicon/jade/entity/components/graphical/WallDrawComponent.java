@@ -22,7 +22,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
     private byte direction = 0;
 
 
-    private static final EventTypes.EntityMoveEvent moveEvent = (Entity ent, Tile source, Tile dest) -> {
+    private static final EventTypes.EntityMoveTileEvent moveEvent = (Entity ent, Tile source, Tile dest) -> {
         WallDrawComponent wdc = ent.getComponent(WallDrawComponent.class);
         if (source != null) {
             wdc.removeNearbyWalls(source);

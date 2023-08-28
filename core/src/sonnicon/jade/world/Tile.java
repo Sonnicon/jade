@@ -18,8 +18,14 @@ public class Tile implements IDebuggable {
     private final int drawX, drawY;
     private final int drawMiddleX, drawMiddleY;
 
+    // Pixel size of a tile
     public static final int TILE_SIZE = 32;
+    // Half of pixel size of a tile
     public static final int HALF_TILE_SIZE = TILE_SIZE / 2;
+    // How many positions on each axis there are in each tile
+    public static final int SUBTILE_NUM = 4;
+    // Pixels between sub-positions in a tile
+    public static final int SUBTILE_DELTA = TILE_SIZE / SUBTILE_NUM;
 
     public Tile(short x, short y, Chunk chunk) {
         this.x = x;

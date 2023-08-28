@@ -53,7 +53,11 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
     public void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
         if (positionComponent != null && positionComponent.tile != null) {
             IRegularDraw b = (IRegularDraw) batch;
-            b.draw(textures.getDrawable().getRegion(), positionComponent.tile.getDrawX(), positionComponent.tile.getDrawY(), width, height);
+            b.draw(
+                    textures.getDrawable().getRegion(),
+                    positionComponent.getDrawX() - width / 2,
+                    positionComponent.getDrawY() - height / 2,
+                    width, height);
         }
     }
 

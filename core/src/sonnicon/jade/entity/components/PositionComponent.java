@@ -9,20 +9,24 @@ import sonnicon.jade.world.Tile;
 
 import java.util.Map;
 
-@EventGenerator(id = "EntityMove", param = {Entity.class, Tile.class, Tile.class}, label = {"entity", "source", "destination"})
+@EventGenerator(id = "EntityMoveTile", param = {Entity.class, Tile.class, Tile.class}, label = {"entity", "source", "destination"})
+@EventGenerator(id = "EntityMovePos", param = {Entity.class, Short.class, Short.class, Short.class, Short.class}, label = {"entity", "sourceX", "sourceY", "destX", "destY"})
 public class PositionComponent extends Component {
     public Tile tile;
+    public short subx, suby;
 
     public PositionComponent() {
 
     }
 
     public PositionComponent(Tile tile) {
-        setup(tile);
+        setup(tile, (short) (Tile.SUBTILE_NUM / 2), (short) (Tile.SUBTILE_NUM / 2));
     }
 
-    protected PositionComponent setup(Tile tile) {
+    protected PositionComponent setup(Tile tile, short x, short y) {
         this.tile = tile;
+        this.subx = x;
+        this.suby = y;
         return this;
     }
 
@@ -47,7 +51,7 @@ public class PositionComponent extends Component {
 
     @Override
     public PositionComponent copy() {
-        return ((PositionComponent) super.copy()).setup(tile);
+        return ((PositionComponent) super.copy()).setup(tile, subx, suby);
     }
 
     public void moveToTile(Tile destination) {
@@ -67,16 +71,47 @@ public class PositionComponent extends Component {
 
         // Ordering
         if (source != null) {
-            EventTypes.EntityMoveEvent.handle(source.events, entity, source, destination);
+            EventTypes.EntityMoveTileEvent.handle(source.events, entity, source, destination);
         }
         if (destination != null) {
-            EventTypes.EntityMoveEvent.handle(destination.events, entity, source, destination);
+            EventTypes.EntityMoveTileEvent.handle(destination.events, entity, source, destination);
         }
-        EventTypes.EntityMoveEvent.handle(entity.events, entity, source, destination);
+        EventTypes.EntityMoveTileEvent.handle(entity.events, entity, source, destination);
+    }
+
+    public void moveToPos(short x, short y) {
+        if (entity == null) {
+            return;
+        }
+
+        EventTypes.EntityMovePosEvent.handle(entity.events, entity, this.subx, this.suby, this.subx = x, this.suby = y);
+    }
+
+    public void moveByPos(short x, short y) {
+        x += subx;
+        int tx = x / Tile.SUBTILE_NUM - (x < 0 ? 1 : 0);
+        x = (short) Math.floorMod(x, Tile.SUBTILE_NUM);
+
+        y += suby;
+        int ty = y / Tile.SUBTILE_NUM - (y < 0 ? 1 : 0);
+        y = (short) Math.floorMod(y, Tile.SUBTILE_NUM);
+
+        moveToPos(x, y);
+        if (tx != 0 || ty != 0) {
+            moveToTile(tile.chunk.world.getTile((short) (tile.getX() + tx), (short) (tile.getY() + ty)));
+        }
+    }
+
+    public float getDrawX() {
+        return tile.getDrawX() + Tile.SUBTILE_DELTA * subx;
+    }
+
+    public float getDrawY() {
+        return tile.getDrawY() + Tile.SUBTILE_DELTA * suby;
     }
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapExtendFrom(super.debugProperties(), "tile", tile);
+        return Structs.mapExtendFrom(super.debugProperties(), "tile", tile, "subx", subx, "suby", suby);
     }
 }

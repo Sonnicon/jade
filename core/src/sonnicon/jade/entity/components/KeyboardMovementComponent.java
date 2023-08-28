@@ -33,8 +33,28 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
 
     private static final Vector3 TEMP_VEC = new Vector3();
 
-    private static final EventTypes.EntityMoveEvent onMove = (i1, i2, i3) -> {
+    private static final EventTypes.EntityMoveTileEvent onMoveTile = (Entity ent, Tile source, Tile destination) -> {
         ((CachedDrawBatch) Renderer.Batch.dynamicTerrain.batch).invalidate();
+        ((CachedDrawBatch) Renderer.Batch.fow.batch).invalidate();
+
+        if (destination != null) {
+            Iterator<Entity> iter = destination.entities.iterator();
+            while (iter.hasNext()) {
+                Entity e = iter.next();
+                if (ent.getComponent(StorageComponent.class).storage.addEntity(e)) {
+                    if (e.getComponent(PositionComponent.class) != null) {
+                        iter.remove();
+                        PositionComponent epc = e.getComponent(PositionComponent.class);
+                        Content.world.getTileScreenPosition(TEMP_VEC, epc.tile);
+                        Jade.renderer.particles.createParticle(TextParticle.class, TEMP_VEC.x, TEMP_VEC.y).setText("item!");
+                        epc.moveToTile(null);
+                    }
+                }
+            }
+        }
+    };
+
+    private static final EventTypes.EntityMovePosEvent onMovePos = (i1, i2, i3, i4, i5) -> {
         ((CachedDrawBatch) Renderer.Batch.fow.batch).invalidate();
     };
 
@@ -45,7 +65,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
         positionComponent = entity.getComponent(PositionComponent.class);
         storageComponent = entity.getComponent(StorageComponent.class);
 
-        entity.events.register(onMove);
+        entity.events.register(onMoveTile, onMovePos);
     }
 
     @Override
@@ -53,7 +73,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
         super.removeFromEntity(entity);
         Clock.unregister(this);
 
-        entity.events.unregister(onMove);
+        entity.events.unregister(onMoveTile, onMovePos);
     }
 
     @Override
@@ -68,25 +88,13 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
             return;
         }
 
-        destination = destination.getNearby(moveDirection);
-        moveDirection = 0;
-
-        if (destination != null && destination != positionComponent.tile) {
-            Iterator<Entity> iter = destination.entities.iterator();
-            while (iter.hasNext()) {
-                Entity e = iter.next();
-                if (storageComponent.storage.addEntity(e)) {
-                    if (e.getComponent(PositionComponent.class) != null) {
-                        iter.remove();
-                        PositionComponent epc = e.getComponent(PositionComponent.class);
-                        Content.world.getTileScreenPosition(TEMP_VEC, epc.tile);
-                        Jade.renderer.particles.createParticle(TextParticle.class, TEMP_VEC.x, TEMP_VEC.y).setText("item!");
-                        epc.moveToTile(null);
-                    }
-                }
-            }
-            positionComponent.moveToTile(destination);
+        if (moveDirection == 0) {
+            return;
         }
+
+        positionComponent.moveByPos(Direction.directionX(moveDirection), Direction.directionY(moveDirection));
+
+        moveDirection = 0;
     }
 
     @Override

@@ -46,8 +46,7 @@ public class FowDrawComponent extends Component implements IRenderable {
     private static final float[] DEFAULT_RX = new float[]{-Tile.HALF_TILE_SIZE, Tile.HALF_TILE_SIZE};
     private static final float[] DEFAULT_RY = new float[]{Tile.HALF_TILE_SIZE, -Tile.HALF_TILE_SIZE};
 
-
-    private static final EventTypes.EntityMoveEvent moveHandler =
+    private static final EventTypes.EntityMoveTileEvent moveHandler =
             (Entity entity, Tile source, Tile dest) -> {
                 FowDrawComponent comp = entity.getComponent(FowDrawComponent.class);
                 Chunk c = dest == null ? null : dest.chunk;
@@ -210,28 +209,29 @@ public class FowDrawComponent extends Component implements IRenderable {
         if (playerEntity == null) {
             return;
         }
-        Tile playerTile = playerEntity.getComponent(PositionComponent.class).tile;
-        if (positionComponent == null || positionComponent.tile == null || playerTile == null || positionComponent.tile == playerTile) {
+        PositionComponent playerPos = playerEntity.getComponent(PositionComponent.class);
+        if (positionComponent == null || positionComponent.tile == null ||
+                playerPos == null || playerPos.tile == null || positionComponent.tile == playerPos.tile) {
             return;
         }
 
         Tile drawTile = positionComponent.tile;
-        byte playerDir = Direction.relate(drawTile, playerTile);
+        byte playerDir = Direction.relate(drawTile, playerPos.tile);
 
         FowBatch batch = (FowBatch) b;
 
         // Tile centers
         float[] dm = new float[]{drawTile.getDrawMiddleX(), drawTile.getDrawMiddleY()};
-        float[] pm = new float[]{playerTile.getDrawMiddleX(), playerTile.getDrawMiddleY()};
+        float[] pm = new float[]{playerPos.getDrawX(), playerPos.getDrawY()};
 
         //// Cardinal shadows
 
         // Which axis need cardinal shadows
-        final boolean bigShadowX = (dm[0] + directionCounts[1] * Tile.TILE_SIZE >= pm[0] &&
-                dm[0] - directionCounts[3] * Tile.TILE_SIZE <= pm[0]) &&
+        final boolean bigShadowX = (dm[0] + directionCounts[1] * Tile.TILE_SIZE + Tile.HALF_TILE_SIZE >= pm[0] &&
+                dm[0] - directionCounts[3] * Tile.TILE_SIZE - Tile.HALF_TILE_SIZE <= pm[0]) &&
                 (directionCounts[1] == 0 || (directionCounts[2] != 0 && playerDir == 4));
-        final boolean bigShadowY = (dm[1] + directionCounts[0] * Tile.TILE_SIZE >= pm[1] &&
-                dm[1] - directionCounts[2] * Tile.TILE_SIZE <= pm[1]) &&
+        final boolean bigShadowY = (dm[1] + directionCounts[0] * Tile.TILE_SIZE + Tile.HALF_TILE_SIZE >= pm[1] &&
+                dm[1] - directionCounts[2] * Tile.TILE_SIZE - Tile.HALF_TILE_SIZE <= pm[1]) &&
                 (directionCounts[0] == 0 || (directionCounts[3] != 0 && playerDir == 8));
 
         // Cardinal shadows across x
@@ -257,7 +257,7 @@ public class FowDrawComponent extends Component implements IRenderable {
         //// Diagonal shadows
 
         // which way is the shadow going
-        byte shadowDirection = Direction.relate(playerTile, drawTile);
+        byte shadowDirection = Direction.relate(playerPos.tile, drawTile);
         byte shadowLeftIndex = 0;
         for (byte i = 0; i < 4; i++) {
             if ((shadowDirection & (1 << i)) > 0 && (shadowDirection & (1 << ((i + 1) % 4))) > 0) {
