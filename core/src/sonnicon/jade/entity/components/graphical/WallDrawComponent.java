@@ -13,7 +13,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
 
 
     private static final EventTypes.EntityMoveTileEvent moveEvent = (Entity ent, Tile source, Tile dest) -> {
-        ((CachedDrawBatch) Renderer.Batch.dynamicTerrain.batch).invalidate();
+        ((CachedDrawBatch) Renderer.Batch.terrain.batch).invalidate();
     };
 
     public WallDrawComponent() {

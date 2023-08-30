@@ -19,13 +19,13 @@ public abstract class DrawBatch implements GraphicsBatch {
     protected final Matrix4 transformMatrix = new Matrix4();
     public Matrix4 combinedMatrix = new Matrix4();
 
-    protected static final Mesh.VertexDataType vertexDataType;
+    public static final Mesh.VertexDataType VERTEX_DATA_TYPE;
 
     static {
         if (Gdx.gl30 != null) {
-            vertexDataType = Mesh.VertexDataType.VertexBufferObjectWithVAO;
+            VERTEX_DATA_TYPE = Mesh.VertexDataType.VertexBufferObjectWithVAO;
         } else {
-            vertexDataType = Mesh.VertexDataType.VertexArray;
+            VERTEX_DATA_TYPE = Mesh.VertexDataType.VertexArray;
         }
     }
 
@@ -39,15 +39,12 @@ public abstract class DrawBatch implements GraphicsBatch {
             return;
         }
 
-        Gdx.gl.glDepthMask(false);
-
         shader.bind();
         setupExtra();
         mesh.setVertices(vArray, 0, vIndex);
 
         internalFlush();
 
-        Gdx.gl.glDepthMask(true);
         vIndex = 0;
     }
 

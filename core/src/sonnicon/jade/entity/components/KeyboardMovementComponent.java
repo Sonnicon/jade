@@ -34,7 +34,6 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
     private static final Vector3 TEMP_VEC = new Vector3();
 
     private static final EventTypes.EntityMoveTileEvent onMoveTile = (Entity ent, Tile source, Tile destination) -> {
-        ((CachedDrawBatch) Renderer.Batch.dynamicTerrain.batch).invalidate();
         ((CachedDrawBatch) Renderer.Batch.fow.batch).invalidate();
 
         if (destination != null) {
@@ -51,11 +50,15 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
                     }
                 }
             }
+            Jade.renderer.viewMask.x = ent.getComponent(PositionComponent.class).getDrawX();
+            Jade.renderer.viewMask.y = ent.getComponent(PositionComponent.class).getDrawY();
         }
     };
 
-    private static final EventTypes.EntityMovePosEvent onMovePos = (i1, i2, i3, i4, i5) -> {
+    private static final EventTypes.EntityMovePosEvent onMovePos = (e, i2, i3, i4, i5) -> {
         ((CachedDrawBatch) Renderer.Batch.fow.batch).invalidate();
+        Jade.renderer.viewMask.x = e.getComponent(PositionComponent.class).getDrawX();
+        Jade.renderer.viewMask.y = e.getComponent(PositionComponent.class).getDrawY();
     };
 
     @Override

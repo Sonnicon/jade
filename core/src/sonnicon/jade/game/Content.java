@@ -18,6 +18,9 @@ public class Content {
     private static final EventTypes.StateSetEvent stateChangeListener = (Gamestate.State state) -> {
         if (state == Gamestate.State.ingame) {
             create();
+            if (Content.world != null) {
+                Content.world.chunks.values().forEach(Chunk::updateCulled);
+            }
         }
     };
 

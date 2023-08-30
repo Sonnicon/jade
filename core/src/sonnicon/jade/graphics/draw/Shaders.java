@@ -6,7 +6,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 public enum Shaders {
     normal("normal"),
-    fow("fow");
+    fow("fow"),
+    viewdist("viewdist");
 
     private final String name;
     private ShaderProgram program;
@@ -20,6 +21,9 @@ public enum Shaders {
     public ShaderProgram getProgram() {
         if (program == null) {
             program = new ShaderProgram(SHADER_FILE.child(name + ".vert"), SHADER_FILE.child(name + ".frag"));
+            if (!program.isCompiled()) {
+                throw new RuntimeException(program.getLog());
+            }
         }
         return program;
     }

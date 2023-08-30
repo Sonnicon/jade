@@ -21,7 +21,7 @@ public class FowBatch extends CachedIndexedDrawBatch {
             throw new IndexOutOfBoundsException();
         }
 
-        mesh = new Mesh(vertexDataType, true, numVertices, numVertices,
+        mesh = new Mesh(VERTEX_DATA_TYPE, true, numVertices, numVertices,
                 new VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE));
 
         shader = Shaders.fow.getProgram();

@@ -25,7 +25,7 @@ public class TerrainSpriteBatch extends CachedDrawBatch implements IRegularDraw 
 
         int maxVertices = size * 4, maxIndices = size * 6;
 
-        mesh = new Mesh(vertexDataType, false, maxVertices, maxIndices,
+        mesh = new Mesh(VERTEX_DATA_TYPE, false, maxVertices, maxIndices,
                 new VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
                 new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE));
 

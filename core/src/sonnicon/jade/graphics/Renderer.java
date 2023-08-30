@@ -2,6 +2,7 @@ package sonnicon.jade.graphics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -30,31 +31,58 @@ public class Renderer {
     private final LinkedList<IRenderable> renderFullList;
     private final SubRenderer subRenderer;
 
+    public final ViewMask viewMask;
+
     public Renderer() {
         subRenderer = new SubRenderer();
         renderFullList = new LinkedList<>();
 
         Batch.terrain.batch = new TerrainSpriteBatch();
-        Batch.dynamicTerrain.batch = new TerrainSpriteBatch();
         Batch.world.batch = new SpriteBatch();
         Batch.gui.batch = new SpriteBatch();
         Batch.fow.batch = new FowBatch();
+        Batch.overfow.batch = new SpriteBatch();
 
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
+
+        viewMask = new ViewMask();
+        viewMask.setRadius(160);
     }
 
     public void render(float delta) {
-        Gui.render(delta);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         if (Gamestate.getState() == Gamestate.State.menu) {
+            Gui.render(delta);
             return;
         }
 
+        // Clear depth
+        Gdx.gl.glClearDepthf(1f);
+        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+
+        // Draw depth mask
+        Gdx.gl.glDepthFunc(GL20.GL_LESS);
+        Batch.overfow.batch.begin();
+        Gdx.gl.glDepthMask(true);
+        viewMask.render((SpriteBatch) Batch.overfow.batch);
+        Batch.overfow.batch.end();
+
+        // Hide things we can't see
+        Gdx.gl.glDepthMask(false);
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+        Gdx.gl.glDepthFunc(GL20.GL_EQUAL);
+
         GraphicsBatch batch = null;
         for (RenderLayer layer : RenderLayer.all) {
+            // Don't want to mask out the GUI
+            if (layer == RenderLayer.overfow) {
+                Gdx.gl.glDepthFunc(GL20.GL_ALWAYS);
+            }
+
             if (layer.batchType != null) {
                 if (batch != null) {
-
                     if (batch instanceof CachedDrawBatch && (!((CachedDrawBatch) batch).invalidated)) {
                         batch.flush();
                     } else {
@@ -70,6 +98,11 @@ public class Renderer {
 
             if (batch == null) {
                 throw new EnumConstantNotPresentException(RenderLayer.class, layer.name() + ".batchType.batch");
+            }
+
+            // Draw view circle
+            if (layer == RenderLayer.overfow) {
+                viewMask.render((SpriteBatch) Batch.overfow.batch);
             }
 
             if (batch instanceof CachedDrawBatch && !((CachedDrawBatch) batch).invalidated) {
@@ -170,10 +203,10 @@ public class Renderer {
 
     public enum Batch {
         terrain,
-        dynamicTerrain,
         world,
         gui(false),
-        fow;
+        fow,
+        overfow;
 
         public GraphicsBatch batch;
         public final boolean followCamera;
@@ -194,10 +227,11 @@ public class Renderer {
     public enum RenderLayer {
         bottom(Batch.terrain),
         floor,
-        terrain(Batch.dynamicTerrain),
+        terrain,
         characters(Batch.world),
         particles,
         fow(Batch.fow),
+        overfow(Batch.overfow),
         overlay(Batch.gui),
         gui,
         top;

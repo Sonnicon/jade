@@ -1,7 +1,5 @@
 package sonnicon.jade.graphics.draw;
 
-import com.badlogic.gdx.Gdx;
-
 public abstract class CachedDrawBatch extends DrawBatch {
     public boolean invalidated = true;
 
@@ -28,13 +26,10 @@ public abstract class CachedDrawBatch extends DrawBatch {
             return;
         }
 
-        Gdx.gl.glDepthMask(false);
         shader.bind();
         setupExtra();
 
         internalFlush();
-
-        Gdx.gl.glDepthMask(true);
     }
 
     public void invalidate() {
