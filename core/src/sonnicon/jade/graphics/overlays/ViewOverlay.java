@@ -1,4 +1,4 @@
-package sonnicon.jade.graphics;
+package sonnicon.jade.graphics.overlays;
 
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import sonnicon.jade.graphics.draw.Shaders;
 import sonnicon.jade.graphics.draw.SpriteBatch;
 
-public class ViewMask {
+public class ViewOverlay {
     private FrameBuffer framebuffer;
     private final Mesh mesh;
 
@@ -14,7 +14,7 @@ public class ViewMask {
     public float x = 0, y = 0;
     private boolean invalidated = false;
 
-    public ViewMask() {
+    public ViewOverlay() {
         mesh = new Mesh(true, 4, 0,
                 new VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE));
         mesh.setVertices(new float[]{-1f, -1f, -1f, 1f, 1f, 1f, 1f, -1f});

@@ -50,15 +50,15 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
                     }
                 }
             }
-            Jade.renderer.viewMask.x = ent.getComponent(PositionComponent.class).getDrawX();
-            Jade.renderer.viewMask.y = ent.getComponent(PositionComponent.class).getDrawY();
+            Jade.renderer.viewOverlay.x = ent.getComponent(PositionComponent.class).getDrawX();
+            Jade.renderer.viewOverlay.y = ent.getComponent(PositionComponent.class).getDrawY();
         }
     };
 
     private static final EventTypes.EntityMovePosEvent onMovePos = (e, i2, i3, i4, i5) -> {
         ((CachedDrawBatch) Renderer.Batch.fow.batch).invalidate();
-        Jade.renderer.viewMask.x = e.getComponent(PositionComponent.class).getDrawX();
-        Jade.renderer.viewMask.y = e.getComponent(PositionComponent.class).getDrawY();
+        Jade.renderer.viewOverlay.x = e.getComponent(PositionComponent.class).getDrawX();
+        Jade.renderer.viewOverlay.y = e.getComponent(PositionComponent.class).getDrawY();
     };
 
     @Override

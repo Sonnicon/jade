@@ -38,7 +38,7 @@ public class FowDrawComponent extends Component implements IRenderable {
 
     // Constants
     // How far to extend a shadow behind source
-    private static final float VIEW_BIG_DISTANCE = 500f;
+    private static final float VIEW_BIG_DISTANCE = 50f;
     // Rotation offsets
     private static final float[] ROTATE_1 = {-Tile.HALF_TILE_SIZE, Tile.HALF_TILE_SIZE, Tile.HALF_TILE_SIZE, -Tile.HALF_TILE_SIZE};
     private static final int[] R_INDEX_X = {0, 1, 1, 0};

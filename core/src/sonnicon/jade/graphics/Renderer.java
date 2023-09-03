@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import sonnicon.jade.game.Content;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.graphics.draw.*;
+import sonnicon.jade.graphics.overlays.ViewOverlay;
 import sonnicon.jade.graphics.particles.ParticleEngine;
 import sonnicon.jade.gui.Gui;
 import sonnicon.jade.world.Chunk;
@@ -22,6 +23,7 @@ public class Renderer {
     public ParticleEngine particles;
 
     public float viewportScale = 0.25f;
+    public final float[] resolution = new float[2];
 
     private float cameraEdgeLeft;
     private float cameraEdgeRight;
@@ -31,7 +33,7 @@ public class Renderer {
     private final LinkedList<IRenderable> renderFullList;
     private final SubRenderer subRenderer;
 
-    public final ViewMask viewMask;
+    public final ViewOverlay viewOverlay;
 
     public Renderer() {
         subRenderer = new SubRenderer();
@@ -46,12 +48,12 @@ public class Renderer {
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
 
-        viewMask = new ViewMask();
-        viewMask.setRadius(160);
+        viewOverlay = new ViewOverlay();
+        viewOverlay.setRadius(160);
     }
 
     public void render(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
 
         if (Gamestate.getState() == Gamestate.State.menu) {
             Gui.render(delta);
@@ -60,13 +62,12 @@ public class Renderer {
 
         // Clear depth
         Gdx.gl.glClearDepthf(1f);
-        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
 
         // Draw depth mask
         Gdx.gl.glDepthFunc(GL20.GL_LESS);
         Batch.overfow.batch.begin();
         Gdx.gl.glDepthMask(true);
-        viewMask.render((SpriteBatch) Batch.overfow.batch);
+        viewOverlay.render((SpriteBatch) Batch.overfow.batch);
         Batch.overfow.batch.end();
 
         // Hide things we can't see
@@ -102,7 +103,7 @@ public class Renderer {
 
             // Draw view circle
             if (layer == RenderLayer.overfow) {
-                viewMask.render((SpriteBatch) Batch.overfow.batch);
+                viewOverlay.render((SpriteBatch) Batch.overfow.batch);
             }
 
             if (batch instanceof CachedDrawBatch && !((CachedDrawBatch) batch).invalidated) {
@@ -150,6 +151,9 @@ public class Renderer {
     }
 
     public void resize(int width, int height) {
+        resolution[0] = width;
+        resolution[1] = height;
+
         viewport.update(width, height);
         updateCamera();
         Gui.resize(width, height);

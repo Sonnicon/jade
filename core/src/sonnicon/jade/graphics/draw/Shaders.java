@@ -7,7 +7,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 public enum Shaders {
     normal("normal"),
     fow("fow"),
-    viewdist("viewdist");
+    viewdist("viewdist"),
+    gridoverlay("gridoverlay");
 
     private final String name;
     private ShaderProgram program;

@@ -6,6 +6,7 @@ import sonnicon.jade.content.ItemPrinter;
 import sonnicon.jade.content.WorldPrinter;
 import sonnicon.jade.entity.components.graphical.WallDrawComponent;
 import sonnicon.jade.generated.EventTypes;
+import sonnicon.jade.graphics.overlays.GridOverlay;
 import sonnicon.jade.graphics.particles.ParticleEngine;
 import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.Tile;
@@ -21,6 +22,7 @@ public class Content {
             if (Content.world != null) {
                 Content.world.chunks.values().forEach(Chunk::updateCulled);
             }
+            new GridOverlay();
         }
     };
 

@@ -2,6 +2,7 @@ package sonnicon.jade;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.Content;
 import sonnicon.jade.game.Gamestate;
@@ -15,6 +16,7 @@ public class Jade extends ApplicationAdapter {
 
     @Override
     public void create() {
+        ShaderProgram.pedantic = false;
         Textures.init();
         renderer = new Renderer();
         Input.init();
