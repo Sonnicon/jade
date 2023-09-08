@@ -28,7 +28,7 @@ public class WorldInput extends InputInterpreter {
         } else {
             Optional<Entity> e = tile.entities.stream().filter(f -> f.hasComponent(WallDrawComponent.class)).findAny();
             if (e.isPresent()) {
-                e.get().getComponent(PositionComponent.class).moveToTile(null);
+                e.get().getComponent(PositionComponent.class).moveTo(null);
             } else {
                 WorldPrinter.printWallEntity(tile);
             }

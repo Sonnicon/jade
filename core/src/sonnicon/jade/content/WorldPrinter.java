@@ -3,6 +3,7 @@ package sonnicon.jade.content;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
 import sonnicon.jade.entity.components.PositionComponent;
+import sonnicon.jade.entity.components.TileTraitComponent;
 import sonnicon.jade.entity.components.graphical.ChunkDrawComponent;
 import sonnicon.jade.entity.components.graphical.FowDrawComponent;
 import sonnicon.jade.entity.components.graphical.WallDrawComponent;
@@ -27,8 +28,9 @@ public class WorldPrinter {
         wallEntity.addComponents(
                 new PositionComponent(location),
                 new WallDrawComponent(wallTextures),
-                new FowDrawComponent()
-        ).addTrait(Traits.Trait.opaque);
+                new FowDrawComponent(),
+                new TileTraitComponent(Traits.Trait.blockMovement)
+        );
         return wallEntity;
     }
 }

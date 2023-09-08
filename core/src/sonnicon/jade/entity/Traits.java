@@ -4,6 +4,7 @@ import sonnicon.jade.util.IDebuggable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Traits implements IDebuggable {
     private HashMap<Trait, Integer> traits;
@@ -13,6 +14,18 @@ public class Traits implements IDebuggable {
             traits = new HashMap<>();
         }
         traits.put(trait, traits.getOrDefault(trait, 0) + 1);
+    }
+
+    public void addTraits(Trait... traits) {
+        for (Trait trait : traits) {
+            addTrait(trait);
+        }
+    }
+
+    public void addTraits(Set<Trait> traits) {
+        for (Trait trait : traits) {
+            addTrait(trait);
+        }
     }
 
     public void removeTrait(Trait trait) {
@@ -27,8 +40,20 @@ public class Traits implements IDebuggable {
         }
     }
 
+    public void removeTraits(Trait... traits) {
+        for (Trait trait : traits) {
+            removeTrait(trait);
+        }
+    }
+
+    public void removeTraits(Set<Trait> traits) {
+        for (Trait trait : traits) {
+            removeTrait(trait);
+        }
+    }
+
     public boolean hasTrait(Trait trait) {
-        return traits.containsKey(trait);
+        return traits != null && traits.containsKey(trait);
     }
 
     public void copyTo(Traits other) {
@@ -45,6 +70,7 @@ public class Traits implements IDebuggable {
 
 
     public enum Trait {
-        opaque
+        blockMovement,
+        incorporeal
     }
 }

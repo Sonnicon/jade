@@ -54,6 +54,11 @@ public abstract class Component implements ICopyable, IComparable, IDebuggable {
     }
 
     @Override
+    public boolean compare(IComparable other) {
+        return other != null && getClass() == other.getClass();
+    }
+
+    @Override
     public Map<Object, Object> debugProperties() {
         return Structs.mapFrom("entity", entity);
     }

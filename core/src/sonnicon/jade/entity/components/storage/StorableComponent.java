@@ -41,7 +41,7 @@ public class StorableComponent extends Component {
 
     @Override
     public boolean compare(IComparable other) {
-        if (other instanceof StorableComponent) {
+        if (super.compare(other)) {
             return Arrays.equals(icons, ((StorableComponent) other).icons) &&
                     Objects.equals(displayName, ((StorableComponent) other).displayName);
         }

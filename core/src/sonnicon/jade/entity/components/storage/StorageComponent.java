@@ -33,7 +33,7 @@ public class StorageComponent extends Component {
 
     @Override
     public boolean compare(IComparable other) {
-        return other instanceof StorageComponent && storage.compare(((StorageComponent) other).storage);
+        return super.compare(other) && storage.compare(((StorageComponent) other).storage);
     }
 
     @Override

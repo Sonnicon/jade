@@ -192,7 +192,7 @@ public class FowDrawComponent extends Component implements IRenderable {
 
     @Override
     public HashSet<Class<? extends Component>> getDependencies() {
-        return new HashSet<>(Collections.singletonList(PositionComponent.class));
+        return Structs.setFrom(PositionComponent.class);
     }
 
     @Override
@@ -452,7 +452,7 @@ public class FowDrawComponent extends Component implements IRenderable {
 
     @Override
     public boolean compare(IComparable other) {
-        if (other.getClass() != getClass()) {
+        if (!super.compare(other)) {
             return false;
         }
         FowDrawComponent comp = (FowDrawComponent) other;

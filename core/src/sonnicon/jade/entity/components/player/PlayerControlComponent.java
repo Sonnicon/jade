@@ -44,7 +44,7 @@ public class PlayerControlComponent extends Component {
 
     @Override
     public boolean compare(IComparable other) {
-        return other instanceof PlayerControlComponent && ((PlayerControlComponent) other).entity == entity;
+        return super.compare(other) && ((PlayerControlComponent) other).entity == entity;
     }
 
     public static Entity getControlledEntity() {

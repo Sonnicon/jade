@@ -11,7 +11,6 @@ import sonnicon.jade.graphics.draw.IRegularDraw;
 import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.Structs;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -46,7 +45,7 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
 
     @Override
     public HashSet<Class<? extends Component>> getDependencies() {
-        return new HashSet<>(Collections.singletonList(PositionComponent.class));
+        return Structs.setFrom(PositionComponent.class);
     }
 
     @Override
@@ -63,7 +62,7 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
 
     @Override
     public boolean compare(IComparable other) {
-        if (!(other instanceof WorldDrawComponent)) {
+        if (!super.compare(other)) {
             return false;
         }
         WorldDrawComponent comp = (WorldDrawComponent) other;

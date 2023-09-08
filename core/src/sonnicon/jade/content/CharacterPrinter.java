@@ -2,6 +2,7 @@ package sonnicon.jade.content;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.KeyboardMovementComponent;
+import sonnicon.jade.entity.components.MoveboxComponent;
 import sonnicon.jade.entity.components.PositionComponent;
 import sonnicon.jade.entity.components.graphical.ChunkDrawComponent;
 import sonnicon.jade.entity.components.player.PlayerControlComponent;
@@ -33,6 +34,7 @@ public class CharacterPrinter {
         result.addComponents(new PositionComponent(location),
                 new ChunkDrawComponent(new TextureSet("character-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE, Renderer.RenderLayer.characters),
                 storageComponent,
+                new MoveboxComponent((short) 2),
                 new KeyboardMovementComponent(),
                 new PlayerControlComponent());
 

@@ -54,9 +54,9 @@ public class Renderer {
 
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
+        Gui.render(delta);
 
         if (Gamestate.getState() == Gamestate.State.menu) {
-            Gui.render(delta);
             return;
         }
 

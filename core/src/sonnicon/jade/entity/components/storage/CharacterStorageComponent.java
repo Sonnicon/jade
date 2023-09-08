@@ -101,9 +101,7 @@ public class CharacterStorageComponent extends StorageComponent {
 
     @Override
     public boolean compare(IComparable other) {
-        return super.compare(other) &&
-                (other instanceof CharacterStorageComponent &&
-                        ((CharacterStorageComponent) other).hands.size() == hands.size());
+        return super.compare(other) && ((CharacterStorageComponent) other).hands.size() == hands.size();
     }
 
     @Override

@@ -64,7 +64,7 @@ public class ChunkDrawComponent extends WorldDrawComponent {
 
     @Override
     public boolean compare(IComparable other) {
-        if (other.getClass() != getClass()) {
+        if (!super.compare(other)) {
             return false;
         }
         ChunkDrawComponent comp = (ChunkDrawComponent) other;

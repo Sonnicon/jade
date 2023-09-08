@@ -46,7 +46,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
                         PositionComponent epc = e.getComponent(PositionComponent.class);
                         Content.world.getTileScreenPosition(TEMP_VEC, epc.tile);
                         Jade.renderer.particles.createParticle(TextParticle.class, TEMP_VEC.x, TEMP_VEC.y).setText("item!");
-                        epc.moveToTile(null);
+                        epc.moveTo(null);
                     }
                 }
             }
@@ -95,7 +95,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
             return;
         }
 
-        positionComponent.moveByPos(Direction.directionX(moveDirection), Direction.directionY(moveDirection));
+        positionComponent.tryMoveByPos(Direction.directionX(moveDirection), Direction.directionY(moveDirection));
 
         moveDirection = 0;
     }

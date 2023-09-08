@@ -2,6 +2,7 @@ package sonnicon.jade.world;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
+import sonnicon.jade.entity.components.MoveboxComponent;
 import sonnicon.jade.util.*;
 
 import java.util.HashSet;
@@ -11,12 +12,14 @@ public class Tile implements IDebuggable {
     private final short x, y;
     public final Chunk chunk;
     public final HashSet<Entity> entities;
+    public final HashSet<MoveboxComponent> nearbyMoveboxes;
     public final Traits traits;
     public final Events events;
 
     private final int globalX, globalY;
     private final int drawX, drawY;
     private final int drawMiddleX, drawMiddleY;
+    private final int jointX, jointY;
 
     // Pixel size of a tile
     public static final int TILE_SIZE = 32;
@@ -38,8 +41,11 @@ public class Tile implements IDebuggable {
         this.drawY = globalY * TILE_SIZE;
         this.drawMiddleX = (int) (drawX + TILE_SIZE * .5f);
         this.drawMiddleY = (int) (drawY + TILE_SIZE * .5f);
+        this.jointX = globalX * Tile.SUBTILE_NUM;
+        this.jointY = globalY * Tile.SUBTILE_NUM;
 
         this.entities = new HashSet<>();
+        this.nearbyMoveboxes = new HashSet<>();
         this.traits = new Traits();
         this.events = new Events();
     }
@@ -74,6 +80,14 @@ public class Tile implements IDebuggable {
 
     public float getDrawMiddleY() {
         return drawMiddleY;
+    }
+
+    public int getJointX() {
+        return jointX;
+    }
+
+    public int getJointY() {
+        return jointY;
     }
 
     public Tile getNearby(byte direction) {
@@ -150,6 +164,6 @@ public class Tile implements IDebuggable {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapFrom("x", x, "y", y, "chunk", chunk, "entities", entities, "traits", traits);
+        return Structs.mapFrom("x", x, "y", y, "chunk", chunk, "entities", entities, "nearbyMoveboxes", nearbyMoveboxes, "traits", traits);
     }
 }
