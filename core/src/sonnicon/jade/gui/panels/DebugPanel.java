@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import sonnicon.jade.gui.Gui;
 import sonnicon.jade.util.IDebuggable;
-import sonnicon.jade.util.Structs;
+import sonnicon.jade.util.Utils;
 
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +18,7 @@ public class DebugPanel extends Panel {
 
     protected Table tableContents;
 
-    private static final Set<Class<?>> PURE_TYPES = Structs.setFrom(Integer.class, Byte.class, Short.class, Long.class, Float.class, Double.class, Boolean.class, Character.class, String.class);
+    private static final Set<Class<?>> PURE_TYPES = Utils.setFrom(Integer.class, Byte.class, Short.class, Long.class, Float.class, Double.class, Boolean.class, Character.class, String.class);
 
     public DebugPanel() {
     }

@@ -4,8 +4,7 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.game.Content;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.Direction;
-import sonnicon.jade.util.JMath;
-import sonnicon.jade.util.Structs;
+import sonnicon.jade.util.Utils;
 import sonnicon.jade.world.Tile;
 
 import java.util.ArrayList;
@@ -109,7 +108,7 @@ public class MoveboxComponent extends Component {
     public static Stream<MoveboxComponent> coveredStream() {
         return coveredTilesOperation.stream()
                 .flatMap(tile -> tile.nearbyMoveboxes.stream())
-                .filter(other -> JMath.overlapsSquare(operX, operY, operSize,
+                .filter(other -> Utils.overlapsSquare(operX, operY, operSize,
                         other.positionComponent.getJointX(), other.positionComponent.getJointY(), other.size));
     }
 
@@ -128,12 +127,12 @@ public class MoveboxComponent extends Component {
 
     @Override
     public HashSet<Class<? extends Component>> getDependencies() {
-        return Structs.setFrom(PositionComponent.class);
+        return Utils.setFrom(PositionComponent.class);
     }
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapExtendFrom(super.debugProperties(), "size", size, "tiles", coveredTiles);
+        return Utils.mapExtendFrom(super.debugProperties(), "size", size, "tiles", coveredTiles);
     }
 
     @Override

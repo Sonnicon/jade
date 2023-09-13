@@ -1,10 +1,8 @@
 package sonnicon.jade.world;
 
-import com.badlogic.gdx.math.Vector3;
-import sonnicon.jade.Jade;
 import sonnicon.jade.input.WorldInput;
 import sonnicon.jade.util.IDebuggable;
-import sonnicon.jade.util.Structs;
+import sonnicon.jade.util.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,24 +10,8 @@ import java.util.Map;
 public class World implements IDebuggable {
     public final HashMap<Integer, Chunk> chunks = new HashMap<>();
 
-    private static final Vector3 TEMP_VEC = new Vector3();
-
     public World() {
         new WorldInput();
-    }
-
-    public Vector3 getTileScreenPosition(Vector3 vec, Tile tile) {
-        return Jade.renderer.camera.project(
-                vec.set(tile.getDrawX() + Tile.TILE_SIZE / 2f,
-                        tile.getDrawY() + Tile.TILE_SIZE / 2f,
-                        0f));
-    }
-
-    public Tile getScreenPositionTile(int x, int y) {
-        TEMP_VEC.set(x, y, 0f);
-        Jade.renderer.camera.unproject(TEMP_VEC);
-        TEMP_VEC.scl(1f / Tile.TILE_SIZE);
-        return getTile((short) TEMP_VEC.x, (short) TEMP_VEC.y);
     }
 
     public Tile getTile(short x, short y) {
@@ -44,6 +26,6 @@ public class World implements IDebuggable {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapFrom("chunks", chunks);
+        return Utils.mapFrom("chunks", chunks);
     }
 }

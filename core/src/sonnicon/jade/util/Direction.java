@@ -1,5 +1,6 @@
 package sonnicon.jade.util;
 
+import sonnicon.jade.entity.components.PositionComponent;
 import sonnicon.jade.world.Tile;
 
 import java.util.function.Consumer;
@@ -27,6 +28,15 @@ public class Direction {
         }
     }
 
+    public static void round(Consumer<Byte> cons) {
+        for (byte i = 0; i < 4; i++) {
+            cons.accept((byte) (1 << i));
+            byte r = (byte) (1 << (i + 1));
+            cons.accept((byte) (((1 << i) | r | r >>> 4) & Direction.ALL));
+
+        }
+    }
+
     public static short directionX(byte direction) {
         return (short) (((direction & EAST) > 0) ? 1 : ((direction & WEST) > 0) ? -1 : 0);
     }
@@ -37,7 +47,7 @@ public class Direction {
 
     public static byte rotate(byte direction, byte amount) {
         amount = (byte) Math.floorMod(amount, 4);
-        return (byte) ((byte) ((direction << amount) | (direction >> (4 - amount))) & 0b1111);
+        return (byte) ((byte) ((direction << amount) | (direction >>> (4 - amount))) & 0b1111);
     }
 
     public static byte flatten(byte direction) {
@@ -70,5 +80,20 @@ public class Direction {
 
     public static byte relate(Tile from, Tile to) {
         return relate(from.getX(), from.getY(), to.getX(), to.getY());
+    }
+
+    public static byte relate(PositionComponent from, PositionComponent to, int range) {
+        byte result = 0;
+        if (Math.abs(to.getJointX() - from.getJointX()) >= range) {
+            result |= to.getJointX() > from.getJointX() ? EAST : WEST;
+        }
+        if (Math.abs(to.getJointY() - from.getJointY()) >= range) {
+            result |= to.getJointY() > from.getJointY() ? NORTH : SOUTH;
+        }
+        return result;
+    }
+
+    public static byte relate(PositionComponent from, PositionComponent to) {
+        return relate(from.getJointX(), from.getJointY(), to.getJointX(), to.getJointY());
     }
 }

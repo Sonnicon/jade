@@ -3,7 +3,7 @@ package sonnicon.jade.entity.components.storage;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.util.IComparable;
-import sonnicon.jade.util.Structs;
+import sonnicon.jade.util.Utils;
 
 import java.util.Map;
 
@@ -38,6 +38,6 @@ public class StorageComponent extends Component {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapExtendFrom(super.debugProperties(), "storage", storage);
+        return Utils.mapExtendFrom(super.debugProperties(), "storage", storage);
     }
 }

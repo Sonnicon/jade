@@ -17,10 +17,14 @@ public interface IDebuggable {
             return ((IDebuggable) target).debugName();
         }
 
-        return target.getClass().getName() + "@" + Integer.toHexString(target.hashCode());
+        return target.getClass().getName().replace("sonnicon.jade.", "") + "@" + Integer.toHexString(target.hashCode());
     }
 
     static Map<Object, Object> debugProperties(Object target) {
+        if (target == null) {
+            return new HashMap<>();
+        }
+
         if (target instanceof IDebuggable) {
             return ((IDebuggable) target).debugProperties();
         }

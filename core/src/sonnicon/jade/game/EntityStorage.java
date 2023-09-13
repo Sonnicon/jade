@@ -187,6 +187,6 @@ public class EntityStorage implements ICopyable, IComparable, IDebuggable {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapFrom("slots", slots, "capacityUsed", capacityUsed, "capacity", capacity, "minSize", minimumSize, "maxSize", maximumSize);
+        return Utils.mapFrom("slots", slots, "capacityUsed", capacityUsed, "capacity", capacity, "minSize", minimumSize, "maxSize", maximumSize);
     }
 }

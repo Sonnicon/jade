@@ -40,6 +40,7 @@ public class Renderer {
         renderFullList = new LinkedList<>();
 
         Batch.terrain.batch = new TerrainSpriteBatch();
+        Batch.terrainDynamic.batch = new TerrainSpriteBatch();
         Batch.world.batch = new SpriteBatch();
         Batch.gui.batch = new SpriteBatch();
         Batch.fow.batch = new FowBatch();
@@ -110,13 +111,7 @@ public class Renderer {
                 continue;
             }
 
-            subRenderer.renderRenderables(batch, delta, layer);
-
-            for (IRenderable r : renderFullList) {
-                if (!r.culled(layer)) {
-                    r.render(batch, delta, layer);
-                }
-            }
+            renderLayer(batch, delta, layer);
         }
 
         if (batch != null) {
@@ -147,6 +142,16 @@ public class Renderer {
         }
         if (cameraMoved) {
             updateCamera();
+        }
+    }
+
+    private void renderLayer(GraphicsBatch batch, float delta, RenderLayer layer) {
+        subRenderer.renderRenderables(batch, delta, layer);
+
+        for (IRenderable r : renderFullList) {
+            if (!r.culled(layer)) {
+                r.render(batch, delta, layer);
+            }
         }
     }
 
@@ -207,6 +212,7 @@ public class Renderer {
 
     public enum Batch {
         terrain,
+        terrainDynamic,
         world,
         gui(false),
         fow,
@@ -228,10 +234,14 @@ public class Renderer {
         public static final Batch[] allFollowing = Arrays.stream(values()).filter(b -> b.followCamera).toArray(Batch[]::new);
     }
 
+    private static int layerNextIndex = 0;
+
     public enum RenderLayer {
         bottom(Batch.terrain),
         floor,
-        terrain,
+        terrainBottom,
+        terrain(false),
+        terrainTop(Batch.terrainDynamic, false),
         characters(Batch.world),
         particles,
         fow(Batch.fow),
@@ -241,15 +251,25 @@ public class Renderer {
         top;
 
         public final Batch batchType;
+        public final int index;
 
         private static final RenderLayer[] all = values();
 
         RenderLayer() {
-            this.batchType = null;
+            this(null, true);
+        }
+
+        RenderLayer(boolean separate) {
+            this(null, separate);
         }
 
         RenderLayer(Batch batchType) {
+            this(batchType, true);
+        }
+
+        RenderLayer(Batch batchType, boolean separate) {
             this.batchType = batchType;
+            this.index = separate ? ++layerNextIndex : layerNextIndex;
         }
 
         RenderLayer next() {
@@ -261,6 +281,10 @@ public class Renderer {
 
         static RenderLayer[] all() {
             return all;
+        }
+
+        static int size() {
+            return layerNextIndex + 1;
         }
     }
 }

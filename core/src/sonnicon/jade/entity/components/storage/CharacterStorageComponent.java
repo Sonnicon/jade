@@ -11,7 +11,7 @@ import sonnicon.jade.game.Gamestate.State;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.util.IComparable;
-import sonnicon.jade.util.Structs;
+import sonnicon.jade.util.Utils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -106,6 +106,6 @@ public class CharacterStorageComponent extends StorageComponent {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapExtendFrom(super.debugProperties(), "hands", hands);
+        return Utils.mapExtendFrom(super.debugProperties(), "hands", hands);
     }
 }

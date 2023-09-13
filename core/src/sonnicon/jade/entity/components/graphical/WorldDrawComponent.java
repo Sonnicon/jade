@@ -9,7 +9,7 @@ import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.graphics.draw.IRegularDraw;
 import sonnicon.jade.util.IComparable;
-import sonnicon.jade.util.Structs;
+import sonnicon.jade.util.Utils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -45,7 +45,7 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
 
     @Override
     public HashSet<Class<? extends Component>> getDependencies() {
-        return Structs.setFrom(PositionComponent.class);
+        return Utils.setFrom(PositionComponent.class);
     }
 
     @Override
@@ -80,6 +80,6 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapExtendFrom(super.debugProperties(), "textures", textures, "width", width, "height", height, "position", positionComponent, "layer", layer);
+        return Utils.mapExtendFrom(super.debugProperties(), "textures", textures, "width", width, "height", height, "position", positionComponent, "layer", layer);
     }
 }

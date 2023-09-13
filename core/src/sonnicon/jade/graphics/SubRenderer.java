@@ -6,19 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SubRenderer {
-    protected final int[] renderLayers = new int[Renderer.RenderLayer.all().length];
+    protected final int[] renderLayers = new int[Renderer.RenderLayer.size()];
     protected final List<IRenderable> renderList = new ArrayList<>();
 
     public void addRenderable(IRenderable renderable, Renderer.RenderLayer layer) {
-        boolean inserted = false;
+        int incr = -1;
         for (Renderer.RenderLayer listLayer : Renderer.RenderLayer.all()) {
-            if (!inserted) {
+            if (incr == -1) {
                 if (listLayer == layer) {
-                    renderList.add(renderLayers[listLayer.ordinal()], renderable);
-                    inserted = true;
+                    renderList.add(renderLayers[listLayer.index], renderable);
+                    incr = listLayer.index;
                 }
-            } else {
-                renderLayers[listLayer.ordinal()]++;
+            } else if (listLayer.index > incr) {
+                renderLayers[incr = listLayer.index]++;
             }
         }
     }
@@ -40,12 +40,12 @@ public class SubRenderer {
     public void renderRenderables(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
         if (layer != null) {
             int end;
-            if (layer.ordinal() < renderLayers.length - 1) {
-                end = renderLayers[layer.ordinal() + 1];
+            if (layer.index < Renderer.RenderLayer.size() - 1) {
+                end = renderLayers[layer.index + 1];
             } else {
                 end = renderList.size();
             }
-            for (int i = renderLayers[layer.ordinal()]; i < end; i++) {
+            for (int i = renderLayers[layer.index]; i < end; i++) {
                 renderList.get(i).render(batch, delta, layer);
             }
         }

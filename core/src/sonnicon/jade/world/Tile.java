@@ -164,6 +164,6 @@ public class Tile implements IDebuggable {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapFrom("x", x, "y", y, "chunk", chunk, "entities", entities, "nearbyMoveboxes", nearbyMoveboxes, "traits", traits);
+        return Utils.mapFrom("x", x, "y", y, "chunk", chunk, "entities", entities, "nearbyMoveboxes", nearbyMoveboxes, "traits", traits);
     }
 }

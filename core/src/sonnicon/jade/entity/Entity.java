@@ -160,6 +160,6 @@ public class Entity implements ICopyable, IComparable, IDebuggable {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapFrom("components", components, "traits", traits, "id", id);
+        return Utils.mapFrom("components", components, "traits", traits, "id", id);
     }
 }

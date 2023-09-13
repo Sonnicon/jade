@@ -4,7 +4,7 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.ICopyable;
 import sonnicon.jade.util.IDebuggable;
-import sonnicon.jade.util.Structs;
+import sonnicon.jade.util.Utils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -60,6 +60,6 @@ public abstract class Component implements ICopyable, IComparable, IDebuggable {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapFrom("entity", entity);
+        return Utils.mapFrom("entity", entity);
     }
 }

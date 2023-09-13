@@ -5,7 +5,7 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.IComparable;
-import sonnicon.jade.util.Structs;
+import sonnicon.jade.util.Utils;
 import sonnicon.jade.world.Tile;
 
 import java.util.Map;
@@ -155,6 +155,6 @@ public class PositionComponent extends Component {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapExtendFrom(super.debugProperties(), "tile", tile, "subx", subx, "suby", suby, "jointx", getJointX(), "jointy", getJointY());
+        return Utils.mapExtendFrom(super.debugProperties(), "tile", tile, "subx", subx, "suby", suby, "jointx", getJointX(), "jointy", getJointY());
     }
 }

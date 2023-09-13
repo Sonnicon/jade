@@ -12,11 +12,10 @@ import sonnicon.jade.graphics.draw.FowBatch;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.util.Direction;
 import sonnicon.jade.util.IComparable;
-import sonnicon.jade.util.Structs;
+import sonnicon.jade.util.Utils;
 import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.Tile;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -192,7 +191,7 @@ public class FowDrawComponent extends Component implements IRenderable {
 
     @Override
     public HashSet<Class<? extends Component>> getDependencies() {
-        return Structs.setFrom(PositionComponent.class);
+        return Utils.setFrom(PositionComponent.class);
     }
 
     @Override
@@ -259,7 +258,7 @@ public class FowDrawComponent extends Component implements IRenderable {
         //// Diagonal shadows
 
         // which way is the shadow going
-        byte shadowDirection = Direction.relate(playerPos.tile, drawTile);
+        byte shadowDirection = Direction.relate(playerPos, positionComponent, Tile.SUBTILE_NUM / 2);
         byte shadowLeftIndex = 0;
         for (byte i = 0; i < 4; i++) {
             if ((shadowDirection & (1 << i)) > 0 && (shadowDirection & (1 << ((i + 1) % 4))) > 0) {
@@ -466,6 +465,6 @@ public class FowDrawComponent extends Component implements IRenderable {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapExtendFrom(super.debugProperties(), "directionCounts", directionCounts, "directionEdges", directionEdges, "endFows", endFows);
+        return Utils.mapExtendFrom(super.debugProperties(), "directionCounts", directionCounts, "directionEdges", directionEdges, "endFows", endFows);
     }
 }

@@ -3,7 +3,7 @@ package sonnicon.jade.entity.components;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
 import sonnicon.jade.generated.EventTypes;
-import sonnicon.jade.util.Structs;
+import sonnicon.jade.util.Utils;
 import sonnicon.jade.world.Tile;
 
 import java.util.HashSet;
@@ -26,7 +26,7 @@ public class TileTraitComponent extends Component {
     }
 
     public TileTraitComponent(Traits.Trait... traits) {
-        setup(Structs.setFrom(traits));
+        setup(Utils.setFrom(traits));
     }
 
     public TileTraitComponent setup(HashSet<Traits.Trait> traits) {
@@ -69,11 +69,11 @@ public class TileTraitComponent extends Component {
 
     @Override
     public HashSet<Class<? extends Component>> getDependencies() {
-        return Structs.setFrom(PositionComponent.class);
+        return Utils.setFrom(PositionComponent.class);
     }
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapExtendFrom(super.debugProperties(), "traits", traits);
+        return Utils.mapExtendFrom(super.debugProperties(), "traits", traits);
     }
 }

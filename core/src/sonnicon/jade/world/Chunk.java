@@ -7,7 +7,7 @@ import sonnicon.jade.graphics.draw.CachedDrawBatch;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.util.Direction;
 import sonnicon.jade.util.IDebuggable;
-import sonnicon.jade.util.Structs;
+import sonnicon.jade.util.Utils;
 
 import java.util.Map;
 
@@ -104,6 +104,6 @@ public class Chunk implements IRenderable, IDebuggable {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Structs.mapFrom("x", x, "y", y, "world", world, "tiles", tiles, "nearbyChunks", nearbyChunks, "culled", culled, "subrenderer", subRenderer);
+        return Utils.mapFrom("x", x, "y", y, "world", world, "tiles", tiles, "nearbyChunks", nearbyChunks, "culled", culled, "subrenderer", subRenderer);
     }
 }

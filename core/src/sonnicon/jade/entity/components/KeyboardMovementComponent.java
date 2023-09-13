@@ -8,16 +8,16 @@ import sonnicon.jade.content.ItemPrinter;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.game.Clock;
-import sonnicon.jade.game.Content;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.draw.CachedDrawBatch;
 import sonnicon.jade.graphics.particles.TextParticle;
 import sonnicon.jade.gui.StageIngame;
+import sonnicon.jade.input.WorldInput;
 import sonnicon.jade.util.Direction;
 import sonnicon.jade.util.IComparable;
-import sonnicon.jade.util.Structs;
+import sonnicon.jade.util.Utils;
 import sonnicon.jade.world.Tile;
 
 import java.util.HashSet;
@@ -34,6 +34,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
     private static final Vector3 TEMP_VEC = new Vector3();
 
     private static final EventTypes.EntityMoveTileEvent onMoveTile = (Entity ent, Tile source, Tile destination) -> {
+        ((CachedDrawBatch) Renderer.Batch.terrainDynamic.batch).invalidate();
         ((CachedDrawBatch) Renderer.Batch.fow.batch).invalidate();
 
         if (destination != null) {
@@ -44,7 +45,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
                     if (e.getComponent(PositionComponent.class) != null) {
                         iter.remove();
                         PositionComponent epc = e.getComponent(PositionComponent.class);
-                        Content.world.getTileScreenPosition(TEMP_VEC, epc.tile);
+                        WorldInput.readWorldPosition(TEMP_VEC, epc.tile);
                         Jade.renderer.particles.createParticle(TextParticle.class, TEMP_VEC.x, TEMP_VEC.y).setText("item!");
                         epc.moveTo(null);
                     }
@@ -56,6 +57,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
     };
 
     private static final EventTypes.EntityMovePosEvent onMovePos = (e, i2, i3, i4, i5) -> {
+        ((CachedDrawBatch) Renderer.Batch.terrainDynamic.batch).invalidate();
         ((CachedDrawBatch) Renderer.Batch.fow.batch).invalidate();
         Jade.renderer.viewOverlay.x = e.getComponent(PositionComponent.class).getDrawX();
         Jade.renderer.viewOverlay.y = e.getComponent(PositionComponent.class).getDrawY();
@@ -81,7 +83,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
 
     @Override
     public HashSet<Class<? extends Component>> getDependencies() {
-        return Structs.setFrom(PositionComponent.class, StorageComponent.class);
+        return Utils.setFrom(PositionComponent.class, StorageComponent.class);
     }
 
     @Override
