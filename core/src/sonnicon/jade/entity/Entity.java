@@ -59,6 +59,13 @@ public class Entity implements ICopyable, IComparable, IDebuggable {
         return true;
     }
 
+    public boolean removeComponent(Component component) {
+        //todo implement
+        components.remove(component.getKeyClass(), component);
+        component.removeFromEntity(this);
+        return true;
+    }
+
     public <T extends Component> T getComponent(Class<T> type) {
         return (T) components.getOrDefault(type, null);
     }

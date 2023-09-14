@@ -2,8 +2,8 @@ package sonnicon.jade.entity.components.graphical;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import sonnicon.jade.entity.Entity;
-import sonnicon.jade.entity.components.PositionComponent;
 import sonnicon.jade.entity.components.player.PlayerControlComponent;
+import sonnicon.jade.entity.components.world.PositionComponent;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
@@ -103,7 +103,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
 
             case terrainTop: {
                 // Internal shadows
-                Entity playerEntity = PlayerControlComponent.getControlledEntity();
+                Entity playerEntity = PlayerControlComponent.getEntity();
                 if (playerEntity == null) {
                     return;
                 }

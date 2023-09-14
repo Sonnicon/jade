@@ -1,7 +1,8 @@
-package sonnicon.jade.entity.components;
+package sonnicon.jade.entity.components.world;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
+import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.Utils;
 import sonnicon.jade.world.Tile;

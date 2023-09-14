@@ -2,11 +2,11 @@ package sonnicon.jade.content;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
-import sonnicon.jade.entity.components.PositionComponent;
-import sonnicon.jade.entity.components.TileTraitComponent;
 import sonnicon.jade.entity.components.graphical.ChunkDrawComponent;
 import sonnicon.jade.entity.components.graphical.FowDrawComponent;
 import sonnicon.jade.entity.components.graphical.WallDrawComponent;
+import sonnicon.jade.entity.components.world.PositionComponent;
+import sonnicon.jade.entity.components.world.TileTraitComponent;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.world.Tile;

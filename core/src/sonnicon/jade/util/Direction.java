@@ -1,6 +1,6 @@
 package sonnicon.jade.util;
 
-import sonnicon.jade.entity.components.PositionComponent;
+import sonnicon.jade.entity.components.world.PositionComponent;
 import sonnicon.jade.world.Tile;
 
 import java.util.function.Consumer;

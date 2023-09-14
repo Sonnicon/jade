@@ -1,6 +1,7 @@
-package sonnicon.jade.entity.components;
+package sonnicon.jade.entity.components.world;
 
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.game.Content;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.Direction;
@@ -22,13 +23,9 @@ public class MoveboxComponent extends Component {
 
     private PositionComponent positionComponent;
 
-    private static final EventTypes.EntityMovePosEvent MOVE_POS_EVENT = (Entity e, Short i1, Short i2, Short i3, Short i4) -> {
-        processMove(e);
-    };
+    private static final EventTypes.EntityMovePosEvent MOVE_POS_EVENT = (Entity e, Short i1, Short i2, Short i3, Short i4) -> processMove(e);
 
-    private static final EventTypes.EntityMoveTileEvent MOVE_TILE_EVENT = (Entity e, Tile i1, Tile i2) -> {
-        processMove(e);
-    };
+    private static final EventTypes.EntityMoveTileEvent MOVE_TILE_EVENT = (Entity e, Tile i1, Tile i2) -> processMove(e);
 
     public MoveboxComponent() {
 
@@ -86,9 +83,9 @@ public class MoveboxComponent extends Component {
         short posTop = (short) ((y + size - 1) / Tile.SUBTILE_NUM);
 
         Tile tx = Content.world.getTile(posLeft, posBottom);
-        while (tx.getX() <= posRight) {
+        while (tx != null && tx.getX() <= posRight) {
             Tile ty = tx;
-            while (ty.getY() <= posTop) {
+            while (ty != null && ty.getY() <= posTop) {
                 coveredTilesOperation.add(ty);
                 ty = ty.getNearby(Direction.NORTH);
             }

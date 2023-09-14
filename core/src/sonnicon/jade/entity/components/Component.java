@@ -10,13 +10,13 @@ import java.util.HashSet;
 import java.util.Map;
 
 public abstract class Component implements ICopyable, IComparable, IDebuggable {
-    protected Entity entity;
+    public Entity entity;
 
     public boolean canAddToEntity(Entity entity) {
         HashSet<Class<? extends Component>> deps = getDependencies();
         if (deps != null) {
             for (Class<? extends Component> dep : deps) {
-                if (!entity.components.containsKey(dep)) {
+                if (!entity.hasComponentFuzzy(dep)) {
                     return false;
                 }
             }
@@ -38,10 +38,6 @@ public abstract class Component implements ICopyable, IComparable, IDebuggable {
 
     public Class<? extends Component> getKeyClass() {
         return getClass();
-    }
-
-    public void dispose() {
-
     }
 
     @Override

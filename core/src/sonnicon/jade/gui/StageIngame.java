@@ -36,7 +36,7 @@ public class StageIngame extends GuiStage {
 
     public InventoryMovePopup popupInventoryMove;
 
-    protected int nextHandIndex = 0;
+    protected short nextHandIndex = 0;
     protected Table handTableLeft, handTableRight, toolbarWrapper;
     protected HorizontalGroup toolbarGroup;
 
@@ -108,7 +108,7 @@ public class StageIngame extends GuiStage {
             return;
         }
 
-        CharacterStorageComponent storageComponent = (CharacterStorageComponent) PlayerControlComponent.getControlledEntity().getComponent(StorageComponent.class);
+        CharacterStorageComponent storageComponent = (CharacterStorageComponent) PlayerControlComponent.getEntity().getComponent(StorageComponent.class);
         if (storageComponent != null) {
             tableMain.add(handTableLeft).width(96f).left().bottom();
             tableMain.add(toolbarWrapper).growX().align(Align.bottomLeft).pad(0f, -4f, 0f, -4f).height(80f);
@@ -132,7 +132,7 @@ public class StageIngame extends GuiStage {
             return;
         }
 
-        CharacterStorageComponent storageComponent = (CharacterStorageComponent) PlayerControlComponent.getControlledEntity().getComponent(StorageComponent.class);
+        CharacterStorageComponent storageComponent = (CharacterStorageComponent) PlayerControlComponent.getEntity().getComponent(StorageComponent.class);
         if (storageComponent != null) {
             nextHandIndex = 0;
             for (EntityStorageSlot hand : storageComponent.hands) {

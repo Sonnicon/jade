@@ -2,7 +2,7 @@ package sonnicon.jade.world;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
-import sonnicon.jade.entity.components.MoveboxComponent;
+import sonnicon.jade.entity.components.world.MoveboxComponent;
 import sonnicon.jade.util.*;
 
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package sonnicon.jade.entity.components;
+package sonnicon.jade.entity.components.player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -6,7 +6,9 @@ import com.badlogic.gdx.math.Vector3;
 import sonnicon.jade.Jade;
 import sonnicon.jade.content.ItemPrinter;
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.entity.components.storage.StorageComponent;
+import sonnicon.jade.entity.components.world.PositionComponent;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.generated.EventTypes;

@@ -12,6 +12,8 @@ import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.Tile;
 import sonnicon.jade.world.World;
 
+import java.util.Random;
+
 public class Content {
     public static World world;
     //todo this is temporary
@@ -90,7 +92,11 @@ public class Content {
             WorldPrinter.printWallEntity(t);
         }
 
-        ItemPrinter.printItemDebug(world.chunks.get(0).getTile((short) 5, (short) 6));
-        ItemPrinter.printItemDebug(world.chunks.get(0).getTile((short) 10, (short) 8));
+        Random random = new Random();
+        for (int i = 0; i < 8; i++) {
+            ItemPrinter.printItemDebug(world.getTile((short) random.nextInt(32), (short) random.nextInt(32)));
+            ItemPrinter.printWeaponDebug(world.getTile((short) random.nextInt(32), (short) random.nextInt(32)));
+            CharacterPrinter.printCharacterEnemy(world.getTile((short) random.nextInt(32), (short) random.nextInt(32)));
+        }
     }
 }

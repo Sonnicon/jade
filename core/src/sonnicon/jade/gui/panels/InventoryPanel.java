@@ -12,7 +12,6 @@ import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate.State;
 import sonnicon.jade.gui.Gui;
-import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.gui.actors.InventoryContainerButton;
 import sonnicon.jade.gui.actors.InventorySlotButton;
 import sonnicon.jade.util.DoubleLinkedList;
@@ -168,7 +167,7 @@ public class InventoryPanel extends Panel {
 
         if (State.ingame.isActive()) {
             StorageComponent storageComponent =
-                    PlayerControlComponent.getControlledEntity().getComponent(StorageComponent.class);
+                    PlayerControlComponent.getEntity().getComponent(StorageComponent.class);
             if (storageComponent instanceof CharacterStorageComponent) {
                 int handIndex = ((CharacterStorageComponent) storageComponent).hands.indexOf(slot);
                 if (handIndex != -1) {

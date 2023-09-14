@@ -2,7 +2,7 @@ package sonnicon.jade.entity.components.graphical;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
-import sonnicon.jade.entity.components.PositionComponent;
+import sonnicon.jade.entity.components.world.PositionComponent;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
@@ -11,6 +11,7 @@ import sonnicon.jade.graphics.draw.IRegularDraw;
 import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.Utils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
     protected float height;
     protected PositionComponent positionComponent;
     protected Renderer.RenderLayer layer;
+    protected ArrayList<IRenderable> joinedRenderables;
 
     public WorldDrawComponent() {
 
@@ -50,13 +52,30 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
 
     @Override
     public void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
-        if (positionComponent != null && positionComponent.tile != null) {
+        if (textures != null && positionComponent != null && positionComponent.tile != null) {
             IRegularDraw b = (IRegularDraw) batch;
             b.draw(
                     textures.getDrawable().getRegion(),
                     positionComponent.getDrawX() - width / 2,
                     positionComponent.getDrawY() - height / 2,
                     width, height);
+        }
+
+        if (joinedRenderables != null) {
+            joinedRenderables.forEach(r -> r.render(batch, delta, layer));
+        }
+    }
+
+    public void addJoined(IRenderable renderable) {
+        if (joinedRenderables == null) {
+            joinedRenderables = new ArrayList<>();
+        }
+        joinedRenderables.add(renderable);
+    }
+
+    public void removeJoined(IRenderable renderable) {
+        if (joinedRenderables != null) {
+            joinedRenderables.remove(renderable);
         }
     }
 
