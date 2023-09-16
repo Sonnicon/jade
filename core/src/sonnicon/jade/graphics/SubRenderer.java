@@ -1,11 +1,14 @@
 package sonnicon.jade.graphics;
 
 import sonnicon.jade.graphics.draw.GraphicsBatch;
+import sonnicon.jade.util.IDebuggable;
+import sonnicon.jade.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class SubRenderer {
+public class SubRenderer implements IDebuggable {
     protected final int[] renderLayers = new int[Renderer.RenderLayer.size()];
     protected final List<IRenderable> renderList = new ArrayList<>();
 
@@ -49,5 +52,10 @@ public class SubRenderer {
                 renderList.get(i).render(batch, delta, layer);
             }
         }
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Utils.mapFrom("indexes", renderLayers, "renderables", renderList);
     }
 }

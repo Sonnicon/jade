@@ -9,6 +9,7 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.entity.components.world.PositionComponent;
+import sonnicon.jade.game.Actions;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.generated.EventTypes;
@@ -17,6 +18,7 @@ import sonnicon.jade.graphics.draw.CachedDrawBatch;
 import sonnicon.jade.graphics.particles.TextParticle;
 import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.input.WorldInput;
+import sonnicon.jade.input.actions.CharacterMoveAction;
 import sonnicon.jade.util.Direction;
 import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.Utils;
@@ -26,12 +28,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 //todo remove debug component
-public class KeyboardMovementComponent extends Component implements Clock.ITicking, Clock.IUpdate {
+public class KeyboardMovementComponent extends Component implements Clock.IUpdate {
     protected PositionComponent positionComponent;
     protected StorageComponent storageComponent;
 
+    private final CharacterMoveAction characterMoveAction = (CharacterMoveAction) Actions.actionObtain(CharacterMoveAction.class).keepRef();
+
     private boolean pPressed = false, spacePressed = false;
-    private byte moveDirection = 0;
 
     private static final Vector3 TEMP_VEC = new Vector3();
 
@@ -53,16 +56,14 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
                     }
                 }
             }
-            Jade.renderer.viewOverlay.x = ent.getComponent(PositionComponent.class).getDrawX();
-            Jade.renderer.viewOverlay.y = ent.getComponent(PositionComponent.class).getDrawY();
+            Jade.renderer.viewOverlay.moveTo(ent.getComponent(PositionComponent.class));
         }
     };
 
     private static final EventTypes.EntityMovePosEvent onMovePos = (e, i2, i3, i4, i5) -> {
         ((CachedDrawBatch) Renderer.Batch.terrainDynamic.batch).invalidate();
         ((CachedDrawBatch) Renderer.Batch.fow.batch).invalidate();
-        Jade.renderer.viewOverlay.x = e.getComponent(PositionComponent.class).getDrawX();
-        Jade.renderer.viewOverlay.y = e.getComponent(PositionComponent.class).getDrawY();
+        Jade.renderer.viewOverlay.moveTo(e.getComponent(PositionComponent.class));
     };
 
     @Override
@@ -73,6 +74,7 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
         storageComponent = entity.getComponent(StorageComponent.class);
 
         entity.events.register(onMoveTile, onMovePos);
+        Jade.renderer.viewOverlay.moveTo(positionComponent);
     }
 
     @Override
@@ -89,24 +91,9 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
     }
 
     @Override
-    public void tick(float delta) {
-        Tile destination = positionComponent.tile;
-        if (destination == null) {
-            return;
-        }
-
-        if (moveDirection == 0) {
-            return;
-        }
-
-        positionComponent.tryMoveByPos(Direction.directionX(moveDirection), Direction.directionY(moveDirection));
-
-        moveDirection = 0;
-    }
-
-    @Override
     public void update(float delta) {
         //todo make this not poll
+        byte moveDirection = 0;
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             moveDirection |= Direction.NORTH;
         }
@@ -120,6 +107,9 @@ public class KeyboardMovementComponent extends Component implements Clock.ITicki
             moveDirection |= Direction.EAST;
         }
         moveDirection = Direction.flatten(moveDirection);
+        if (moveDirection != 0) {
+            characterMoveAction.set(positionComponent, Direction.directionX(moveDirection), Direction.directionY(moveDirection)).time(1f).enqueue();
+        }
 
         if (Gdx.input.isKeyPressed(Input.Keys.I)) {
             ((StageIngame) Gamestate.State.ingame.getStage()).panelInventory.show(storageComponent.storage);

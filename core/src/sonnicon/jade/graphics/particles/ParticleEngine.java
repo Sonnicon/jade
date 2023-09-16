@@ -6,11 +6,14 @@ import sonnicon.jade.game.Clock;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
+import sonnicon.jade.util.IDebuggable;
+import sonnicon.jade.util.Utils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
-public class ParticleEngine implements IRenderable, Clock.ITicking {
+public class ParticleEngine implements IRenderable, Clock.ITicking, IDebuggable {
     private final ArrayList<Particle> particles;
 
     public ParticleEngine(Renderer renderer) {
@@ -55,5 +58,10 @@ public class ParticleEngine implements IRenderable, Clock.ITicking {
         particles.forEach(Pools::free);
         particles.clear();
         Jade.renderer.removeRenderable(this);
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Utils.mapFrom("particles", particles);
     }
 }

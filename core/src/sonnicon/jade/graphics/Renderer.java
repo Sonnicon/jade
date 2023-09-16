@@ -12,12 +12,15 @@ import sonnicon.jade.graphics.draw.*;
 import sonnicon.jade.graphics.overlays.ViewOverlay;
 import sonnicon.jade.graphics.particles.ParticleEngine;
 import sonnicon.jade.gui.Gui;
+import sonnicon.jade.util.IDebuggable;
+import sonnicon.jade.util.Utils;
 import sonnicon.jade.world.Chunk;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Map;
 
-public class Renderer {
+public class Renderer implements IDebuggable {
     public Viewport viewport;
     public OrthographicCamera camera;
     public ParticleEngine particles;
@@ -49,6 +52,7 @@ public class Renderer {
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
 
+        //todo find a place for this
         viewOverlay = new ViewOverlay();
         viewOverlay.setRadius(160);
     }
@@ -208,6 +212,22 @@ public class Renderer {
 
     public boolean removeRenderable(IRenderable renderable) {
         return renderFullList.remove(renderable) || subRenderer.removeRenderable(renderable);
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Utils.mapFrom(
+                "particle_engine", particles,
+                "viewportScale", viewportScale,
+                "resolution", resolution,
+                "camEdgeLeft", cameraEdgeLeft,
+                "camEdgeRight", cameraEdgeRight,
+                "camEdgeTop", cameraEdgeTop,
+                "camEdgeBottom", cameraEdgeBottom,
+                "renderFullList", renderFullList,
+                "subRenderer", subRenderer,
+                "viewOverlay", viewOverlay
+        );
     }
 
     public enum Batch {

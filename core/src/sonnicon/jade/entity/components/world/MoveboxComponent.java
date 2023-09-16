@@ -129,7 +129,8 @@ public class MoveboxComponent extends Component {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Utils.mapExtendFrom(super.debugProperties(), "size", size, "tiles", coveredTiles);
+        return Utils.mapExtendFrom(super.debugProperties(), "size", size, "tiles", coveredTiles,
+                "s_operX", operX, "s_operY", operY, "s_operSize", operSize, "s_coveredTilesOperation", coveredTilesOperation);
     }
 
     @Override

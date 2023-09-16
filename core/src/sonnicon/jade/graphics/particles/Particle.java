@@ -2,8 +2,12 @@ package sonnicon.jade.graphics.particles;
 
 import com.badlogic.gdx.utils.Pool;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
+import sonnicon.jade.util.IDebuggable;
+import sonnicon.jade.util.Utils;
 
-public abstract class Particle implements Pool.Poolable {
+import java.util.Map;
+
+public abstract class Particle implements Pool.Poolable, IDebuggable {
     public float life = 0f;
     public float lifetime = 1f;
     public boolean destroy = false;
@@ -35,5 +39,10 @@ public abstract class Particle implements Pool.Poolable {
     @Override
     public void reset() {
 
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Utils.mapFrom("life", life, "lifetime", lifetime, "x", x, "y");
     }
 }

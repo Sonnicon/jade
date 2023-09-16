@@ -3,6 +3,10 @@ package sonnicon.jade.gui.panels;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import sonnicon.jade.Jade;
+import sonnicon.jade.entity.components.player.PlayerControlComponent;
+import sonnicon.jade.game.Actions;
+import sonnicon.jade.game.Clock;
 import sonnicon.jade.gui.Gui;
 import sonnicon.jade.util.IDebuggable;
 import sonnicon.jade.util.Utils;
@@ -19,6 +23,7 @@ public class DebugPanel extends Panel {
     protected Table tableContents;
 
     private static final Set<Class<?>> PURE_TYPES = Utils.setFrom(Integer.class, Byte.class, Short.class, Long.class, Float.class, Double.class, Boolean.class, Character.class, String.class);
+    private static final DebugGlobal DEBUG_GLOBAL = new DebugGlobal();
 
     public DebugPanel() {
     }
@@ -41,11 +46,20 @@ public class DebugPanel extends Panel {
         labelName.setFontScale(1.2f);
         tableTitle.add(labelName).left().expandX().padLeft(12f);
 
-        ImageButton buttonClose = new ImageButton(Gui.skin, "imagebutton-inventorycontent-close");
-        buttonClose.addListener(new ChangeListener() {
+        ImageButton buttonGlobal = new ImageButton(Gui.skin, "imagebutton-inventorycontent-world");
+        buttonGlobal.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                hide();
+                show(DEBUG_GLOBAL);
+                recreate();
+            }
+        });
+
+        ImageButton buttonRefresh = new ImageButton(Gui.skin, "imagebutton-inventorycontent-refresh");
+        buttonRefresh.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                recreate();
             }
         });
 
@@ -58,7 +72,17 @@ public class DebugPanel extends Panel {
             }
         });
 
+        ImageButton buttonClose = new ImageButton(Gui.skin, "imagebutton-inventorycontent-close");
+        buttonClose.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                hide();
+            }
+        });
+
         Table buttonsTable = new Table();
+        buttonsTable.add(buttonGlobal);
+        buttonsTable.add(buttonRefresh);
         buttonsTable.add(buttonBack);
         buttonsTable.add(buttonClose);
         add(buttonsTable).top().right().row();
@@ -75,6 +99,10 @@ public class DebugPanel extends Panel {
 
     @Override
     protected void recreate() {
+        if (targets.isEmpty()) {
+            hide();
+            return;
+        }
         labelName.setText(IDebuggable.debugName(targets.peek()));
 
         tableContents.clearChildren();
@@ -118,5 +146,26 @@ public class DebugPanel extends Panel {
     public void hide() {
         super.hide();
         targets.clear();
+    }
+
+    private static final class DebugGlobal implements IDebuggable {
+
+        @Override
+        public String debugName() {
+            return "Global";
+        }
+
+        @Override
+        public Map<Object, Object> debugProperties() {
+            return Utils.mapFrom(
+                    "actions", Actions.actions,
+                    "clock_ticking", Clock.ticking,
+                    "clock_updating", Clock.updating,
+                    "clock_tick", Clock.getTickNum(),
+                    "clock_update", Clock.getUpdateNum(),
+                    "controlled", PlayerControlComponent.getEntity(),
+                    "renderer", Jade.renderer
+            );
+        }
     }
 }

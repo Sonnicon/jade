@@ -3,10 +3,15 @@ package sonnicon.jade.graphics.overlays;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import sonnicon.jade.entity.components.world.PositionComponent;
 import sonnicon.jade.graphics.draw.Shaders;
 import sonnicon.jade.graphics.draw.SpriteBatch;
+import sonnicon.jade.util.IDebuggable;
+import sonnicon.jade.util.Utils;
 
-public class ViewOverlay {
+import java.util.Map;
+
+public class ViewOverlay implements IDebuggable {
     private FrameBuffer framebuffer;
     private final Mesh mesh;
 
@@ -27,6 +32,15 @@ public class ViewOverlay {
 
         this.radius = radius;
         this.invalidated = true;
+    }
+
+    public void moveTo(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void moveTo(PositionComponent positionComponent) {
+        moveTo(positionComponent.getDrawX(), positionComponent.getDrawY());
     }
 
     private void create() {
@@ -56,5 +70,10 @@ public class ViewOverlay {
         }
 
         batch.draw(framebuffer.getColorBufferTexture(), x - radius, y - radius, radius * 2, radius * 2);
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Utils.mapFrom("radius", radius, "x", x, "y", y);
     }
 }

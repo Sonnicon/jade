@@ -131,7 +131,6 @@
 
   ImageButtonStyle: {
     default: {
-
     }
     imagebutton-inventorycontent-close: {
       up: button-inventory-2-9p
@@ -140,7 +139,17 @@
 
     imagebutton-inventorycontent-back: {
       up: button-inventory-2-9p
-      imageUp: icon-arrow-right
+      imageUp: icon-arrow-left
+    }
+
+    imagebutton-inventorycontent-world: {
+      up: button-inventory-2-9p
+      imageUp: icon-world
+    }
+
+    imagebutton-inventorycontent-refresh: {
+      up: button-inventory-2-9p
+      imageUp: icon-refresh
     }
   }
 }

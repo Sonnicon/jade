@@ -3,8 +3,8 @@ package sonnicon.jade.game;
 import java.util.LinkedList;
 
 public class Clock {
-    protected static LinkedList<ITicking> ticking = new LinkedList<>();
-    protected static LinkedList<IUpdate> updating = new LinkedList<>();
+    public static LinkedList<ITicking> ticking = new LinkedList<>();
+    public static LinkedList<IUpdate> updating = new LinkedList<>();
 
     private static float tickNum = 0f, updateNum = 0f;
 
