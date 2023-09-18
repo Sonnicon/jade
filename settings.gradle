@@ -1,1 +1,1 @@
-include 'desktop', 'core', 'annotations', 'annotations:processor'
+include 'annotations', 'annotations:processor', 'assets', 'core', 'desktop'

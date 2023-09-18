@@ -4,7 +4,6 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
-import sonnicon.jade.util.IComparable;
 import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.Tile;
 
@@ -60,19 +59,6 @@ public class ChunkDrawComponent extends WorldDrawComponent {
 
     protected void removeFromChunk() {
         currentChunk.removeRenderable(this);
-    }
-
-    @Override
-    public boolean compare(IComparable other) {
-        if (!super.compare(other)) {
-            return false;
-        }
-        ChunkDrawComponent comp = (ChunkDrawComponent) other;
-        return textures == comp.textures &&
-                width == comp.width &&
-                height == comp.height &&
-                layer == comp.layer &&
-                positionComponent.compare(((ChunkDrawComponent) other).positionComponent);
     }
 
     @Override

@@ -72,17 +72,16 @@ public class StageIngame extends GuiStage {
         });
 
 
-        // toolbarWrapper { toolbarPane { toolbarGroup } } }
         toolbarGroup = new HorizontalGroup();
         ScrollPane toolbarPane = new ScrollPane(toolbarGroup);
         toolbarWrapper = new Table(Gui.skin);
 
-        toolbarWrapper.add(toolbarPane).growX();
+        toolbarWrapper.add(toolbarPane).growX().pad(0f, 4f, 0f, 4f);
         toolbarWrapper.background("panel-toolbar-9p");
 
         toolbarGroup.setFillParent(true);
         toolbarGroup.left();
-        toolbarGroup.space(8f);
+        toolbarGroup.space(6f);
 
         toolbarPane.setScrollingDisabled(false, true);
         toolbarPane.setOverscroll(false, false);
@@ -92,9 +91,11 @@ public class StageIngame extends GuiStage {
 
     public Table addToolbarButton(String drawable, Runnable clicked) {
         Table table = new Table();
-        TapButton button = new TapButton("panel-1", new Image(Textures.atlasFindDrawable(drawable)));
+        TapButton button = new TapButton("button-toolbar", new Image(Textures.atlasFindDrawable(drawable)));
+        button.actorCell.pad(4f);
+
         button.setTapAction(clicked);
-        table.add(button).size(56f);
+        table.add(button).size(76f).pad(3f, 0f, 3f, 0f);
         toolbarEntries.add(table);
         if (toolbarGroup != null) {
             toolbarGroup.addActor(table);
@@ -110,9 +111,9 @@ public class StageIngame extends GuiStage {
 
         CharacterStorageComponent storageComponent = (CharacterStorageComponent) PlayerControlComponent.getEntity().getComponent(StorageComponent.class);
         if (storageComponent != null) {
-            tableMain.add(handTableLeft).width(96f).left().bottom();
-            tableMain.add(toolbarWrapper).growX().align(Align.bottomLeft).pad(0f, -4f, 0f, -4f).height(80f);
-            tableMain.add(handTableRight).width(96f).right().bottom();
+            tableMain.add(handTableLeft).left().bottom();
+            tableMain.add(toolbarWrapper).growX().align(Align.bottomLeft);
+            tableMain.add(handTableRight).right().bottom();
             toolbarWrapper.setZIndex(handTableRight.getZIndex() + 1);
 
             toolbarEntries.forEach(actor -> toolbarGroup.addActor(actor));

@@ -1,0 +1,10 @@
+import com.badlogic.gdx.tools.texturepacker.TexturePackerFileProcessor
+
+abstract class PackSpritesTask extends DefaultTask {
+    @TaskAction
+    def invoke() {
+        new TexturePackerFileProcessor().process(new File("assets/spritesRaw/"), new File("assets/sprites/"))
+    }
+}
+
+tasks.register("packSprites", PackSpritesTask)

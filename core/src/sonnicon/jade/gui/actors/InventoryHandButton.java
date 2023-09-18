@@ -28,6 +28,15 @@ public class InventoryHandButton extends InventorySlotButton {
     }
 
     @Override
+    public void recreate() {
+        super.recreate();
+        if (cellEntityStack != null) {
+            boolean left = handNumber % 2 == 0;
+            cellEntityStack.pad(0f, left ? 9f : 0, 9f, left ? 0f : 9f);
+        }
+    }
+
+    @Override
     public void tapped() {
         PlayerControlComponent control = PlayerControlComponent.getControlled();
         if (control.selectedHand == -1) {
@@ -51,5 +60,15 @@ public class InventoryHandButton extends InventorySlotButton {
         slot.events.unregister(slotWatch);
         slotWatch = null;
         return super.remove();
+    }
+
+    @Override
+    public float getPrefWidth() {
+        return 114f;
+    }
+
+    @Override
+    public float getPrefHeight() {
+        return 114f;
     }
 }

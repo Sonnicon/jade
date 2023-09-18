@@ -10,7 +10,7 @@ public class TextPopup extends Popup {
     @Override
     public void create() {
         super.create();
-        background("button-inventory-1-9p");
+        background("panel-inventory-rounded-9p");
         label = new Label("", Gui.skin);
         add(label);
     }

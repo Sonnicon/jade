@@ -3,12 +3,14 @@ package sonnicon.jade.gui.actors;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import sonnicon.jade.gui.Gui;
 
 public class TapButton extends Button {
     protected ClickListener tapClickListener;
     public Runnable tapAction;
+    public Cell<Actor> actorCell;
 
     public TapButton(String style) {
         super(Gui.skin, style);
@@ -31,7 +33,7 @@ public class TapButton extends Button {
 
     public TapButton(String style, Actor actor) {
         this(style);
-        add(actor).grow();
+        actorCell = add(actor).grow();
     }
 
     public void setTapAction(Runnable action) {

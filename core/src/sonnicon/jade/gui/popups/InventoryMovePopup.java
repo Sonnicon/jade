@@ -12,7 +12,7 @@ public class InventoryMovePopup extends Popup {
     @Override
     public void create() {
         super.create();
-        background("button-inventory-1-9p");
+        background("panel-inventory-rounded-9p");
 
         int displayedButtons = 0;
         for (EntityStorageSlot.InventoryMove action : EntityStorageSlot.InventoryMove.values()) {
@@ -20,7 +20,7 @@ public class InventoryMovePopup extends Popup {
                 continue;
             }
 
-            TapButton button = new TapButton("button-inventorycontent");
+            TapButton button = new TapButton("button-inventory-control");
             button.add(new Image(action.icon)).grow();
             button.tapAction = () -> hide(action);
             add(button).size(64f);

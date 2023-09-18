@@ -63,10 +63,10 @@ public class InventoryPanel extends Panel {
     @Override
     public void create() {
         super.create();
-        wrapper.pad(4f, 100f, 0f, 100f);
+        wrapper.pad(4f, 111f, 0f, 111f);
         wrapper.debugAll();
 
-        background("button-inventory-1-9p");
+        background("panel-inventory-rounded-9p");
 
         Table tableTitle = new Table();
         add(tableTitle).growX().padLeft(4f).row();
@@ -74,7 +74,7 @@ public class InventoryPanel extends Panel {
         Label labelTitle = new Label("Contents", Gui.skin);
         tableTitle.add(labelTitle).left().expandX();
 
-        ImageButton buttonClose = new ImageButton(Gui.skin, "imagebutton-inventorycontent-close");
+        ImageButton buttonClose = new ImageButton(Gui.skin, "imagebutton-inventory-control-close");
         buttonClose.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -92,16 +92,16 @@ public class InventoryPanel extends Panel {
 
 
         Table containersWrapper = new Table(Gui.skin);
-        containersWrapper.background("button-inventory-1-9p");
+        containersWrapper.background("panel-inventory-9p");
         containerGroup = new HorizontalGroup();
         containerGroup.left().space(4f);
         ScrollPane containersPane = new ScrollPane(containerGroup);
         wrapper.row();
-        wrapper.add(containersWrapper).growX().pad(4f, 0f, 0f, 0f).height(96f);
+        wrapper.add(containersWrapper).growX().pad(-3f, 0f, 0f, 0f).height(96f);
         containersWrapper.add(containersPane).growX().pad(0f, -4f, 0f, -4f);
         containersPane.setScrollingDisabled(false, true);
 
-        containerExitButton = new ImageButton(Gui.skin, "imagebutton-inventorycontent-close") {
+        containerExitButton = new ImageButton(Gui.skin, "imagebutton-inventory-control-close") {
             @Override
             public float getPrefWidth() {
                 return 64f;
@@ -112,7 +112,7 @@ public class InventoryPanel extends Panel {
                 return 64f;
             }
         };
-        containerExitButton.background("button-inventory-2-9p").pad(0f, 4f, 0f, 4f);
+        containerExitButton.background("button-inventory-control-9p").pad(0f, 4f, 0f, 4f);
         containerExitButton.addCaptureListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -158,7 +158,7 @@ public class InventoryPanel extends Panel {
 
     public void addInventoryButton(EntityStorageSlot slot) {
         InventorySlotButton slotButton = new InventorySlotButton(slot);
-        entriesTable.add(slotButton).align(Align.topLeft);
+        entriesTable.add(slotButton).align(Align.topLeft).pad(2f);
         if (slot.hasStorageEntity()) {
             InventoryContainerButton containerButton = new InventoryContainerButton(slot);
             containerGroup.addActor(containerButton);

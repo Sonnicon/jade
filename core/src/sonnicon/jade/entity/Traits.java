@@ -64,6 +64,16 @@ public class Traits implements IDebuggable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o == null || !getClass().isAssignableFrom(o.getClass())) {
+            return false;
+        }
+        Traits other = (Traits) o;
+        return (traits == null && other.traits == null) ||
+                (traits != null && other.traits != null && traits.equals(other.traits));
+    }
+
+    @Override
     public Map<Object, Object> debugProperties() {
         return IDebuggable.debugProperties(traits);
     }

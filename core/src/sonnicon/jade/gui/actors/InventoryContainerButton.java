@@ -12,7 +12,7 @@ public class InventoryContainerButton extends TapButton {
     public EntityStorageSlot slot;
 
     public InventoryContainerButton(EntityStorageSlot slot) {
-        super("button-inventorycontent");
+        super("button-inventory-slot");
         this.slot = slot;
         create();
     }

@@ -451,11 +451,7 @@ public class FowDrawComponent extends Component implements IRenderable {
 
     @Override
     public boolean compare(IComparable other) {
-        if (!super.compare(other)) {
-            return false;
-        }
-        FowDrawComponent comp = (FowDrawComponent) other;
-        return positionComponent.compare(comp.positionComponent);
+        return true;
     }
 
     @Override

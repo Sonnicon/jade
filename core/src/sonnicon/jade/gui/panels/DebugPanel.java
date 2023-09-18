@@ -34,7 +34,7 @@ public class DebugPanel extends Panel {
         wrapper.pad(32f, 32f, 32f, 32f);
         cell.maxSize(800f, 1000f);
 
-        background("button-inventory-1-9p");
+        background("panel-inventory-rounded-9p");
 
         Table tableTitle = new Table();
         ScrollPane titleScrollPane = new ScrollPane(tableTitle);
@@ -46,7 +46,7 @@ public class DebugPanel extends Panel {
         labelName.setFontScale(1.2f);
         tableTitle.add(labelName).left().expandX().padLeft(12f);
 
-        ImageButton buttonGlobal = new ImageButton(Gui.skin, "imagebutton-inventorycontent-world");
+        ImageButton buttonGlobal = new ImageButton(Gui.skin, "imagebutton-inventory-control-world");
         buttonGlobal.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -55,7 +55,7 @@ public class DebugPanel extends Panel {
             }
         });
 
-        ImageButton buttonRefresh = new ImageButton(Gui.skin, "imagebutton-inventorycontent-refresh");
+        ImageButton buttonRefresh = new ImageButton(Gui.skin, "imagebutton-inventory-control-refresh");
         buttonRefresh.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -63,7 +63,7 @@ public class DebugPanel extends Panel {
             }
         });
 
-        ImageButton buttonBack = new ImageButton(Gui.skin, "imagebutton-inventorycontent-back");
+        ImageButton buttonBack = new ImageButton(Gui.skin, "imagebutton-inventory-control-back");
         buttonBack.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -72,7 +72,7 @@ public class DebugPanel extends Panel {
             }
         });
 
-        ImageButton buttonClose = new ImageButton(Gui.skin, "imagebutton-inventorycontent-close");
+        ImageButton buttonClose = new ImageButton(Gui.skin, "imagebutton-inventory-control-close");
         buttonClose.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -88,11 +88,11 @@ public class DebugPanel extends Panel {
         add(buttonsTable).top().right().row();
 
         Table contentsWrapper = new Table();
-        add(contentsWrapper).grow().colspan(2);
+        add(contentsWrapper).grow().colspan(2).padTop(4f);
 
         tableContents = new Table(Gui.skin);
         tableContents.top().left();
-        tableContents.background("button-inventory-2-9p");
+        tableContents.background("panel-debug-9p");
         ScrollPane paneDescription = new ScrollPane(tableContents);
         contentsWrapper.add(paneDescription).grow();
     }
@@ -126,7 +126,7 @@ public class DebugPanel extends Panel {
         if (PURE_TYPES.contains(target.getClass())) {
             result = new Label(target.toString(), Gui.skin);
         } else {
-            result = new TextButton("[" + IDebuggable.debugName(target) + "]", Gui.skin);
+            result = new TextButton("[" + IDebuggable.debugName(target) + "]", Gui.skin, "debug");
             result.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {

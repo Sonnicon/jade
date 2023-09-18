@@ -24,11 +24,10 @@ public class InventoryDetailsPanel extends Panel {
     @Override
     public void create() {
         super.create();
-        wrapper.pad(32f, 32f, 32f, 32f);
+        wrapper.pad(16f, 123f, 12f, 123f);
         wrapper.debugAll();
-        cell.maxSize(600f, 1000f);
 
-        background("button-inventory-1-9p");
+        background("panel-inventory-rounded-9p");
 
         Table tableTitle = new Table();
         add(tableTitle).growX().padLeft(4f).top();
@@ -40,7 +39,7 @@ public class InventoryDetailsPanel extends Panel {
         labelEntity.setFontScale(1.2f);
         tableTitle.add(labelEntity).left().expandX().padLeft(12f);
 
-        ImageButton buttonClose = new ImageButton(Gui.skin, "imagebutton-inventorycontent-close");
+        ImageButton buttonClose = new ImageButton(Gui.skin, "imagebutton-inventory-control-close");
         buttonClose.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -54,7 +53,7 @@ public class InventoryDetailsPanel extends Panel {
         add(tableContents).grow().colspan(2);
 
         Table tableDescripton = new Table(Gui.skin);
-        tableDescripton.background("button-inventory-2-9p");
+        tableDescripton.background("button-inventory-slot-9p");
         ScrollPane paneDescription = new ScrollPane(tableDescripton);
         paneDescription.setScrollingDisabled(true, false);
         tableContents.add(paneDescription).growX();

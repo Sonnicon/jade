@@ -35,15 +35,3 @@ subprojects {
     sourceCompatibility = 1.8
     sourceSets.main.java.srcDirs = ["src/"]
 }
-
-
-import com.badlogic.gdx.tools.texturepacker.TexturePacker
-
-abstract class PackSpritesTask extends DefaultTask {
-    @TaskAction
-    def invoke() {
-        TexturePacker.process("assets/spritesRaw/", "assets/sprites/", "sprites.atlas")
-    }
-}
-
-tasks.register("packSprites", PackSpritesTask)

@@ -15,7 +15,7 @@ public class Textures {
     private static Texture spriteSheet;
 
     public static void init() {
-        atlas = new TextureAtlas(Gdx.files.internal("sprites/sprites.atlas"));
+        atlas = new TextureAtlas(Gdx.files.internal("sprites/pack.atlas"));
         spriteSheet = atlas.getTextures().first();
         spriteSheet.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         spriteSheet.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.ClampToEdge);

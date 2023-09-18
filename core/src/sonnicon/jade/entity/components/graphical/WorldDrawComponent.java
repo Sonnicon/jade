@@ -81,15 +81,8 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
 
     @Override
     public boolean compare(IComparable other) {
-        if (!super.compare(other)) {
-            return false;
-        }
-        WorldDrawComponent comp = (WorldDrawComponent) other;
-        return textures == ((WorldDrawComponent) other).textures &&
-                width == comp.width &&
-                height == comp.height &&
-                layer == comp.layer &&
-                positionComponent.compare(((WorldDrawComponent) other).positionComponent);
+        // Comparing this is unnecessary, drawing should be changed by other components which will be compared
+        return true;
     }
 
     @Override

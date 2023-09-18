@@ -1,3 +1,4 @@
+//noinspection GDXNonExistingField
 {
   BitmapFont: {
     foldit.fnt: {
@@ -5,97 +6,128 @@
     }
   },
   com.badlogic.gdx.graphics.g2d.NinePatch: {
-    button-1-9p: {
-      name: "button-1"
-      leftEdge: 1
-      rightEdge: 1
-      bottomEdge: 1
-      leftWidth: 4
-      rightWidth: 4
+    button-hand-l-9p: {
+      name: "button-hand-l"
+      leftEdge: 2
+      rightEdge: 5
+      topEdge: 5
+      bottomEdge: 2
+      leftWidth: 6
+      rightWidth: 15
+      topHeight: 15
       bottomHeight: 6
     }
-    button-inventory-1-9p: {
-      name: "button-inventory-1"
-      leftEdge: 3
-      rightEdge: 3
-      topEdge: 3
-      bottomEdge: 3
-      leftWidth: 12
-      rightWidth: 12
-      topHeight: 12
-      bottomHeight: 12
-    }
-    button-inventory-1-checked-9p: {
-      name: "button-inventory-1-checked"
-      leftEdge: 3
-      rightEdge: 3
-      topEdge: 3
-      bottomEdge: 3
-      leftWidth: 12
-      rightWidth: 12
-      topHeight: 12
-      bottomHeight: 12
-    }
-    button-inventory-2-9p: {
-      name: "button-inventory-2"
-      leftEdge: 1
-      rightEdge: 1
-      topEdge: 1
-      bottomEdge: 1
-      leftWidth: 6
+    button-hand-r-9p: {
+      name: "button-hand-r"
+      leftEdge: 5
+      rightEdge: 2
+      topEdge: 5
+      bottomEdge: 2
+      leftWidth: 15
       rightWidth: 6
-      topHeight: 6
-      bottomHeight: 6
-    }
-    button-inventory-2-checked-9p: {
-      name: "button-inventory-2-checked"
-      leftEdge: 1
-      rightEdge: 1
-      topEdge: 1
-      bottomEdge: 1
-      leftWidth: 6
-      rightWidth: 6
-      topHeight: 6
-      bottomHeight: 6
-    }
-    button-inventory-1-bottomless-9p: {
-      name: "button-inventory-1"
-      leftEdge: 3
-      rightEdge: 3
-      topEdge: 3
-      bottomEdge: 3
-      leftWidth: 12
-      rightWidth: 12
-      topHeight: 12
-      bottomHeight: 0
-    }
-    panel-1-9p: {
-      name: "panel-1"
-      leftEdge: 1
-      rightEdge: 1
-      topEdge: 1
-      bottomEdge: 1
-      leftWidth: 6
-      rightWidth: 6
-      topHeight: 6
+      topHeight: 15
       bottomHeight: 6
     }
     panel-toolbar-9p: {
       name: "panel-toolbar"
+      leftEdge: 0
+      rightEdge: 0
+      topEdge: 0
+      bottomEdge: 1
+      leftWidth: 0
+      rightWidth: 0
+      topHeight: 0
+      bottomHeight: 3
+    }
+    button-toolbar-9p: {
+      name: "button-toolbar"
       leftEdge: 1
       rightEdge: 1
-      topEdge: 3
-      bottomEdge: 3
-      leftWidth: 4
-      rightWidth: 4
+      topEdge: 1
+      bottomEdge: 1
+      leftWidth: 2
+      rightWidth: 2
+      topHeight: 2
+      bottomHeight: 2
+    }
+
+    panel-inventory-9p: {
+      name: "panel-inventory"
+      leftEdge: 5
+      rightEdge: 5
+      topEdge: 5
+      bottomEdge: 5
+      leftWidth: 15
+      rightWidth: 15
+      topHeight: 15
+      bottomHeight: 15
+    }
+    panel-inventory-rounded-9p: {
+      name: "panel-inventory-rounded"
+      leftEdge: 5
+      rightEdge: 5
+      topEdge: 5
+      bottomEdge: 5
+      leftWidth: 15
+      rightWidth: 15
+      topHeight: 15
+      bottomHeight: 15
+    }
+    button-inventory-control-9p: {
+      name: "button-inventory-control"
+      leftEdge: 4
+      rightEdge: 4
+      topEdge: 4
+      bottomEdge: 4
+      leftWidth: 12
+      rightWidth: 12
       topHeight: 12
       bottomHeight: 12
     }
-  }
-  TintedDrawable: {
-    icon-cross: {
-      color: { hex: "#ffffff" }
-      name: icon-cross
+    button-inventory-control-down-9p: {
+      name: "button-inventory-control-down"
+      leftEdge: 4
+      rightEdge: 4
+      topEdge: 4
+      bottomEdge: 4
+      leftWidth: 12
+      rightWidth: 12
+      topHeight: 12
+      bottomHeight: 12
+    }
+    button-inventory-slot-9p: {
+      name: "button-inventory-slot"
+      leftEdge: 4
+      rightEdge: 4
+      topEdge: 4
+      bottomEdge: 4
+      leftWidth: 12
+      rightWidth: 12
+      topHeight: 12
+      bottomHeight: 12
+    }
+    button-inventory-slot-checked-9p: {
+      name: "button-inventory-slot-checked"
+      leftEdge: 4
+      rightEdge: 4
+      topEdge: 4
+      bottomEdge: 4
+      leftWidth: 12
+      rightWidth: 12
+      topHeight: 12
+      bottomHeight: 12
+    }
+
+    panel-debug-9p: {
+      name: "panel-debug"
+      leftEdge: 4
+      rightEdge: 4
+      topEdge: 4
+      bottomEdge: 4
+      leftWidth: 12
+      rightWidth: 12
+      topHeight: 12
+      bottomHeight: 12
     }
   }
 
@@ -104,51 +136,61 @@
       font: "foldit.fnt"
     }
   }
+
   "TextButtonStyle": {
     default: {
       font: "foldit.fnt"
-      up: button-1-9p
+      up: button-inventory-control-9p
+    }
+    debug: {
+      font: "foldit.fnt"
+      up: light-10
     }
   }
 
   ButtonStyle: {
-    button-inventorycontent: {
-      up: button-inventory-2-9p
-      checked: button-inventory-2-checked-9p
+    button-inventory-slot: {
+      up: button-inventory-slot-9p
+      checked: button-inventory-slot-checked-9p
     }
     button-hand-0: {
-      up: button-inventory-1-9p
-      checked: button-inventory-1-checked-9p
+      up: button-hand-l-9p
     }
     button-hand-1: {
-      up: button-inventory-1-9p
-      checked: button-inventory-1-checked-9p
+      up: button-hand-r-9p
     }
-    panel-1: {
-      up: panel-1-9p
+    button-toolbar: {
+      up: button-toolbar-9p
+    }
+    button-inventory-control: {
+      up: button-inventory-control-9p
     }
   }
 
   ImageButtonStyle: {
     default: {
     }
-    imagebutton-inventorycontent-close: {
-      up: button-inventory-2-9p
+    imagebutton-inventory-control-close: {
+      up: button-inventory-control-9p
+      down: button-inventory-control-down-9p
       imageUp: icon-cross
     }
 
-    imagebutton-inventorycontent-back: {
-      up: button-inventory-2-9p
+    imagebutton-inventory-control-back: {
+      up: button-inventory-control-9p
+      down: button-inventory-control-down-9p
       imageUp: icon-arrow-left
     }
 
-    imagebutton-inventorycontent-world: {
-      up: button-inventory-2-9p
+    imagebutton-inventory-control-world: {
+      up: button-inventory-control-9p
+      down: button-inventory-control-down-9p
       imageUp: icon-world
     }
 
-    imagebutton-inventorycontent-refresh: {
-      up: button-inventory-2-9p
+    imagebutton-inventory-control-refresh: {
+      up: button-inventory-control-9p
+      down: button-inventory-control-down-9p
       imageUp: icon-refresh
     }
   }

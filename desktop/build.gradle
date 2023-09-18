@@ -15,7 +15,7 @@ dependencies {
 import org.gradle.internal.os.OperatingSystem
 
 tasks.register('run', JavaExec) {
-    dependsOn classes, ":packSprites"
+    dependsOn classes, ":assets:packSprites"
     mainClass = project.mainClassName
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
@@ -28,7 +28,7 @@ tasks.register('run', JavaExec) {
 }
 
 tasks.register('dist', Jar) {
-    dependsOn classes, configurations.runtimeClasspath, ":packSprites"
+    dependsOn classes, configurations.runtimeClasspath, ":assets:packSprites"
 
     from {
         configurations.runtimeClasspath.collect {
