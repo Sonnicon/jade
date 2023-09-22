@@ -2,16 +2,19 @@ package sonnicon.jade.input;
 
 import com.badlogic.gdx.math.Vector3;
 import sonnicon.jade.Jade;
-import sonnicon.jade.content.WorldPrinter;
 import sonnicon.jade.entity.Entity;
-import sonnicon.jade.entity.components.graphical.WallDrawComponent;
+import sonnicon.jade.entity.components.Component;
+import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.entity.components.world.PositionComponent;
 import sonnicon.jade.game.Content;
+import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.game.IUsable;
 import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.world.Tile;
 
-import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class WorldInput extends InputInterpreter {
 
@@ -23,24 +26,34 @@ public class WorldInput extends InputInterpreter {
 
     @Override
     public boolean tapped(int screenX, int screenY, int pointer, int button) {
-        // debug box spawner
         WorldInput.readScreenPosition(TEMP_VEC, screenX, screenY);
-        Tile tile = Content.world.getTile((short) (TEMP_VEC.x / Tile.SUBTILE_NUM), (short) (TEMP_VEC.y / Tile.SUBTILE_NUM));
-
-        if (tile == null) {
-            return false;
-        } else if (button == com.badlogic.gdx.Input.Buttons.MIDDLE) {
+        // Debug takes priority
+        if (button == com.badlogic.gdx.Input.Buttons.MIDDLE) {
+            Tile tile = Content.world.getTile((int) (TEMP_VEC.x / Tile.SUBTILE_NUM), (int) (TEMP_VEC.y / Tile.SUBTILE_NUM));
             ((StageIngame) Gamestate.State.ingame.getStage()).panelDebug.show(tile);
-        } else {
-            Optional<Entity> e = tile.entities.stream().filter(f -> f.hasComponent(WallDrawComponent.class)).findAny();
-            if (e.isPresent()) {
-                e.get().getComponent(PositionComponent.class).moveTo(null);
-            } else {
-                WorldPrinter.printWallEntity(tile);
-            }
-            //ItemPrinter.printItemDebug(tile);
+            return true;
         }
-        return true;
+
+        // Don't try things if we aren't controlling anything
+        if (!PlayerControlComponent.isControlled()) {
+            return false;
+        }
+
+        Entity user = PlayerControlComponent.getEntity();
+        EntityStorageSlot selectedSlot = PlayerControlComponent.getControlled().getSelectedHandSlot();
+        if (selectedSlot == null) {
+            // todo moving
+        } else if (!selectedSlot.isEmpty()) {
+            Entity selectedEntity = selectedSlot.getEntity();
+            Stream<? extends IUsable> usableComponents = selectedEntity.findComponentsFuzzy(IUsable.class);
+            usableComponents.collect(Collectors.toList()).forEach((IUsable comp) -> {
+                if (comp != null && ((Component) comp).entity == selectedEntity) {
+                    comp.use(user, (int) TEMP_VEC.x, (int) TEMP_VEC.y);
+                }
+            });
+            return true;
+        }
+        return false;
     }
 
     public static Vector3 readScreenPosition(Vector3 out, int x, int y) {
@@ -50,15 +63,15 @@ public class WorldInput extends InputInterpreter {
         return out;
     }
 
-    public static Vector3 readWorldPosition(Vector3 out, Tile tile, short subx, short suby) {
-        return Jade.renderer.camera.project(
-                out.set(tile.getDrawX() + Tile.SUBTILE_DELTA * subx,
-                        tile.getDrawY() + Tile.SUBTILE_DELTA * suby,
-                        0f));
+    public static Vector3 readWorldPosition(Vector3 out, float x, float y) {
+        return Jade.renderer.camera.project(out.set(x, y, 0f));
     }
 
     public static Vector3 readWorldPosition(Vector3 out, Tile tile) {
-        return readWorldPosition(out, tile, (short) (Tile.SUBTILE_NUM / 2), (short) (Tile.SUBTILE_NUM / 2));
+        return readWorldPosition(out, tile.getDrawX(), tile.getDrawY());
+    }
 
+    public static Vector3 readWorldPosition(Vector3 out, PositionComponent pos) {
+        return readWorldPosition(out, pos.getDrawX(), pos.getDrawY());
     }
 }

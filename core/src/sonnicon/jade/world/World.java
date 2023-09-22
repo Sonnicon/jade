@@ -14,7 +14,7 @@ public class World implements IDebuggable {
         new WorldInput();
     }
 
-    public Tile getTile(short x, short y) {
+    public Tile getTile(int x, int y) {
         short chunkX = (short) Math.floorDiv(x, Chunk.CHUNK_SIZE);
         short chunkY = (short) Math.floorDiv(y, Chunk.CHUNK_SIZE);
         Chunk chunk = chunks.get(Chunk.getHashcode(chunkX, chunkY));

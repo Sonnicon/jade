@@ -23,9 +23,7 @@ public class MoveboxComponent extends Component {
 
     private PositionComponent positionComponent;
 
-    private static final EventTypes.EntityMovePosEvent MOVE_POS_EVENT = (Entity e, Short i1, Short i2, Short i3, Short i4) -> processMove(e);
-
-    private static final EventTypes.EntityMoveTileEvent MOVE_TILE_EVENT = (Entity e, Tile i1, Tile i2) -> processMove(e);
+    private static final EventTypes.EntityMoveEvent MOVE_EVENT = MoveboxComponent::processMove;
 
     public MoveboxComponent() {
 
@@ -47,7 +45,7 @@ public class MoveboxComponent extends Component {
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
         positionComponent = entity.getComponent(PositionComponent.class);
-        entity.events.register(MOVE_POS_EVENT, MOVE_TILE_EVENT);
+        entity.events.register(MOVE_EVENT);
 
         coveredFind();
         coveredSwap();
@@ -57,7 +55,7 @@ public class MoveboxComponent extends Component {
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
         positionComponent = null;
-        entity.events.unregister(MOVE_POS_EVENT, MOVE_POS_EVENT);
+        entity.events.unregister(MOVE_EVENT);
 
         coveredTiles.forEach(t -> t.nearbyMoveboxes.remove(this));
     }
@@ -77,10 +75,10 @@ public class MoveboxComponent extends Component {
 
         coveredTilesOperation.clear();
 
-        short posLeft = (short) ((x - size) / Tile.SUBTILE_NUM);
-        short posRight = (short) ((x + size - 1) / Tile.SUBTILE_NUM);
-        short posBottom = (short) ((y - size) / Tile.SUBTILE_NUM);
-        short posTop = (short) ((y + size - 1) / Tile.SUBTILE_NUM);
+        int posLeft = (x - size) / Tile.SUBTILE_NUM;
+        int posRight = (x + size - 1) / Tile.SUBTILE_NUM;
+        int posBottom = (y - size) / Tile.SUBTILE_NUM;
+        int posTop = (y + size - 1) / Tile.SUBTILE_NUM;
 
         Tile tx = Content.world.getTile(posLeft, posBottom);
         while (tx != null && tx.getX() <= posRight) {

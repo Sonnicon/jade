@@ -94,9 +94,9 @@ public class Content {
 
         Random random = new Random();
         for (int i = 0; i < 8; i++) {
-            ItemPrinter.printItemDebug(world.getTile((short) random.nextInt(32), (short) random.nextInt(32)));
-            ItemPrinter.printWeaponDebug(world.getTile((short) random.nextInt(32), (short) random.nextInt(32)));
-            CharacterPrinter.printCharacterEnemy(world.getTile((short) random.nextInt(32), (short) random.nextInt(32)));
+            ItemPrinter.printItemDebug(world.getTile(random.nextInt(32), random.nextInt(32)));
+            ItemPrinter.printWeaponDebug(world.getTile(random.nextInt(32), random.nextInt(32)));
+            CharacterPrinter.printCharacterEnemy(world.getTile(random.nextInt(32), random.nextInt(32)));
         }
     }
 }

@@ -17,6 +17,18 @@
       topHeight: 15
       bottomHeight: 6
     }
+    button-hand-l-checked-9p: {
+      name: "button-hand-l-checked"
+      leftEdge: 2
+      rightEdge: 5
+      topEdge: 5
+      bottomEdge: 2
+      leftWidth: 6
+      rightWidth: 15
+      topHeight: 15
+      bottomHeight: 6
+    }
+
     button-hand-r-9p: {
       name: "button-hand-r"
       leftEdge: 5
@@ -28,6 +40,18 @@
       topHeight: 15
       bottomHeight: 6
     }
+    button-hand-r-checked-9p: {
+      name: "button-hand-r-checked"
+      leftEdge: 5
+      rightEdge: 2
+      topEdge: 5
+      bottomEdge: 2
+      leftWidth: 15
+      rightWidth: 6
+      topHeight: 15
+      bottomHeight: 6
+    }
+
     panel-toolbar-9p: {
       name: "panel-toolbar"
       leftEdge: 0
@@ -73,6 +97,7 @@
       topHeight: 15
       bottomHeight: 15
     }
+
     button-inventory-control-9p: {
       name: "button-inventory-control"
       leftEdge: 4
@@ -95,6 +120,7 @@
       topHeight: 12
       bottomHeight: 12
     }
+
     button-inventory-slot-9p: {
       name: "button-inventory-slot"
       leftEdge: 4
@@ -155,9 +181,11 @@
     }
     button-hand-0: {
       up: button-hand-l-9p
+      checked: button-hand-l-checked-9p
     }
     button-hand-1: {
       up: button-hand-r-9p
+      checked: button-hand-r-checked-9p
     }
     button-toolbar: {
       up: button-toolbar-9p

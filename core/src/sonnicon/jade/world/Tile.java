@@ -18,7 +18,6 @@ public class Tile implements IDebuggable {
 
     private final int globalX, globalY;
     private final int drawX, drawY;
-    private final int drawMiddleX, drawMiddleY;
     private final int jointX, jointY;
 
     // Pixel size of a tile
@@ -37,10 +36,8 @@ public class Tile implements IDebuggable {
 
         this.globalX = chunk.x * Chunk.CHUNK_SIZE + x;
         this.globalY = chunk.y * Chunk.CHUNK_SIZE + y;
-        this.drawX = globalX * TILE_SIZE;
-        this.drawY = globalY * TILE_SIZE;
-        this.drawMiddleX = (int) (drawX + TILE_SIZE * .5f);
-        this.drawMiddleY = (int) (drawY + TILE_SIZE * .5f);
+        this.drawX = globalX * TILE_SIZE + Tile.HALF_TILE_SIZE;
+        this.drawY = globalY * TILE_SIZE + Tile.HALF_TILE_SIZE;
         this.jointX = globalX * Tile.SUBTILE_NUM;
         this.jointY = globalY * Tile.SUBTILE_NUM;
 
@@ -72,14 +69,6 @@ public class Tile implements IDebuggable {
 
     public float getDrawY() {
         return drawY;
-    }
-
-    public float getDrawMiddleX() {
-        return drawMiddleX;
-    }
-
-    public float getDrawMiddleY() {
-        return drawMiddleY;
     }
 
     public int getJointX() {

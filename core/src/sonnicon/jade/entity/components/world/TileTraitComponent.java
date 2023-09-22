@@ -37,14 +37,14 @@ public class TileTraitComponent extends Component {
 
     public void addTrait(Traits.Trait trait) {
         if (entity != null) {
-            entity.getComponent(PositionComponent.class).tile.traits.addTrait(trait);
+            entity.getComponent(PositionComponent.class).getTile().traits.addTrait(trait);
             traits.add(trait);
         }
     }
 
     public void removeTrait(Traits.Trait trait) {
         if (entity != null) {
-            entity.getComponent(PositionComponent.class).tile.traits.removeTrait(trait);
+            entity.getComponent(PositionComponent.class).getTile().traits.removeTrait(trait);
             traits.remove(trait);
         }
     }
@@ -53,14 +53,14 @@ public class TileTraitComponent extends Component {
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
         entity.events.register(MOVE_TILE_EVENT);
-        MOVE_TILE_EVENT.apply(entity, null, entity.getComponent(PositionComponent.class).tile);
+        MOVE_TILE_EVENT.apply(entity, null, entity.getComponent(PositionComponent.class).getTile());
     }
 
     @Override
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
         entity.events.unregister(MOVE_TILE_EVENT);
-        MOVE_TILE_EVENT.apply(entity, entity.getComponent(PositionComponent.class).tile, null);
+        MOVE_TILE_EVENT.apply(entity, entity.getComponent(PositionComponent.class).getTile(), null);
     }
 
     @Override

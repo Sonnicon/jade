@@ -3,6 +3,7 @@ package sonnicon.jade.entity.components.player;
 import sonnicon.jade.EventGenerator;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
+import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.gui.StageIngame;
@@ -59,12 +60,21 @@ public class PlayerControlComponent extends Component {
 
     public void setSelectedHand(short hand) {
         selectedHand = hand;
+        InventoryHandButton.handButtons.forEach((InventoryHandButton b) -> b.setChecked(b.handNumber == selectedHand));
     }
 
     public short getSelectedHand() {
         return selectedHand;
     }
 
+    public EntityStorageSlot getSelectedHandSlot() {
+        short s = getSelectedHand();
+        if (s == InventoryHandButton.HAND_NONE) {
+            return null;
+        } else {
+            return InventoryHandButton.handButtons.get(s).slot;
+        }
+    }
 
     @Override
     public boolean compare(IComparable other) {
@@ -81,5 +91,9 @@ public class PlayerControlComponent extends Component {
 
     public static boolean isControlled(Entity entity) {
         return getEntity() == entity;
+    }
+
+    public static boolean isControlled() {
+        return getEntity() != null;
     }
 }

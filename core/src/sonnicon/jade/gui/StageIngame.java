@@ -1,10 +1,7 @@
 package sonnicon.jade.gui;
 
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import sonnicon.jade.Jade;
@@ -37,10 +34,10 @@ public class StageIngame extends GuiStage {
     public InventoryMovePopup popupInventoryMove;
 
     protected short nextHandIndex = 0;
-    protected Table handTableLeft, handTableRight, toolbarWrapper;
-    protected HorizontalGroup toolbarGroup;
+    protected Table tableHandsLeft, tableHandsRight, tableToolbar;
+    protected HorizontalGroup groupToolbar;
 
-    protected LinkedList<Table> toolbarEntries;
+    protected LinkedList<Table> entriesToolbar;
 
     public StageIngame() {
         super(new ScreenViewport(), (SpriteBatch) Renderer.Batch.gui.batch);
@@ -61,30 +58,31 @@ public class StageIngame extends GuiStage {
         tableMain.align(Align.bottom);
         addActor(tableMain);
 
-        handTableLeft = new Table();
-        handTableRight = new Table();
+        // Hands
+        tableHandsLeft = new Table();
+        tableHandsRight = new Table();
 
-        toolbarEntries = new LinkedList<>();
+        // Toolbar
+        entriesToolbar = new LinkedList<>();
         addToolbarButton("icon-arrow-right", () -> {
             Jade.renderer.particles.createParticle(TextParticle.class, 100, 100).setText("tick");
             //todo
             Clock.tick(1f);
         });
 
+        groupToolbar = new HorizontalGroup();
+        ScrollPane paneToolbar = new ScrollPane(groupToolbar);
+        tableToolbar = new Table(Gui.skin);
 
-        toolbarGroup = new HorizontalGroup();
-        ScrollPane toolbarPane = new ScrollPane(toolbarGroup);
-        toolbarWrapper = new Table(Gui.skin);
+        tableToolbar.add(paneToolbar).growX().pad(0f, 4f, 0f, 4f);
+        tableToolbar.background("panel-toolbar-9p");
 
-        toolbarWrapper.add(toolbarPane).growX().pad(0f, 4f, 0f, 4f);
-        toolbarWrapper.background("panel-toolbar-9p");
+        groupToolbar.setFillParent(true);
+        groupToolbar.left();
+        groupToolbar.space(6f);
 
-        toolbarGroup.setFillParent(true);
-        toolbarGroup.left();
-        toolbarGroup.space(6f);
-
-        toolbarPane.setScrollingDisabled(false, true);
-        toolbarPane.setOverscroll(false, false);
+        paneToolbar.setScrollingDisabled(false, true);
+        paneToolbar.setOverscroll(false, false);
 
         recreate();
     }
@@ -96,9 +94,9 @@ public class StageIngame extends GuiStage {
 
         button.setTapAction(clicked);
         table.add(button).size(76f).pad(3f, 0f, 3f, 0f);
-        toolbarEntries.add(table);
-        if (toolbarGroup != null) {
-            toolbarGroup.addActor(table);
+        entriesToolbar.add(table);
+        if (groupToolbar != null) {
+            groupToolbar.addActor(table);
         }
         return table;
     }
@@ -111,12 +109,12 @@ public class StageIngame extends GuiStage {
 
         CharacterStorageComponent storageComponent = (CharacterStorageComponent) PlayerControlComponent.getEntity().getComponent(StorageComponent.class);
         if (storageComponent != null) {
-            tableMain.add(handTableLeft).left().bottom();
-            tableMain.add(toolbarWrapper).growX().align(Align.bottomLeft);
-            tableMain.add(handTableRight).right().bottom();
-            toolbarWrapper.setZIndex(handTableRight.getZIndex() + 1);
+            tableMain.add(tableHandsLeft).left().bottom();
+            tableMain.add(tableToolbar).growX().align(Align.bottomLeft);
+            tableMain.add(tableHandsRight).right().bottom();
+            tableToolbar.setZIndex(tableHandsRight.getZIndex() + 1);
 
-            toolbarEntries.forEach(actor -> toolbarGroup.addActor(actor));
+            entriesToolbar.forEach(actor -> groupToolbar.addActor(actor));
 
             recreateHands();
         }
@@ -127,8 +125,8 @@ public class StageIngame extends GuiStage {
             return;
         }
 
-        handTableLeft.clearChildren();
-        handTableRight.clearChildren();
+        tableHandsLeft.clearChildren();
+        tableHandsRight.clearChildren();
         if (PlayerControlComponent.isControlled(null)) {
             return;
         }
@@ -148,7 +146,7 @@ public class StageIngame extends GuiStage {
 
     public void addHand(EntityStorageSlot slot) {
         InventoryHandButton handButton = new InventoryHandButton(slot, nextHandIndex);
-        (nextHandIndex % 2 == 0 ? handTableLeft : handTableRight).add(handButton).row();
+        (nextHandIndex % 2 == 0 ? tableHandsLeft : tableHandsRight).add(handButton).row();
         nextHandIndex++;
     }
 

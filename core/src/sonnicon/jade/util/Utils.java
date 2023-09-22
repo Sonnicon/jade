@@ -1,5 +1,7 @@
 package sonnicon.jade.util;
 
+import com.badlogic.gdx.math.Matrix3;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,5 +36,15 @@ public class Utils {
     public static boolean overlapsSquare(int x1, int y1, short r1, int x2, int y2, short r2) {
         return ((x1 + r1 > x2 - r2) ^ (x1 - r1 > x2 + r2)) &&
                 (y1 + r1 > y2 - r2) ^ (y1 - r1 > y2 + r2);
+    }
+
+    public static float pythag(float x, float y) {
+        float a = x * x + y * y;
+        return (float) Math.sqrt(a);
+    }
+
+    public static float mat3mul(Matrix3 matrix, byte row, float v1, float v2, float v3) {
+        byte offset = (byte) (row * 3);
+        return matrix.val[offset] * v1 + matrix.val[offset + 1] * v2 + matrix.val[offset + 2] * v3;
     }
 }

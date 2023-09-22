@@ -55,7 +55,7 @@ public class HitboxComponent extends Component implements IRenderable {
     @Override
     public void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
         //todo not render when not needed
-        if (positionComponent != null && positionComponent.tile != null) {
+        if (positionComponent != null && positionComponent.isInNull()) {
             IRegularDraw b = (IRegularDraw) batch;
 
             float drawSize = (float) sizeTotal / fieldCount;

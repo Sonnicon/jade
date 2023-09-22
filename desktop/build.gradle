@@ -1,6 +1,6 @@
 sourceSets.main.resources {
     srcDirs "../assets"
-    exclude "**/spritesRaw"
+    exclude "**/spritesRaw", "**/build.gradle"
 }
 
 project.ext.mainClassName = "sonnicon.jade.DesktopLauncher"

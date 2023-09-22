@@ -8,7 +8,7 @@ import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.entity.components.storage.CharacterStorageComponent;
 import sonnicon.jade.entity.components.world.HitboxComponent;
 import sonnicon.jade.entity.components.world.MoveboxComponent;
-import sonnicon.jade.entity.components.world.PositionComponent;
+import sonnicon.jade.entity.components.world.SubtilePositionComponent;
 import sonnicon.jade.game.EntitySize;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.FixedSlotEntityStorage;
@@ -55,7 +55,7 @@ public class CharacterPrinter {
 
     public static Entity printCharacterEnemy(Tile location) {
         Entity result = new Entity();
-        result.addComponents(new PositionComponent(location),
+        result.addComponents(new SubtilePositionComponent(location),
                 new ChunkDrawComponent(new TextureSet("character-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE, Renderer.RenderLayer.characters),
                 new MoveboxComponent((short) 2),
                 new HitboxComponent((short) Tile.TILE_SIZE, (short) 3));

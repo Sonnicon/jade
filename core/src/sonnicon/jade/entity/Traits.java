@@ -80,7 +80,11 @@ public class Traits implements IDebuggable {
 
 
     public enum Trait {
+        // Other entities can't move to overlap with us if we have this
         blockMovement,
-        incorporeal
+        // We can move to overlap with other entities, even those with blockMovement
+        incorporeal,
+        // Can be picked up //todo
+        stopPickup
     }
 }

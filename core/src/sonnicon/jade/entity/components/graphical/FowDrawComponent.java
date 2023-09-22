@@ -76,11 +76,12 @@ public class FowDrawComponent extends Component implements IRenderable {
 
     public void addNearbyFows() {
         directionEdges = 0;
+        Tile positionComponentTile = positionComponent.getTile();
         for (byte dirIndex = 0; dirIndex < 4; dirIndex++) {
-            FowDrawComponent comp = getFowInDirection(positionComponent.tile, dirIndex);
+            FowDrawComponent comp = getFowInDirection(positionComponentTile, dirIndex);
             if (comp == null) {
                 NEARBY_FOWS[dirIndex] = null;
-            } else if (comp.positionComponent.tile.chunk != positionComponent.tile.chunk) {
+            } else if (comp.positionComponent.getTile().chunk != positionComponentTile.chunk) {
                 NEARBY_FOWS[dirIndex] = null;
                 directionCounts[dirIndex] = 0;
                 directionEdges |= 1 << dirIndex;
@@ -118,7 +119,7 @@ public class FowDrawComponent extends Component implements IRenderable {
                 continue;
             }
             byte dirBackIndex = (byte) ((dirIndex + 2) % 4);
-            if (otherComp.positionComponent.tile.chunk == tile.chunk) {
+            if (otherComp.positionComponent.getTile().chunk == tile.chunk) {
                 otherComp.propagateNearbyFows(dirIndex, dirBackIndex, (short) (-directionCounts[dirBackIndex] - 1), false, null);
             } else {
                 otherComp.propagateNearbyFows(dirIndex, dirBackIndex, (short) 0, false, null);
@@ -137,8 +138,9 @@ public class FowDrawComponent extends Component implements IRenderable {
         directionEdges = (byte) ((edge ? (1 << dirBackIndex) : 0) | (((1 << dirBackIndex) ^ Direction.ALL) & directionEdges));
 
         if (directionCounts[dirIndex] > 0) {
-            FowDrawComponent comp = getFowInDirection(positionComponent.tile, dirIndex);
-            if (comp != null && comp.positionComponent.tile.chunk == positionComponent.tile.chunk) {
+            Tile positionComponentTile = positionComponent.getTile();
+            FowDrawComponent comp = getFowInDirection(positionComponentTile, dirIndex);
+            if (comp != null && comp.positionComponent.getTile().chunk == positionComponentTile.chunk) {
                 return comp.propagateNearbyFows(dirIndex, dirBackIndex, dcount, edge, source);
             } else {
                 return this;
@@ -167,7 +169,7 @@ public class FowDrawComponent extends Component implements IRenderable {
         positionComponent = entity.getComponent(PositionComponent.class);
 
         entity.events.register(moveHandler);
-        moveHandler.apply(entity, null, positionComponent.tile);
+        moveHandler.apply(entity, null, positionComponent.getTile());
     }
 
     @Override
@@ -211,18 +213,19 @@ public class FowDrawComponent extends Component implements IRenderable {
             return;
         }
         PositionComponent playerPos = playerEntity.getComponent(PositionComponent.class);
-        if (positionComponent == null || positionComponent.tile == null ||
-                playerPos == null || playerPos.tile == null || positionComponent.tile == playerPos.tile) {
+        Tile playerTile = playerPos.getTile();
+        Tile drawTile = positionComponent.getTile();
+        if (positionComponent == null || positionComponent.isInNull() ||
+                playerPos == null || playerPos.isInNull() || drawTile == playerTile) {
             return;
         }
 
-        Tile drawTile = positionComponent.tile;
-        byte playerDir = Direction.relate(drawTile, playerPos.tile);
+        byte playerDir = Direction.relate(drawTile, playerTile);
 
         FowBatch batch = (FowBatch) b;
 
         // Tile centers
-        float[] dm = new float[]{drawTile.getDrawMiddleX(), drawTile.getDrawMiddleY()};
+        float[] dm = new float[]{drawTile.getDrawX(), drawTile.getDrawY()};
         float[] pm = new float[]{playerPos.getDrawX(), playerPos.getDrawY()};
 
         //// Cardinal shadows
@@ -294,7 +297,7 @@ public class FowDrawComponent extends Component implements IRenderable {
     }
 
     private void drawCardinalX(FowBatch batch, float[] pm, boolean singleTile) {
-        float[] dm = new float[]{positionComponent.tile.getDrawMiddleX(), positionComponent.tile.getDrawMiddleY()};
+        float[] dm = new float[]{positionComponent.getDrawX(), positionComponent.getDrawY()};
 
         // Directions and rotate offset
         int yp = dm[1] > pm[1] ? 1 : 0, yn = yp ^ 1;
@@ -335,7 +338,7 @@ public class FowDrawComponent extends Component implements IRenderable {
     }
 
     private void drawCardinalY(FowBatch batch, float[] pm, boolean singleTile) {
-        float[] dm = new float[]{positionComponent.tile.getDrawMiddleX(), positionComponent.tile.getDrawMiddleY()};
+        float[] dm = new float[]{positionComponent.getDrawX(), positionComponent.getDrawY()};
 
         // Directions and rotate offset
         int xp = dm[0] > pm[0] ? 1 : 0, xn = xp ^ 1;
@@ -376,7 +379,7 @@ public class FowDrawComponent extends Component implements IRenderable {
     }
 
     private void drawDiagonal(FowBatch batch, float[] pm, float[] rx, float[] ry, byte shadowLeftIndex, int i) {
-        float[] dm = new float[]{positionComponent.tile.getDrawMiddleX(), positionComponent.tile.getDrawMiddleY()};
+        float[] dm = new float[]{positionComponent.getDrawX(), positionComponent.getDrawY()};
         byte shadowRightIndex = (byte) ((shadowLeftIndex + 1) % 4);
 
         // Offsets from middle to corner
@@ -397,8 +400,8 @@ public class FowDrawComponent extends Component implements IRenderable {
         FowDrawComponent farComp = endFows[otherFowIndex];
         FowDrawComponent nearComp = endFows[(otherFowIndex + 2) % 4];
 
-        float[] dme = new float[]{nearComp.positionComponent.tile.getDrawMiddleX(),
-                nearComp.positionComponent.tile.getDrawMiddleY()};
+        float[] dme = new float[]{nearComp.positionComponent.getDrawX(),
+                nearComp.positionComponent.getDrawY()};
 
         // Base shadow
         batch.drawDiag(

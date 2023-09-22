@@ -5,7 +5,7 @@ import sonnicon.jade.entity.Traits;
 import sonnicon.jade.entity.components.graphical.ChunkDrawComponent;
 import sonnicon.jade.entity.components.graphical.FowDrawComponent;
 import sonnicon.jade.entity.components.graphical.WallDrawComponent;
-import sonnicon.jade.entity.components.world.PositionComponent;
+import sonnicon.jade.entity.components.world.TilePositionComponent;
 import sonnicon.jade.entity.components.world.TileTraitComponent;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
@@ -18,7 +18,7 @@ public class WorldPrinter {
     public static Entity printFloorEntity(Tile location) {
         Entity floorEntity = new Entity();
         floorEntity.addComponents(
-                new PositionComponent(location),
+                new TilePositionComponent(location),
                 new ChunkDrawComponent(floorTextures, Tile.TILE_SIZE, Tile.TILE_SIZE, Renderer.RenderLayer.floor));
         return floorEntity;
     }
@@ -26,7 +26,7 @@ public class WorldPrinter {
     public static Entity printWallEntity(Tile location) {
         Entity wallEntity = new Entity();
         wallEntity.addComponents(
-                new PositionComponent(location),
+                new TilePositionComponent(location),
                 new WallDrawComponent(wallTextures),
                 new FowDrawComponent(),
                 new TileTraitComponent(Traits.Trait.blockMovement)

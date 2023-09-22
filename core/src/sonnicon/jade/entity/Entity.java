@@ -6,9 +6,11 @@ import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.*;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 @EventGenerator(id = "EntityComponentAdd", param = {Entity.class, Component.class}, label = {"entity", "component"})
 @EventGenerator(id = "EntityTraitAdd", param = {Entity.class, Traits.Trait.class}, label = {"entity", "trait"})
+@EventGenerator(id = "EntityTraitRemove", param = {Entity.class, Traits.Trait.class}, label = {"entity", "trait"})
 public class Entity implements ICopyable, IComparable, IDebuggable {
     public HashMap<Class<? extends Component>, Component> components;
     public Traits traits;
@@ -38,6 +40,18 @@ public class Entity implements ICopyable, IComparable, IDebuggable {
     public Entity addTraits(Traits.Trait... traits) {
         for (Traits.Trait trait : traits) {
             addTrait(trait);
+        }
+        return this;
+    }
+
+    public void removeTrait(Traits.Trait trait) {
+        traits.removeTrait(trait);
+        EventTypes.EntityTraitRemoveEvent.handle(events, this, trait);
+    }
+
+    public Entity removeTraits(Traits.Trait... traits) {
+        for (Traits.Trait trait : traits) {
+            removeTrait(trait);
         }
         return this;
     }
@@ -75,12 +89,15 @@ public class Entity implements ICopyable, IComparable, IDebuggable {
         if (comp != null) {
             return comp;
         }
-        Optional<T> opt = components.entrySet().stream()
-                .filter(entry -> type.isAssignableFrom(entry.getKey()))
-                .map(entry -> (T) entry.getValue())
-                .findAny();
-
+        Optional<T> opt = (Optional<T>) findComponentsFuzzy(type).findAny();
         return opt.orElse(null);
+    }
+
+    // todo find a way to make the bound include T and Component
+    public <T> Stream<? extends T> findComponentsFuzzy(Class<T> type) {
+        return (Stream<? extends T>) components.entrySet().stream()
+                .filter(entry -> type.isAssignableFrom(entry.getKey()))
+                .map(Map.Entry::getValue);
     }
 
     public boolean hasComponent(Class<? extends Component> type) {

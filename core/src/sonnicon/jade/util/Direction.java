@@ -71,7 +71,7 @@ public class Direction {
         return result;
     }
 
-    public static byte relate(int fromX, int fromY, int toX, int toY) {
+    public static byte relate(float fromX, float fromY, float toX, float toY) {
         byte result = 0;
         if (toX != fromX) result |= toX > fromX ? EAST : WEST;
         if (toY != fromY) result |= toY > fromY ? NORTH : SOUTH;
@@ -82,18 +82,18 @@ public class Direction {
         return relate(from.getX(), from.getY(), to.getX(), to.getY());
     }
 
-    public static byte relate(PositionComponent from, PositionComponent to, int range) {
+    public static byte relate(PositionComponent from, PositionComponent to, float range) {
         byte result = 0;
-        if (Math.abs(to.getJointX() - from.getJointX()) >= range) {
-            result |= to.getJointX() > from.getJointX() ? EAST : WEST;
+        if (Math.abs(to.getDrawX() - from.getDrawX()) >= range) {
+            result |= to.getDrawX() > from.getDrawX() ? EAST : WEST;
         }
-        if (Math.abs(to.getJointY() - from.getJointY()) >= range) {
-            result |= to.getJointY() > from.getJointY() ? NORTH : SOUTH;
+        if (Math.abs(to.getDrawY() - from.getDrawY()) >= range) {
+            result |= to.getDrawY() > from.getDrawY() ? NORTH : SOUTH;
         }
         return result;
     }
 
     public static byte relate(PositionComponent from, PositionComponent to) {
-        return relate(from.getJointX(), from.getJointY(), to.getJointX(), to.getJointY());
+        return relate(from.getDrawX(), from.getDrawY(), to.getDrawX(), to.getDrawY());
     }
 }

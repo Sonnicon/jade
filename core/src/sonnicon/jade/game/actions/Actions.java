@@ -1,5 +1,6 @@
-package sonnicon.jade.game;
+package sonnicon.jade.game.actions;
 
+import sonnicon.jade.game.Clock;
 import sonnicon.jade.util.IDebuggable;
 import sonnicon.jade.util.Utils;
 

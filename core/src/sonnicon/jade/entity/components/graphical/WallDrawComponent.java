@@ -57,14 +57,14 @@ public class WallDrawComponent extends ChunkDrawComponent {
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
         entity.events.register(moveEvent);
-        moveEvent.apply(entity, null, entity.getComponent(PositionComponent.class).tile);
+        moveEvent.apply(entity, null, entity.getComponent(PositionComponent.class).getTile());
     }
 
     @Override
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
         entity.events.unregister(moveEvent);
-        moveEvent.apply(entity, entity.getComponent(PositionComponent.class).tile, null);
+        moveEvent.apply(entity, entity.getComponent(PositionComponent.class).getTile(), null);
     }
 
     @Override
@@ -78,8 +78,8 @@ public class WallDrawComponent extends ChunkDrawComponent {
         switch (layer) {
             case terrainBottom: {
                 // Surrounding shadows
-                float drawx = positionComponent.tile.getDrawX() - 8f - FowBatch.PIXEL_FIXER;
-                float drawy = positionComponent.tile.getDrawY() - 8f - FowBatch.PIXEL_FIXER;
+                float drawx = positionComponent.getDrawX() - 8f - Tile.HALF_TILE_SIZE - FowBatch.PIXEL_FIXER;
+                float drawy = positionComponent.getDrawY() - 8f - Tile.HALF_TILE_SIZE - FowBatch.PIXEL_FIXER;
                 float draww = Tile.TILE_SIZE + 16f + FowBatch.PIXEL_FIXER_XL;
                 float drawh = Tile.TILE_SIZE + 16f + FowBatch.PIXEL_FIXER_XL;
 
@@ -109,7 +109,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
                 }
                 PositionComponent playerPos = playerEntity.getComponent(PositionComponent.class);
 
-                short playerDir = Direction.relate(positionComponent, playerPos, Tile.SUBTILE_NUM / 2);
+                short playerDir = Direction.relate(positionComponent, playerPos, Tile.SUBTILE_NUM / 2f);
                 short playerAwayDir = (short) ((playerDir << 2) | (playerDir >>> 2));
 
                 byte leftIndexDir = 0;

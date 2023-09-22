@@ -5,13 +5,13 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
 
-public class GlobalDrawComponent extends WorldDrawComponent {
+public class GlobalWorldDrawComponent extends WorldDrawComponent {
 
-    public GlobalDrawComponent() {
+    public GlobalWorldDrawComponent() {
 
     }
 
-    public GlobalDrawComponent(TextureSet textures, float width, float height, Renderer.RenderLayer layer) {
+    public GlobalWorldDrawComponent(TextureSet textures, float width, float height, Renderer.RenderLayer layer) {
         super(textures, width, height, layer);
     }
 
@@ -30,12 +30,12 @@ public class GlobalDrawComponent extends WorldDrawComponent {
 
     @Override
     public boolean culled(Renderer.RenderLayer layer) {
-        if (positionComponent == null || positionComponent.tile == null) {
+        if (positionComponent == null || positionComponent.isInNull()) {
             return false;
         }
 
-        float drawX = positionComponent.tile.getDrawX();
-        float drawY = positionComponent.tile.getDrawY();
+        float drawX = positionComponent.getDrawX();
+        float drawY = positionComponent.getDrawY();
 
         return drawX > Jade.renderer.getCameraEdgeRight() ||
                 (drawX + width) < Jade.renderer.getCameraEdgeLeft() ||
@@ -44,7 +44,7 @@ public class GlobalDrawComponent extends WorldDrawComponent {
     }
 
     @Override
-    public GlobalDrawComponent copy() {
-        return (GlobalDrawComponent) super.copy();
+    public GlobalWorldDrawComponent copy() {
+        return (GlobalWorldDrawComponent) super.copy();
     }
 }

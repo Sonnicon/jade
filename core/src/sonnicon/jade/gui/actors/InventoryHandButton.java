@@ -7,11 +7,14 @@ import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.gui.Gui;
 
+import java.util.ArrayList;
+
 public class InventoryHandButton extends InventorySlotButton {
     public final short handNumber;
     private EventTypes.AnyEvent slotWatch;
 
     public static final short HAND_NONE = -1;
+    public static final ArrayList<InventoryHandButton> handButtons = new ArrayList<>();
 
     public InventoryHandButton(EntityStorageSlot slot, short handNumber) {
         super();
@@ -39,7 +42,7 @@ public class InventoryHandButton extends InventorySlotButton {
     @Override
     public void tapped() {
         PlayerControlComponent control = PlayerControlComponent.getControlled();
-        if (control.selectedHand == -1) {
+        if (control.selectedHand != handNumber) {
             control.setSelectedHand(handNumber);
         } else {
             control.setSelectedHand(HAND_NONE);
@@ -52,6 +55,7 @@ public class InventoryHandButton extends InventorySlotButton {
             slot.events.unregister(slotWatch);
         }
         slot.events.register(slotWatch = (type) -> recreate());
+        handButtons.add(this);
         super.setParent(parent);
     }
 
@@ -59,6 +63,7 @@ public class InventoryHandButton extends InventorySlotButton {
     public boolean remove() {
         slot.events.unregister(slotWatch);
         slotWatch = null;
+        handButtons.remove(this);
         return super.remove();
     }
 

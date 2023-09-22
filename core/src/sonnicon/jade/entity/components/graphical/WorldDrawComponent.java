@@ -19,6 +19,7 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
     protected TextureSet textures;
     protected float width;
     protected float height;
+
     protected PositionComponent positionComponent;
     protected Renderer.RenderLayer layer;
     protected ArrayList<IRenderable> joinedRenderables;
@@ -52,12 +53,12 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
 
     @Override
     public void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
-        if (textures != null && positionComponent != null && positionComponent.tile != null) {
+        if (textures != null && positionComponent != null && !positionComponent.isInNull()) {
             IRegularDraw b = (IRegularDraw) batch;
             b.draw(
                     textures.getDrawable().getRegion(),
-                    positionComponent.getDrawX() - width / 2,
-                    positionComponent.getDrawY() - height / 2,
+                    positionComponent.getDrawX() - width / 2f,
+                    positionComponent.getDrawY() - height / 2f,
                     width, height);
         }
 

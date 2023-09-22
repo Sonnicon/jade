@@ -1,6 +1,8 @@
 package sonnicon.jade.entity.components.graphical;
 
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.world.TilePositionComponent;
+import sonnicon.jade.game.Content;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
@@ -38,8 +40,14 @@ public class ChunkDrawComponent extends WorldDrawComponent {
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
         entity.events.register(moveHandler);
-        if (positionComponent.tile != null) {
-            addToChunk(positionComponent.tile.chunk);
+        if (!positionComponent.isInNull()) {
+            Tile t;
+            if (positionComponent instanceof TilePositionComponent) {
+                t = ((TilePositionComponent) positionComponent).tile;
+            } else {
+                t = Content.world.getTile(positionComponent.getTileX(), positionComponent.getTileY());
+            }
+            addToChunk(t.chunk);
         }
     }
 
@@ -59,6 +67,7 @@ public class ChunkDrawComponent extends WorldDrawComponent {
 
     protected void removeFromChunk() {
         currentChunk.removeRenderable(this);
+        currentChunk = null;
     }
 
     @Override

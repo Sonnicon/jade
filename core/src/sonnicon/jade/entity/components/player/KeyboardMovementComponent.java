@@ -6,19 +6,21 @@ import com.badlogic.gdx.math.Vector3;
 import sonnicon.jade.Jade;
 import sonnicon.jade.content.ItemPrinter;
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.Traits;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.entity.components.world.PositionComponent;
-import sonnicon.jade.game.Actions;
+import sonnicon.jade.entity.components.world.SubtilePositionComponent;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.game.actions.Actions;
+import sonnicon.jade.game.actions.CharacterMoveAction;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.draw.CachedDrawBatch;
 import sonnicon.jade.graphics.particles.TextParticle;
 import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.input.WorldInput;
-import sonnicon.jade.input.actions.CharacterMoveAction;
 import sonnicon.jade.util.Direction;
 import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.Utils;
@@ -39,28 +41,26 @@ public class KeyboardMovementComponent extends Component implements Clock.IUpdat
     private static final Vector3 TEMP_VEC = new Vector3();
 
     private static final EventTypes.EntityMoveTileEvent onMoveTile = (Entity ent, Tile source, Tile destination) -> {
-        ((CachedDrawBatch) Renderer.Batch.terrainDynamic.batch).invalidate();
-        ((CachedDrawBatch) Renderer.Batch.fow.batch).invalidate();
-
         if (destination != null) {
             Iterator<Entity> iter = destination.entities.iterator();
             while (iter.hasNext()) {
                 Entity e = iter.next();
+                if (e.traits.hasTrait(Traits.Trait.stopPickup)) continue;
+
                 if (ent.getComponent(StorageComponent.class).storage.addEntity(e)) {
                     if (e.getComponent(PositionComponent.class) != null) {
                         iter.remove();
                         PositionComponent epc = e.getComponent(PositionComponent.class);
-                        WorldInput.readWorldPosition(TEMP_VEC, epc.tile);
+                        WorldInput.readWorldPosition(TEMP_VEC, epc);
                         Jade.renderer.particles.createParticle(TextParticle.class, TEMP_VEC.x, TEMP_VEC.y).setText("item!");
-                        epc.moveTo(null);
+                        epc.moveToNull();
                     }
                 }
             }
-            Jade.renderer.viewOverlay.moveTo(ent.getComponent(PositionComponent.class));
         }
     };
 
-    private static final EventTypes.EntityMovePosEvent onMovePos = (e, i2, i3, i4, i5) -> {
+    private static final EventTypes.EntityMoveEvent onMove = (e) -> {
         ((CachedDrawBatch) Renderer.Batch.terrainDynamic.batch).invalidate();
         ((CachedDrawBatch) Renderer.Batch.fow.batch).invalidate();
         Jade.renderer.viewOverlay.moveTo(e.getComponent(PositionComponent.class));
@@ -73,7 +73,7 @@ public class KeyboardMovementComponent extends Component implements Clock.IUpdat
         positionComponent = entity.getComponent(PositionComponent.class);
         storageComponent = entity.getComponent(StorageComponent.class);
 
-        entity.events.register(onMoveTile, onMovePos);
+        entity.events.register(onMoveTile, onMove);
         Jade.renderer.viewOverlay.moveTo(positionComponent);
     }
 
@@ -82,7 +82,7 @@ public class KeyboardMovementComponent extends Component implements Clock.IUpdat
         super.removeFromEntity(entity);
         Clock.unregister(this);
 
-        entity.events.unregister(onMoveTile, onMovePos);
+        entity.events.unregister(onMoveTile, onMove);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class KeyboardMovementComponent extends Component implements Clock.IUpdat
         }
         moveDirection = Direction.flatten(moveDirection);
         if (moveDirection != 0) {
-            characterMoveAction.set(positionComponent, Direction.directionX(moveDirection), Direction.directionY(moveDirection)).time(1f).enqueue();
+            characterMoveAction.set((SubtilePositionComponent) positionComponent, Direction.directionX(moveDirection), Direction.directionY(moveDirection)).time(1f).enqueue();
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.I)) {
