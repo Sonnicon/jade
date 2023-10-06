@@ -21,8 +21,6 @@ public class MoveboxComponent extends Component {
     private static int operX, operY;
     private static short operSize;
 
-    private PositionComponent positionComponent;
-
     private static final EventTypes.EntityMoveEvent MOVE_EVENT = MoveboxComponent::processMove;
 
     public MoveboxComponent() {
@@ -44,7 +42,6 @@ public class MoveboxComponent extends Component {
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
-        positionComponent = entity.getComponent(PositionComponent.class);
         entity.events.register(MOVE_EVENT);
 
         coveredFind();
@@ -54,13 +51,13 @@ public class MoveboxComponent extends Component {
     @Override
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
-        positionComponent = null;
         entity.events.unregister(MOVE_EVENT);
 
         coveredTiles.forEach(t -> t.nearbyMoveboxes.remove(this));
     }
 
     public void coveredFind() {
+        PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
         if (positionComponent != null) {
             coveredFind(positionComponent.getJointX(), positionComponent.getJointY(), size);
         } else {
@@ -104,14 +101,17 @@ public class MoveboxComponent extends Component {
         return coveredTilesOperation.stream()
                 .flatMap(tile -> tile.nearbyMoveboxes.stream())
                 .filter(other -> Utils.overlapsSquare(operX, operY, operSize,
-                        other.positionComponent.getJointX(), other.positionComponent.getJointY(), other.size));
+                        other.entity.getComponent(PositionComponent.class).getJointX(),
+                        other.entity.getComponent(PositionComponent.class).getJointY(), other.size));
     }
 
     public boolean overlapsMovebox(MoveboxComponent other) {
-        return ((positionComponent.getJointX() + size > other.positionComponent.getJointX() - other.size) ^
-                (positionComponent.getJointX() - size > other.positionComponent.getJointX() + other.size)) &&
-                (positionComponent.getJointY() + size > other.positionComponent.getJointY() - other.size) ^
-                        (positionComponent.getJointY() - size > other.positionComponent.getJointY() + other.size);
+        PositionComponent pos = entity.getComponent(PositionComponent.class);
+        PositionComponent oth = other.entity.getComponent(PositionComponent.class);
+        return ((pos.getJointX() + size > oth.getJointX() - other.size) ^
+                (pos.getJointX() - size > oth.getJointX() + other.size)) &&
+                (pos.getJointY() + size > oth.getJointY() - other.size) ^
+                        (pos.getJointY() - size > oth.getJointY() + other.size);
     }
 
     protected static void processMove(Entity entity) {

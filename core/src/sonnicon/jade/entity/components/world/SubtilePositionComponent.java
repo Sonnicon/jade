@@ -2,6 +2,7 @@ package sonnicon.jade.entity.components.world;
 
 import sonnicon.jade.game.Content;
 import sonnicon.jade.generated.EventTypes;
+import sonnicon.jade.util.Translation;
 import sonnicon.jade.util.Utils;
 import sonnicon.jade.world.Tile;
 
@@ -61,8 +62,16 @@ public class SubtilePositionComponent extends TilePositionComponent {
         if (other instanceof TilePositionComponent) {
             moveTo(((TilePositionComponent) other).tile, sx, sy);
         } else {
-            moveTo(Content.world.getTile(other.getTileX(), other.getTileY()));
+            moveTo(Content.world.getTile(other.getTileX(), other.getTileY()), sx, sy);
         }
+    }
+
+    @Override
+    public void moveToOther(PositionComponent other, Translation translation) {
+        translation.apply(other);
+        short sx = (short) ((Translation.getResX() / Tile.SUBTILE_DELTA) % Tile.SUBTILE_NUM);
+        short sy = (short) ((Translation.getResY() / Tile.SUBTILE_DELTA) % Tile.SUBTILE_NUM);
+        moveTo(Content.world.getTile((int) (Translation.getResX() / Tile.TILE_SIZE), (int) (Translation.getResY() / Tile.TILE_SIZE)), sx, sy);
     }
 
     public boolean tryMoveTo(short subx, short suby) {
@@ -91,7 +100,7 @@ public class SubtilePositionComponent extends TilePositionComponent {
         boolean b = moveToInternal(destination);
 
         if (a) EventTypes.EntityMoveEvent.handle(entity.events, entity);
-        if (b) fireTileEvent(start, tile);
+        if (b) fireTileEvent(entity, start, tile);
         return true;
     }
 

@@ -4,16 +4,19 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.IComparable;
+import sonnicon.jade.util.Translation;
 import sonnicon.jade.util.Utils;
 
 import java.util.HashSet;
 
 public class PositionBindComponent extends Component {
     public Entity follow;
+    private Translation translation;
+
     //todo don't do this
     private static boolean suppress = false;
 
-    private final EventTypes.EntityMoveEvent ON_MOVE_FOLLOWED = this::moveTo;
+    private final EventTypes.EntityMoveEvent ON_MOVE_FOLLOWED = e -> moveTo();
 
     private static final EventTypes.EntityMoveEvent ON_MOVE_THIS = (Entity e) -> {
         if (!suppress) {
@@ -26,10 +29,15 @@ public class PositionBindComponent extends Component {
     }
 
     public PositionBindComponent(Entity target) {
-        setup(target);
+        this(target, null);
     }
 
-    public PositionBindComponent setup(Entity target) {
+    public PositionBindComponent(Entity target, Translation translation) {
+        setup(target, translation);
+    }
+
+    public PositionBindComponent setup(Entity target, Translation translation) {
+        setTranslation(translation);
         attach(target);
         return this;
     }
@@ -55,7 +63,7 @@ public class PositionBindComponent extends Component {
         if (follow != null) {
             entity.events.register(ON_MOVE_THIS);
             follow.events.register(ON_MOVE_FOLLOWED);
-            moveTo(follow);
+            moveTo();
         }
     }
 
@@ -67,9 +75,25 @@ public class PositionBindComponent extends Component {
         }
     }
 
-    private void moveTo(Entity e) {
+    public void setTranslation(Translation translation) {
+        this.translation = translation;
+        moveTo();
+    }
+
+    public void moveTo() {
+        if (follow == null) {
+            return;
+        }
+
         suppress = true;
-        entity.getComponentFuzzy(PositionComponent.class).moveToOther(e.getComponent(PositionComponent.class));
+        PositionComponent posThis = entity.getComponent(PositionComponent.class);
+        PositionComponent posOther = follow.getComponent(PositionComponent.class);
+        if (translation != null) {
+            posThis.moveToOther(posOther, translation);
+        } else {
+            posThis.moveToOther(posOther);
+        }
+
         suppress = false;
     }
 
@@ -92,7 +116,7 @@ public class PositionBindComponent extends Component {
 
     @Override
     public Component copy() {
-        return ((PositionBindComponent) super.copy()).setup(follow);
+        return ((PositionBindComponent) super.copy()).setup(follow, translation);
     }
 
     @Override

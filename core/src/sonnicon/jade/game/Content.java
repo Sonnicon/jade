@@ -43,6 +43,7 @@ public class Content {
             }
         }
         CharacterPrinter.printCharacterPlayer(world.chunks.get(0).getTile((short) 4, (short) 4));
+        ItemPrinter.printWeaponDebug(world.chunks.get(0).getTile((short) 5, (short) 5));
 
         for (short i = 0; i < 32 * 4; i++) {
             if (i % 5 == 0) continue;

@@ -56,10 +56,23 @@ public class Traits implements IDebuggable {
         return traits != null && traits.containsKey(trait);
     }
 
+    public boolean addTraitIfAbsent(Trait trait) {
+        boolean absent = !hasTrait(trait);
+        if (absent) {
+            addTrait(trait);
+        }
+        return absent;
+    }
+
     public void copyTo(Traits other) {
         if (traits == null) {
             return;
         }
+
+        if (other.traits == null) {
+            other.traits = new HashMap<>();
+        }
+
         traits.forEach((Trait t, Integer c) -> other.traits.replace(t, c));
     }
 
@@ -85,6 +98,8 @@ public class Traits implements IDebuggable {
         // We can move to overlap with other entities, even those with blockMovement
         incorporeal,
         // Can be picked up //todo
-        stopPickup
+        stopPickup,
+        // Is currently being used, and can't be used again during same time
+        inUse
     }
 }

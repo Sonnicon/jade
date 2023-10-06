@@ -1,12 +1,11 @@
 package sonnicon.jade.graphics.particles;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFontCache;
-import com.badlogic.gdx.utils.Pool;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.graphics.draw.SpriteBatch;
 import sonnicon.jade.gui.Gui;
 
-public class TextParticle extends Particle implements Pool.Poolable {
+public class TextParticle extends Particle {
     public BitmapFontCache cache = new BitmapFontCache(Gui.getFont());
 
     public TextParticle() {

@@ -31,10 +31,9 @@ import java.util.Iterator;
 
 //todo remove debug component
 public class KeyboardMovementComponent extends Component implements Clock.IUpdate {
-    protected PositionComponent positionComponent;
     protected StorageComponent storageComponent;
 
-    private final CharacterMoveAction characterMoveAction = (CharacterMoveAction) Actions.actionObtain(CharacterMoveAction.class).keepRef();
+    private final CharacterMoveAction characterMoveAction = (CharacterMoveAction) Actions.obtain(CharacterMoveAction.class).keepRef();
 
     private boolean pPressed = false, spacePressed = false;
 
@@ -70,11 +69,10 @@ public class KeyboardMovementComponent extends Component implements Clock.IUpdat
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
         Clock.register(this);
-        positionComponent = entity.getComponent(PositionComponent.class);
         storageComponent = entity.getComponent(StorageComponent.class);
 
         entity.events.register(onMoveTile, onMove);
-        Jade.renderer.viewOverlay.moveTo(positionComponent);
+        Jade.renderer.viewOverlay.moveTo(entity.getComponent(PositionComponent.class));
     }
 
     @Override
@@ -108,7 +106,7 @@ public class KeyboardMovementComponent extends Component implements Clock.IUpdat
         }
         moveDirection = Direction.flatten(moveDirection);
         if (moveDirection != 0) {
-            characterMoveAction.set((SubtilePositionComponent) positionComponent, Direction.directionX(moveDirection), Direction.directionY(moveDirection)).time(1f).enqueue();
+            characterMoveAction.set((SubtilePositionComponent) entity.getComponent(PositionComponent.class), Direction.directionX(moveDirection), Direction.directionY(moveDirection)).time(1f).enqueue();
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.I)) {

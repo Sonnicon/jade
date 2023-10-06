@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @EventGenerator(id = "EntityComponentAdd", param = {Entity.class, Component.class}, label = {"entity", "component"})
+@EventGenerator(id = "EntityComponentRemove", param = {Entity.class, Component.class}, label = {"entity", "component"})
 @EventGenerator(id = "EntityTraitAdd", param = {Entity.class, Traits.Trait.class}, label = {"entity", "trait"})
 @EventGenerator(id = "EntityTraitRemove", param = {Entity.class, Traits.Trait.class}, label = {"entity", "trait"})
 public class Entity implements ICopyable, IComparable, IDebuggable {
@@ -74,9 +75,18 @@ public class Entity implements ICopyable, IComparable, IDebuggable {
     }
 
     public boolean removeComponent(Component component) {
-        //todo implement
+        //todo dependency checking
         components.remove(component.getKeyClass(), component);
         component.removeFromEntity(this);
+        EventTypes.EntityComponentRemoveEvent.handle(events, this, component);
+        return true;
+    }
+
+    public boolean removeComponent(Class<? extends Component> type) {
+        //todo dependency checking
+        Component comp = components.remove(type);
+        comp.removeFromEntity(this);
+        EventTypes.EntityComponentRemoveEvent.handle(events, this, comp);
         return true;
     }
 
@@ -184,6 +194,6 @@ public class Entity implements ICopyable, IComparable, IDebuggable {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Utils.mapFrom("components", components, "traits", traits, "id", id);
+        return Utils.mapFrom("components", components, "traits", traits, "id", id, "events", events);
     }
 }

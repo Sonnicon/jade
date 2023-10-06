@@ -23,7 +23,6 @@ import java.util.Map;
 //todo optimise the conditions
 public class FowDrawComponent extends Component implements IRenderable {
     // Unique component data
-    private PositionComponent positionComponent;
     private Chunk currentChunk;
     // Number of connected FowDrawComponents in each direction
     private final short[] directionCounts = {0, 0, 0, 0};
@@ -76,12 +75,12 @@ public class FowDrawComponent extends Component implements IRenderable {
 
     public void addNearbyFows() {
         directionEdges = 0;
-        Tile positionComponentTile = positionComponent.getTile();
+        Tile positionComponentTile = entity.getComponent(PositionComponent.class).getTile();
         for (byte dirIndex = 0; dirIndex < 4; dirIndex++) {
             FowDrawComponent comp = getFowInDirection(positionComponentTile, dirIndex);
             if (comp == null) {
                 NEARBY_FOWS[dirIndex] = null;
-            } else if (comp.positionComponent.getTile().chunk != positionComponentTile.chunk) {
+            } else if (comp.entity.getComponent(PositionComponent.class).getTile().chunk != positionComponentTile.chunk) {
                 NEARBY_FOWS[dirIndex] = null;
                 directionCounts[dirIndex] = 0;
                 directionEdges |= 1 << dirIndex;
@@ -119,7 +118,7 @@ public class FowDrawComponent extends Component implements IRenderable {
                 continue;
             }
             byte dirBackIndex = (byte) ((dirIndex + 2) % 4);
-            if (otherComp.positionComponent.getTile().chunk == tile.chunk) {
+            if (otherComp.entity.getComponent(PositionComponent.class).getTile().chunk == tile.chunk) {
                 otherComp.propagateNearbyFows(dirIndex, dirBackIndex, (short) (-directionCounts[dirBackIndex] - 1), false, null);
             } else {
                 otherComp.propagateNearbyFows(dirIndex, dirBackIndex, (short) 0, false, null);
@@ -138,9 +137,9 @@ public class FowDrawComponent extends Component implements IRenderable {
         directionEdges = (byte) ((edge ? (1 << dirBackIndex) : 0) | (((1 << dirBackIndex) ^ Direction.ALL) & directionEdges));
 
         if (directionCounts[dirIndex] > 0) {
-            Tile positionComponentTile = positionComponent.getTile();
+            Tile positionComponentTile = entity.getComponent(PositionComponent.class).getTile();
             FowDrawComponent comp = getFowInDirection(positionComponentTile, dirIndex);
-            if (comp != null && comp.positionComponent.getTile().chunk == positionComponentTile.chunk) {
+            if (comp != null && comp.entity.getComponent(PositionComponent.class).getTile().chunk == positionComponentTile.chunk) {
                 return comp.propagateNearbyFows(dirIndex, dirBackIndex, dcount, edge, source);
             } else {
                 return this;
@@ -166,10 +165,9 @@ public class FowDrawComponent extends Component implements IRenderable {
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
-        positionComponent = entity.getComponent(PositionComponent.class);
 
         entity.events.register(moveHandler);
-        moveHandler.apply(entity, null, positionComponent.getTile());
+        moveHandler.apply(entity, null, entity.getComponent(PositionComponent.class).getTile());
     }
 
     @Override
@@ -212,11 +210,14 @@ public class FowDrawComponent extends Component implements IRenderable {
         if (playerEntity == null) {
             return;
         }
+        PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
         PositionComponent playerPos = playerEntity.getComponent(PositionComponent.class);
+        if (positionComponent == null || positionComponent.isInNull() || playerPos == null || playerPos.isInNull()) {
+            return;
+        }
         Tile playerTile = playerPos.getTile();
         Tile drawTile = positionComponent.getTile();
-        if (positionComponent == null || positionComponent.isInNull() ||
-                playerPos == null || playerPos.isInNull() || drawTile == playerTile) {
+        if (drawTile == playerTile) {
             return;
         }
 
@@ -261,7 +262,7 @@ public class FowDrawComponent extends Component implements IRenderable {
         //// Diagonal shadows
 
         // which way is the shadow going
-        byte shadowDirection = Direction.relate(playerPos, positionComponent, Tile.SUBTILE_NUM / 2);
+        byte shadowDirection = Direction.relate(playerPos, positionComponent, Tile.SUBTILE_NUM / 2f);
         byte shadowLeftIndex = 0;
         for (byte i = 0; i < 4; i++) {
             if ((shadowDirection & (1 << i)) > 0 && (shadowDirection & (1 << ((i + 1) % 4))) > 0) {
@@ -297,6 +298,7 @@ public class FowDrawComponent extends Component implements IRenderable {
     }
 
     private void drawCardinalX(FowBatch batch, float[] pm, boolean singleTile) {
+        PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
         float[] dm = new float[]{positionComponent.getDrawX(), positionComponent.getDrawY()};
 
         // Directions and rotate offset
@@ -338,6 +340,7 @@ public class FowDrawComponent extends Component implements IRenderable {
     }
 
     private void drawCardinalY(FowBatch batch, float[] pm, boolean singleTile) {
+        PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
         float[] dm = new float[]{positionComponent.getDrawX(), positionComponent.getDrawY()};
 
         // Directions and rotate offset
@@ -379,6 +382,7 @@ public class FowDrawComponent extends Component implements IRenderable {
     }
 
     private void drawDiagonal(FowBatch batch, float[] pm, float[] rx, float[] ry, byte shadowLeftIndex, int i) {
+        PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
         float[] dm = new float[]{positionComponent.getDrawX(), positionComponent.getDrawY()};
         byte shadowRightIndex = (byte) ((shadowLeftIndex + 1) % 4);
 
@@ -400,8 +404,9 @@ public class FowDrawComponent extends Component implements IRenderable {
         FowDrawComponent farComp = endFows[otherFowIndex];
         FowDrawComponent nearComp = endFows[(otherFowIndex + 2) % 4];
 
-        float[] dme = new float[]{nearComp.positionComponent.getDrawX(),
-                nearComp.positionComponent.getDrawY()};
+        PositionComponent nearCompPositionComponent = nearComp.entity.getComponent(PositionComponent.class);
+        float[] dme = new float[]{nearCompPositionComponent.getDrawX(),
+                nearCompPositionComponent.getDrawY()};
 
         // Base shadow
         batch.drawDiag(

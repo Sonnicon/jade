@@ -1,12 +1,12 @@
 package sonnicon.jade.graphics.particles;
 
-import com.badlogic.gdx.utils.Pools;
 import sonnicon.jade.Jade;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.util.IDebuggable;
+import sonnicon.jade.util.ObjectPool;
 import sonnicon.jade.util.Utils;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class ParticleEngine implements IRenderable, Clock.ITicking, IDebuggable 
             p.render(batch, delta);
             if (p.destroy) {
                 iter.remove();
-                Pools.free(p);
+                ObjectPool.free(p);
             }
         }
     }
@@ -42,20 +42,20 @@ public class ParticleEngine implements IRenderable, Clock.ITicking, IDebuggable 
             p.tick(delta);
             if (p.destroy) {
                 iter.remove();
-                Pools.free(p);
+                ObjectPool.free(p);
             }
         }
     }
 
     public <T extends Particle> T createParticle(Class<T> type, float x, float y) {
-        T p = Pools.obtain(type);
+        T p = ObjectPool.obtain(type);
         p.create(x, y);
         particles.add(p);
         return p;
     }
 
     public void dispose() {
-        particles.forEach(Pools::free);
+        particles.forEach(ObjectPool::free);
         particles.clear();
         Jade.renderer.removeRenderable(this);
     }

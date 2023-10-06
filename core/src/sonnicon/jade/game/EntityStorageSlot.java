@@ -253,7 +253,9 @@ public class EntityStorageSlot implements ICopyable, IComparable, IDebuggable {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Utils.mapFrom("entity", entity, "amount", amount, "minSize", minimumSize, "maxSize", maximumSize, "maxAmount", maximumAmount, "restricted", restriction != null);
+        return Utils.mapFrom("entity", entity, "amount", amount,
+                "minSize", minimumSize, "maxSize", maximumSize,
+                "maxAmount", maximumAmount, "restricted", restriction != null);
     }
 
     public enum InventoryMove {

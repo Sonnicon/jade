@@ -2,6 +2,7 @@ package sonnicon.jade.entity.components.graphical;
 
 import sonnicon.jade.Jade;
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.world.PositionComponent;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
 
@@ -30,6 +31,7 @@ public class GlobalWorldDrawComponent extends WorldDrawComponent {
 
     @Override
     public boolean culled(Renderer.RenderLayer layer) {
+        PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
         if (positionComponent == null || positionComponent.isInNull()) {
             return false;
         }

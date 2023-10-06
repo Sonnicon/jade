@@ -287,7 +287,7 @@ public class DoubleLinkedList<T> implements List<T> {
 
     @Override
     public ListIterator<T> listIterator() {
-        return new DoubleLinkedListListIterator<T>(this);
+        return new DoubleLinkedListListIterator<>(this);
     }
 
     @Override

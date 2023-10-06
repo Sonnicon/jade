@@ -8,11 +8,12 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import sonnicon.jade.graphics.Textures;
+import sonnicon.jade.graphics.draw.ifaces.IDrawRegular;
 import sonnicon.jade.world.Tile;
 
 import java.nio.Buffer;
 
-public class TerrainSpriteBatch extends CachedDrawBatch implements IRegularDraw {
+public class TerrainSpriteBatch extends CachedDrawBatch implements IDrawRegular {
     public TerrainSpriteBatch() {
         this(10000);
     }

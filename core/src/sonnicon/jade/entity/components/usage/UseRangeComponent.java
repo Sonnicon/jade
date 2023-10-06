@@ -38,7 +38,7 @@ public abstract class UseRangeComponent extends Component implements IUsable {
         if (distance <= rangeMin || distance >= rangeMax) {
             return;
         }
-        use(user, distance, MathUtils.atan((float) dx / dy));
+        use(user, distance, (float) Math.toDegrees(((MathUtils.atan2(dy, -dx) + Math.PI * 1.5f) % (Math.PI * 2f))));
     }
 
     public abstract void use(Entity user, float dist, float angle);

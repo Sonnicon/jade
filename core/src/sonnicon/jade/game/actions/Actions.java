@@ -2,15 +2,16 @@ package sonnicon.jade.game.actions;
 
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.util.IDebuggable;
+import sonnicon.jade.util.ObjectPool;
 import sonnicon.jade.util.Utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Actions implements Clock.ITicking, IDebuggable {
+    //todo animations
     public static ArrayList<Action> actionsList = new ArrayList<>();
+
     public static Actions actions;
 
     public static void init() {
@@ -46,39 +47,18 @@ public class Actions implements Clock.ITicking, IDebuggable {
     }
 
     public static void process(float delta) {
-        float deltaEnd = Clock.getTickNum() + delta;
-        Iterator<Action> iter = actionsList.iterator();
-        while (iter.hasNext()) {
-            Action action = iter.next();
-            if (deltaEnd >= action.timeFinish) {
+        while (!actionsList.isEmpty()) {
+            Action action = actionsList.get(0);
+            if (Clock.getTickNum() >= action.timeFinish) {
                 action.finish();
-                iter.remove();
             } else {
                 break;
             }
         }
     }
 
-
-    private static final HashMap<Class<? extends Action>, ArrayList<Action>> ACTION_STORE = new HashMap<>();
-
-    public static <T extends Action> T actionObtain(Class<T> type) {
-        ArrayList<? extends Action> list = ACTION_STORE.get(type);
-        if (list == null || list.isEmpty()) {
-            try {
-                return (T) type.newInstance().reset();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            return (T) list.remove(0).reset();
-        }
-    }
-
-    public static void actionFree(Action action) {
-        Class<? extends Action> clazz = action.getClass();
-        ArrayList<Action> list = ACTION_STORE.computeIfAbsent(clazz, k -> new ArrayList<>());
-        list.add(action);
+    public static <T extends Action> T obtain(Class<T> type) {
+        return (T) ObjectPool.obtain(type).reset();
     }
 
     @Override
@@ -86,37 +66,51 @@ public class Actions implements Clock.ITicking, IDebuggable {
         return Utils.mapFrom("actions", actionsList);
     }
 
-    public abstract static class Action implements IDebuggable {
+    public abstract static class Action implements IDebuggable, ObjectPool.IPooledObject {
         public float timeFinish;
         public boolean keepRef, isQueued;
 
-        final Action reset() {
+        public final Action reset() {
             this.keepRef = false;
             this.isQueued = false;
             return this;
         }
 
-        public void finish() {
+        public final void finish() {
             if (!keepRef) {
-                actionFree(this);
+                free();
             } else {
+                dequeue();
                 isQueued = false;
             }
+            onFinish();
         }
 
-        public Action time(float duration) {
+        public abstract void onFinish();
+
+        public final Action time(float duration) {
             timeFinish = Clock.getTickNum() + duration;
             return this;
         }
 
-        public Action enqueue() {
+        public final Action enqueue() {
             Actions.enqueue(this);
             return this;
         }
 
-        public Action keepRef() {
+        public final Action keepRef() {
             keepRef = true;
             return this;
+        }
+
+        public final Action dequeue() {
+            Actions.dequeue(this);
+            return this;
+        }
+
+        public final void free() {
+            dequeue();
+            ObjectPool.free(this);
         }
 
         @Override

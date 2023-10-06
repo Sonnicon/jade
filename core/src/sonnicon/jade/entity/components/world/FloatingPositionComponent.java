@@ -1,6 +1,9 @@
 package sonnicon.jade.entity.components.world;
 
+import sonnicon.jade.entity.Entity;
 import sonnicon.jade.game.Content;
+import sonnicon.jade.generated.EventTypes;
+import sonnicon.jade.util.Translation;
 import sonnicon.jade.util.Utils;
 import sonnicon.jade.world.Tile;
 
@@ -15,25 +18,86 @@ public class FloatingPositionComponent extends PositionComponent {
     }
 
     public FloatingPositionComponent(float x, float y) {
-        this.x = x;
-        this.y = y;
+        setup(x, y);
+    }
+
+    private FloatingPositionComponent setup(float x, float y) {
+        moveTo(x, y);
+        return this;
     }
 
     @Override
     public void moveToOther(PositionComponent other) {
-        x = other.getDrawX();
-        y = other.getDrawY();
+        moveTo(other.getDrawX(), other.getDrawY());
+    }
+
+    @Override
+    public void moveToOther(PositionComponent other, Translation translation) {
+        translation.apply(other);
+        moveTo(Translation.getResX(), Translation.getResY());
+        rotateTo(Translation.getResR());
     }
 
     @Override
     public void moveToNull() {
-        x = Float.NaN;
-        y = Float.NaN;
+        moveTo(Float.NaN, Float.NaN);
+    }
+
+    public void moveTo(float x, float y) {
+        if (entity == null) {
+            this.x = x;
+            this.y = y;
+        } else {
+            Tile told = getTile();
+            this.x = x;
+            this.y = y;
+            Tile tnew = getTile();
+
+            if (told != tnew) {
+                if (told != null) {
+                    told.entities.remove(entity);
+                }
+                if (tnew != null) {
+                    tnew.entities.add(entity);
+                }
+                fireTileEvent(entity, told, tnew);
+            }
+            EventTypes.EntityMoveEvent.handle(entity.events, entity);
+        }
+    }
+
+    @Override
+    public void addToEntity(Entity entity) {
+        super.addToEntity(entity);
+
+        Tile t = getTile();
+        if (t != null) {
+            t.entities.add(entity);
+            fireTileEvent(entity, null, t);
+            EventTypes.EntityMoveEvent.handle(entity.events, entity);
+        }
+    }
+
+    @Override
+    public void removeFromEntity(Entity entity) {
+        moveToNull();
+        super.removeFromEntity(entity);
     }
 
     @Override
     public boolean isInNull() {
         return Float.isNaN(x) || Float.isNaN(y);
+    }
+
+    @Override
+    public void rotate(float deltaAngle) {
+        rotateTo((rotation + deltaAngle) % 360f);
+    }
+
+    @Override
+    public void rotateTo(float newAngle) {
+        rotation = newAngle;
+        EventTypes.EntityRotateEvent.handle(entity.events, entity, rotation);
     }
 
     @Override
@@ -74,6 +138,11 @@ public class FloatingPositionComponent extends PositionComponent {
     @Override
     public Tile getTile() {
         return Content.world.getTile(getTileX(), getTileY());
+    }
+
+    @Override
+    public FloatingPositionComponent copy() {
+        return ((FloatingPositionComponent) super.copy()).setup(x, y);
     }
 
     @Override

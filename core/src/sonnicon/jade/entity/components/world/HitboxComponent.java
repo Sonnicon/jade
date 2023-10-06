@@ -8,7 +8,7 @@ import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
-import sonnicon.jade.graphics.draw.IRegularDraw;
+import sonnicon.jade.graphics.draw.ifaces.IDrawRegular;
 import sonnicon.jade.util.Utils;
 
 import java.util.HashSet;
@@ -16,7 +16,6 @@ import java.util.Map;
 
 public class HitboxComponent extends Component implements IRenderable {
     public short sizeTotal, fieldCount;
-    private PositionComponent positionComponent;
 
     private static final TextureRegion DAMAGEFIELD_TEXTURE = Textures.atlasFindRegion("damagefield");
 
@@ -37,7 +36,6 @@ public class HitboxComponent extends Component implements IRenderable {
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
-        positionComponent = entity.getComponent(PositionComponent.class);
         entity.getComponentFuzzy(WorldDrawComponent.class).addJoined(this);
     }
 
@@ -55,8 +53,9 @@ public class HitboxComponent extends Component implements IRenderable {
     @Override
     public void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
         //todo not render when not needed
+        PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
         if (positionComponent != null && positionComponent.isInNull()) {
-            IRegularDraw b = (IRegularDraw) batch;
+            IDrawRegular b = (IDrawRegular) batch;
 
             float drawSize = (float) sizeTotal / fieldCount;
             float drawx = positionComponent.getDrawX() - sizeTotal / 2f;

@@ -6,9 +6,11 @@ import sonnicon.jade.generated.EventTypes;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @EventGenerator(id = "Any", param = {Class.class}, label = {"eventType"})
-public class Events {
+public class Events implements IDebuggable {
     private final HashMap<Class<? extends EventHandler>, LinkedList<EventHandler>> handlers = new HashMap<>();
 
     public void register(EventHandler... handles) {
@@ -41,5 +43,13 @@ public class Events {
         if (handleKey != EventTypes.AnyEvent.class) {
             handle(EventTypes.AnyEvent.class, handleKey);
         }
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return handlers.entrySet().stream()
+                .collect(Collectors.toMap(e ->
+                                e.getKey().getSimpleName(),
+                        Map.Entry::getValue));
     }
 }

@@ -1,5 +1,6 @@
 package sonnicon.jade.entity.components.graphical;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.entity.components.world.PositionComponent;
@@ -7,7 +8,8 @@ import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
-import sonnicon.jade.graphics.draw.IRegularDraw;
+import sonnicon.jade.graphics.draw.ifaces.IDrawRegular;
+import sonnicon.jade.graphics.draw.ifaces.IDrawRotated;
 import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.Utils;
 
@@ -20,7 +22,6 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
     protected float width;
     protected float height;
 
-    protected PositionComponent positionComponent;
     protected Renderer.RenderLayer layer;
     protected ArrayList<IRenderable> joinedRenderables;
 
@@ -43,7 +44,6 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
-        positionComponent = entity.getComponent(PositionComponent.class);
     }
 
     @Override
@@ -53,13 +53,19 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
 
     @Override
     public void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
+        PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
         if (textures != null && positionComponent != null && !positionComponent.isInNull()) {
-            IRegularDraw b = (IRegularDraw) batch;
-            b.draw(
-                    textures.getDrawable().getRegion(),
-                    positionComponent.getDrawX() - width / 2f,
-                    positionComponent.getDrawY() - height / 2f,
-                    width, height);
+            float rotation = positionComponent.getRotation();
+            float drawx = positionComponent.getDrawX() - width / 2f;
+            float drawy = positionComponent.getDrawY() - height / 2f;
+            TextureRegion region = textures.getDrawable().getRegion();
+
+            if (rotation == 0f) {
+                ((IDrawRegular) batch).draw(region, drawx, drawy, width, height);
+            } else {
+                //todo default rotation angle
+                ((IDrawRotated) batch).draw(region, drawx, drawy, width, height, 45f - rotation);
+            }
         }
 
         if (joinedRenderables != null) {
@@ -93,6 +99,6 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Utils.mapExtendFrom(super.debugProperties(), "textures", textures, "width", width, "height", height, "position", positionComponent, "layer", layer);
+        return Utils.mapExtendFrom(super.debugProperties(), "textures", textures, "width", width, "height", height, "layer", layer);
     }
 }

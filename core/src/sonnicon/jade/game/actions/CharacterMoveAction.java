@@ -17,9 +17,7 @@ public class CharacterMoveAction extends Actions.Action {
     }
 
     @Override
-    public void finish() {
-        super.finish();
-
+    public void onFinish() {
         target.tryMoveBy(moveX, moveY);
     }
 

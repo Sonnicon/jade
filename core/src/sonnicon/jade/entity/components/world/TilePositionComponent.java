@@ -4,6 +4,7 @@ import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
 import sonnicon.jade.game.Content;
 import sonnicon.jade.generated.EventTypes;
+import sonnicon.jade.util.Translation;
 import sonnicon.jade.util.Utils;
 import sonnicon.jade.world.Tile;
 
@@ -51,7 +52,7 @@ public class TilePositionComponent extends PositionComponent {
     public boolean moveTo(Tile destination) {
         Tile source = tile;
         if (moveToInternal(destination)) {
-            fireTileEvent(source, tile);
+            fireTileEvent(entity, source, tile);
             EventTypes.EntityMoveEvent.handle(entity.events, entity);
             return true;
         } else {
@@ -60,7 +61,7 @@ public class TilePositionComponent extends PositionComponent {
     }
 
     protected boolean moveToInternal(Tile destination) {
-        if (tile == destination && destination.entities.contains(entity)) {
+        if (tile == destination && (destination == null || destination.entities.contains(entity))) {
             return false;
         }
 
@@ -111,6 +112,12 @@ public class TilePositionComponent extends PositionComponent {
     }
 
     @Override
+    public void moveToOther(PositionComponent other, Translation translation) {
+        translation.apply(other);
+        moveTo(Content.world.getTile((int) (Translation.getResX() / Tile.TILE_SIZE), (int) (Translation.getResY() / Tile.TILE_SIZE)));
+    }
+
+    @Override
     public void moveToNull() {
         moveTo(null);
     }
@@ -120,14 +127,15 @@ public class TilePositionComponent extends PositionComponent {
         return tile == null;
     }
 
-    protected void fireTileEvent(Tile source, Tile destination) {
-        if (source != null) {
-            EventTypes.EntityMoveTileEvent.handle(source.events, entity, source, destination);
-        }
-        if (destination != null) {
-            EventTypes.EntityMoveTileEvent.handle(destination.events, entity, source, destination);
-        }
-        EventTypes.EntityMoveTileEvent.handle(entity.events, entity, source, destination);
+    @Override
+    public void rotate(float deltaAngle) {
+        rotateTo((rotation + deltaAngle) % 360f);
+    }
+
+    @Override
+    public void rotateTo(float newAngle) {
+        rotation = newAngle;
+        EventTypes.EntityRotateEvent.handle(entity.events, entity, rotation);
     }
 
     @Override

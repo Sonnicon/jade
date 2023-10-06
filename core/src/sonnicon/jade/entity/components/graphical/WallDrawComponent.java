@@ -75,6 +75,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
     @Override
     public void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
         TerrainSpriteBatch b = (TerrainSpriteBatch) batch;
+        PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
         switch (layer) {
             case terrainBottom: {
                 // Surrounding shadows
