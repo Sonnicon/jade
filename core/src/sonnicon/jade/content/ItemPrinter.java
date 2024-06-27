@@ -1,6 +1,7 @@
 package sonnicon.jade.content;
 
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.graphical.AnimationComponent;
 import sonnicon.jade.entity.components.graphical.ChunkDrawComponent;
 import sonnicon.jade.entity.components.storage.EntitySizeComponent;
 import sonnicon.jade.entity.components.storage.StorableComponent;
@@ -30,6 +31,7 @@ public class ItemPrinter {
                 new ChunkDrawComponent(new TextureSet("item-weapon"), Tile.TILE_SIZE, Tile.TILE_SIZE, Renderer.RenderLayer.characters),
                 EntitySizeComponent.medium,
                 new StorableComponent("debug weapon", Textures.atlasFindDrawable("item-weapon")),
+                new AnimationComponent(),
                 new UseStabComponent());
         return result;
     }

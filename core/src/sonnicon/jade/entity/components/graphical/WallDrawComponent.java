@@ -110,7 +110,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
                 }
                 PositionComponent playerPos = playerEntity.getComponent(PositionComponent.class);
 
-                short playerDir = Direction.relate(positionComponent, playerPos, Tile.SUBTILE_NUM / 2f);
+                short playerDir = Direction.relate(positionComponent, playerPos, Tile.HALF_TILE_SIZE + 0.01f);
                 short playerAwayDir = (short) ((playerDir << 2) | (playerDir >>> 2));
 
                 byte leftIndexDir = 0;

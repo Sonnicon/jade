@@ -69,9 +69,9 @@ public class SubtilePositionComponent extends TilePositionComponent {
     @Override
     public void moveToOther(PositionComponent other, Translation translation) {
         translation.apply(other);
-        short sx = (short) ((Translation.getResX() / Tile.SUBTILE_DELTA) % Tile.SUBTILE_NUM);
-        short sy = (short) ((Translation.getResY() / Tile.SUBTILE_DELTA) % Tile.SUBTILE_NUM);
-        moveTo(Content.world.getTile((int) (Translation.getResX() / Tile.TILE_SIZE), (int) (Translation.getResY() / Tile.TILE_SIZE)), sx, sy);
+        short sx = (short) ((translation.getResX() / Tile.SUBTILE_DELTA) % Tile.SUBTILE_NUM);
+        short sy = (short) ((translation.getResY() / Tile.SUBTILE_DELTA) % Tile.SUBTILE_NUM);
+        moveTo(Content.world.getTile((int) (translation.getResX() / Tile.TILE_SIZE), (int) (translation.getResY() / Tile.TILE_SIZE)), sx, sy);
     }
 
     public boolean tryMoveTo(short subx, short suby) {
@@ -135,6 +135,19 @@ public class SubtilePositionComponent extends TilePositionComponent {
             return true;
         }
         return false;
+    }
+
+    public boolean canMoveByPos(short x, short y) {
+        x += subx;
+        int tx = x / Tile.SUBTILE_NUM - (x < 0 ? 1 : 0);
+        x = (short) Math.floorMod(x, Tile.SUBTILE_NUM);
+
+        y += suby;
+        int ty = y / Tile.SUBTILE_NUM - (y < 0 ? 1 : 0);
+        y = (short) Math.floorMod(y, Tile.SUBTILE_NUM);
+
+        Tile destTile = tile.chunk.world.getTile((tile.getX() + tx), (tile.getY() + ty));
+        return destTile != null && canMoveTo(destTile, x, y);
     }
 
     @Override

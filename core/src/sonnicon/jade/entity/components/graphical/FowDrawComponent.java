@@ -221,7 +221,7 @@ public class FowDrawComponent extends Component implements IRenderable {
             return;
         }
 
-        byte playerDir = Direction.relate(drawTile, playerTile);
+        byte playerDir = Direction.relate(positionComponent, playerPos, Tile.HALF_TILE_SIZE + 0.001f);
 
         FowBatch batch = (FowBatch) b;
 

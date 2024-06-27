@@ -2,12 +2,19 @@ package sonnicon.jade.entity.components.usage;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
+import sonnicon.jade.entity.components.Component;
+import sonnicon.jade.entity.components.graphical.AnimationComponent;
 import sonnicon.jade.entity.components.world.FloatingPositionComponent;
 import sonnicon.jade.entity.components.world.PositionBindComponent;
 import sonnicon.jade.entity.components.world.PositionComponent;
 import sonnicon.jade.game.actions.Actions;
 import sonnicon.jade.game.actions.RunnableAction;
+import sonnicon.jade.graphics.animation.Animation;
 import sonnicon.jade.util.Translation;
+import sonnicon.jade.util.Utils;
+
+import java.util.HashSet;
+import java.util.Map;
 
 public class UseStabComponent extends UseRangeComponent {
     //todo refine this entire component
@@ -15,6 +22,7 @@ public class UseStabComponent extends UseRangeComponent {
     private Translation translation;
     private RunnableAction currentAction;
     private PositionComponent oldPositionComponent;
+    private Animation animation;
 
     //todo reuse objects
     public UseStabComponent() {
@@ -54,10 +62,17 @@ public class UseStabComponent extends UseRangeComponent {
                 .time(1f)
                 .keepRef()
                 .enqueue();
+
+        // Moving animation
+        AnimationComponent ac = entity.getComponent(AnimationComponent.class);
+        translation.mark();
+        translation.setRotatedOffset(0f, 48f);
+        animation = translation.getAnimation(1f).play(ac);
     }
 
     public void stabThrust() {
-        translation.setRotatedOffset(0f, 48f);
+        // Actual moving
+        animation.stop();
         positionBindComponent.moveTo();
         currentAction.set(this::stabSheathe)
                 .time(1f)
@@ -75,5 +90,15 @@ public class UseStabComponent extends UseRangeComponent {
     public void stabInterrupt() {
         //todo free
         currentAction.free();
+    }
+
+    @Override
+    public HashSet<Class<? extends Component>> getDependencies() {
+        return Utils.setFrom(AnimationComponent.class);
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Utils.mapExtendFrom(super.debugProperties(), "positionBind", positionBindComponent, "translation", translation, "currentAction", currentAction, "oldPositionComponent", oldPositionComponent);
     }
 }

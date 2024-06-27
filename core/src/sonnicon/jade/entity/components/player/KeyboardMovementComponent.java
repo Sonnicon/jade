@@ -14,7 +14,7 @@ import sonnicon.jade.entity.components.world.SubtilePositionComponent;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.game.actions.Actions;
-import sonnicon.jade.game.actions.CharacterMoveAction;
+import sonnicon.jade.game.actions.PlayerCharacterMoveAction;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.draw.CachedDrawBatch;
@@ -33,9 +33,9 @@ import java.util.Iterator;
 public class KeyboardMovementComponent extends Component implements Clock.IUpdate {
     protected StorageComponent storageComponent;
 
-    private final CharacterMoveAction characterMoveAction = (CharacterMoveAction) Actions.obtain(CharacterMoveAction.class).keepRef();
+    private final PlayerCharacterMoveAction characterMoveAction = (PlayerCharacterMoveAction) Actions.obtain(PlayerCharacterMoveAction.class).keepRef();
 
-    private boolean pPressed = false, spacePressed = false;
+    private boolean pPressed = false;
 
     private static final Vector3 TEMP_VEC = new Vector3();
 
@@ -91,22 +91,24 @@ public class KeyboardMovementComponent extends Component implements Clock.IUpdat
     @Override
     public void update(float delta) {
         //todo make this not poll
-        byte moveDirection = 0;
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            moveDirection |= Direction.NORTH;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            moveDirection |= Direction.WEST;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            moveDirection |= Direction.SOUTH;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            moveDirection |= Direction.EAST;
-        }
-        moveDirection = Direction.flatten(moveDirection);
-        if (moveDirection != 0) {
-            characterMoveAction.set((SubtilePositionComponent) entity.getComponent(PositionComponent.class), Direction.directionX(moveDirection), Direction.directionY(moveDirection)).time(1f).enqueue();
+        if (!characterMoveAction.isQueued) {
+            byte moveDirection = 0;
+            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                moveDirection |= Direction.NORTH;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                moveDirection |= Direction.WEST;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                moveDirection |= Direction.SOUTH;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                moveDirection |= Direction.EAST;
+            }
+            moveDirection = Direction.flatten(moveDirection);
+            if (moveDirection != 0) {
+                characterMoveAction.set((SubtilePositionComponent) entity.getComponent(PositionComponent.class), Direction.directionX(moveDirection), Direction.directionY(moveDirection)).time(1f).enqueue();
+            }
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.I)) {
@@ -120,10 +122,7 @@ public class KeyboardMovementComponent extends Component implements Clock.IUpdat
             storageComponent.storage.addEntity(ItemPrinter.printItemDebug(null));
         }
 
-        if (spacePressed && !Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            spacePressed = false;
-        } else if (!spacePressed && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            spacePressed = true;
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && !Clock.isTickRemaining()) {
             Clock.tick(1f);
         }
     }

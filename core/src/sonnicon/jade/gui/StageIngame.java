@@ -70,6 +70,12 @@ public class StageIngame extends GuiStage {
             Clock.tick(1f);
         });
 
+        addToolbarButton("icon-arrow-right-double", () -> {
+            Jade.renderer.particles.createParticle(TextParticle.class, 100, 100).setText("tickFast");
+            //todo
+            Clock.tickFast(1f);
+        });
+
         groupToolbar = new HorizontalGroup();
         ScrollPane paneToolbar = new ScrollPane(groupToolbar);
         tableToolbar = new Table(Gui.skin);

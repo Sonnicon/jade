@@ -30,7 +30,9 @@ public class WorldInput extends InputInterpreter {
         // Debug takes priority
         if (button == com.badlogic.gdx.Input.Buttons.MIDDLE) {
             Tile tile = Content.world.getTile((int) (TEMP_VEC.x / Tile.SUBTILE_NUM), (int) (TEMP_VEC.y / Tile.SUBTILE_NUM));
-            ((StageIngame) Gamestate.State.ingame.getStage()).panelDebug.show(tile);
+            if (tile != null) {
+                ((StageIngame) Gamestate.State.ingame.getStage()).panelDebug.show(tile);
+            }
             return true;
         }
 

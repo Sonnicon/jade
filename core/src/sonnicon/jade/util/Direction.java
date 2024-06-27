@@ -5,6 +5,8 @@ import sonnicon.jade.world.Tile;
 
 import java.util.function.Consumer;
 
+import static java.lang.Math.abs;
+
 public class Direction {
     public static final byte NORTH = 1;
     public static final byte EAST = 1 << 1;
@@ -73,8 +75,8 @@ public class Direction {
 
     public static byte relate(float fromX, float fromY, float toX, float toY) {
         byte result = 0;
-        if (toX != fromX) result |= toX > fromX ? EAST : WEST;
-        if (toY != fromY) result |= toY > fromY ? NORTH : SOUTH;
+        if (abs(toX - fromX) > 0.001f) result |= toX > fromX ? EAST : WEST;
+        if (abs(toY - fromY) > 0.001f) result |= toY > fromY ? NORTH : SOUTH;
         return result;
     }
 
@@ -84,10 +86,10 @@ public class Direction {
 
     public static byte relate(PositionComponent from, PositionComponent to, float range) {
         byte result = 0;
-        if (Math.abs(to.getDrawX() - from.getDrawX()) >= range) {
+        if (abs(to.getDrawX() - from.getDrawX()) >= range) {
             result |= to.getDrawX() > from.getDrawX() ? EAST : WEST;
         }
-        if (Math.abs(to.getDrawY() - from.getDrawY()) >= range) {
+        if (abs(to.getDrawY() - from.getDrawY()) >= range) {
             result |= to.getDrawY() > from.getDrawY() ? NORTH : SOUTH;
         }
         return result;

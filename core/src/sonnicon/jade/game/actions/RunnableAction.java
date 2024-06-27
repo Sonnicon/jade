@@ -13,6 +13,11 @@ public class RunnableAction extends Actions.Action {
     }
 
     @Override
+    public void onStart() {
+
+    }
+
+    @Override
     public void onFinish() {
         func.run();
     }

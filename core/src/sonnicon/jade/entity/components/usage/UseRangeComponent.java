@@ -8,6 +8,8 @@ import sonnicon.jade.game.IUsable;
 import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.Utils;
 
+import java.util.Map;
+
 public abstract class UseRangeComponent extends Component implements IUsable {
     public float rangeMin = 0f, rangeMax = Float.MAX_VALUE;
 
@@ -53,5 +55,10 @@ public abstract class UseRangeComponent extends Component implements IUsable {
         if (!super.compare(other)) return false;
         UseRangeComponent o = (UseRangeComponent) other;
         return Math.abs(o.rangeMin - rangeMin) < 0.01f && Math.abs(o.rangeMax - rangeMax) < 0.01f;
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Utils.mapExtendFrom(super.debugProperties(), "rangeMin", rangeMin, "rangeMax", rangeMax);
     }
 }

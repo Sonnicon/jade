@@ -2,6 +2,7 @@ package sonnicon.jade.content;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
+import sonnicon.jade.entity.components.graphical.AnimationComponent;
 import sonnicon.jade.entity.components.graphical.ChunkDrawComponent;
 import sonnicon.jade.entity.components.player.KeyboardMovementComponent;
 import sonnicon.jade.entity.components.player.PlayerControlComponent;
@@ -34,6 +35,7 @@ public class CharacterPrinter {
 
         result.addComponents(
                 storageComponent,
+                new AnimationComponent(),
                 new KeyboardMovementComponent());
         PlayerControlComponent.setControlledEntity(result);
 

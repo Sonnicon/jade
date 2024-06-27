@@ -123,7 +123,9 @@ public class DebugPanel extends Panel {
 
     private Actor createEntry(Object target) {
         Actor result;
-        if (PURE_TYPES.contains(target.getClass())) {
+        if (target == null) {
+            result = new Label("null", Gui.skin);
+        } else if (PURE_TYPES.contains(target.getClass())) {
             result = new Label(target.toString(), Gui.skin);
         } else {
             result = new TextButton("[" + IDebuggable.debugName(target) + "]", Gui.skin, "debug");
@@ -163,6 +165,7 @@ public class DebugPanel extends Panel {
                     "clock_updating", Clock.updating,
                     "clock_tick", Clock.getTickNum(),
                     "clock_update", Clock.getUpdateNum(),
+                    "clock_interp", Clock.getTickInterp(),
                     "controlled", PlayerControlComponent.getEntity(),
                     "renderer", Jade.renderer
             );

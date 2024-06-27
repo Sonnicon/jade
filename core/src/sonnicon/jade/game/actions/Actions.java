@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class Actions implements Clock.ITicking, IDebuggable {
-    //todo animations
     public static ArrayList<Action> actionsList = new ArrayList<>();
 
     public static Actions actions;
@@ -40,6 +39,7 @@ public class Actions implements Clock.ITicking, IDebuggable {
         }
         actionsList.add(l, action);
         action.isQueued = true;
+        action.onStart();
     }
 
     public static void dequeue(Action action) {
@@ -77,16 +77,13 @@ public class Actions implements Clock.ITicking, IDebuggable {
         }
 
         public final void finish() {
-            if (!keepRef) {
-                free();
-            } else {
-                dequeue();
-                isQueued = false;
-            }
+            interrupt();
             onFinish();
         }
 
-        public abstract void onFinish();
+        protected abstract void onStart();
+
+        protected abstract void onFinish();
 
         public final Action time(float duration) {
             timeFinish = Clock.getTickNum() + duration;
@@ -106,6 +103,15 @@ public class Actions implements Clock.ITicking, IDebuggable {
         public final Action dequeue() {
             Actions.dequeue(this);
             return this;
+        }
+
+        public void interrupt() {
+            if (!keepRef) {
+                free();
+            } else {
+                dequeue();
+                isQueued = false;
+            }
         }
 
         public final void free() {

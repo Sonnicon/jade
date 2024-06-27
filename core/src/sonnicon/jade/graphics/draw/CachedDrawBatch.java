@@ -2,6 +2,7 @@ package sonnicon.jade.graphics.draw;
 
 public abstract class CachedDrawBatch extends DrawBatch {
     public boolean invalidated = true;
+    public char alwaysRedraw = 0;
 
     public CachedDrawBatch(int vSize) {
         vArray = new float[vSize];
@@ -18,7 +19,9 @@ public abstract class CachedDrawBatch extends DrawBatch {
         mesh.setVertices(vArray, 0, vIndex);
         super.end();
 
-        invalidated = false;
+        if (alwaysRedraw == 0) {
+            invalidated = false;
+        }
     }
 
     public void flush() {

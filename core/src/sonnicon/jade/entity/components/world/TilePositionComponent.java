@@ -2,6 +2,7 @@ package sonnicon.jade.entity.components.world;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
+import sonnicon.jade.entity.components.graphical.AnimationComponent;
 import sonnicon.jade.game.Content;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.Translation;
@@ -114,7 +115,7 @@ public class TilePositionComponent extends PositionComponent {
     @Override
     public void moveToOther(PositionComponent other, Translation translation) {
         translation.apply(other);
-        moveTo(Content.world.getTile((int) (Translation.getResX() / Tile.TILE_SIZE), (int) (Translation.getResY() / Tile.TILE_SIZE)));
+        moveTo(Content.world.getTile((int) (translation.getResX() / Tile.TILE_SIZE), (int) (translation.getResY() / Tile.TILE_SIZE)));
     }
 
     @Override
@@ -140,12 +141,22 @@ public class TilePositionComponent extends PositionComponent {
 
     @Override
     public float getDrawX() {
-        return tile.getDrawX();
+        AnimationComponent ac = entity.getComponent(AnimationComponent.class);
+        if (ac == null || !ac.isAnimating()) {
+            return tile.getDrawX();
+        } else {
+            return tile.getDrawX() + ac.getX();
+        }
     }
 
     @Override
     public float getDrawY() {
-        return tile.getDrawY();
+        AnimationComponent ac = entity.getComponent(AnimationComponent.class);
+        if (ac == null || !ac.isAnimating()) {
+            return tile.getDrawY();
+        } else {
+            return tile.getDrawY() + ac.getY();
+        }
     }
 
     @Override
@@ -170,7 +181,12 @@ public class TilePositionComponent extends PositionComponent {
 
     @Override
     public float getRotation() {
-        return rotation;
+        AnimationComponent ac = entity.getComponent(AnimationComponent.class);
+        if (ac == null || !ac.isAnimating()) {
+            return rotation;
+        } else {
+            return rotation + ac.getRotation();
+        }
     }
 
     @Override

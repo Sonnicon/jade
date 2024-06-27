@@ -2,38 +2,37 @@ package sonnicon.jade.util;
 
 import com.badlogic.gdx.math.MathUtils;
 import sonnicon.jade.entity.components.world.PositionComponent;
+import sonnicon.jade.graphics.animation.Animation;
+import sonnicon.jade.graphics.animation.TranslateAnimation;
 
-public class Translation implements ObjectPool.IPooledObject {
+import java.util.Map;
+
+public class Translation implements ObjectPool.IPooledObject, IDebuggable {
     private boolean enableFlat, enableRotate, enableFollowRotation;
-    private float dx, dy, dr, drx, dry;
+    private float flatX, flatY, rotation;
+    private float relX, relY;
 
-    private static float resX, resY, resR;
+    private float diffX, diffY;
+    private float resX, resY, resR;
+
+    private float markX, markY;
 
     public void apply(PositionComponent positionComponent) {
-        resX = positionComponent.getDrawX();
-        resY = positionComponent.getDrawY();
+        resX = positionComponent.getDrawX() + diffX;
+        resY = positionComponent.getDrawY() + diffY;
+
         resR = positionComponent.getRotation();
-
-        if (enableRotate) {
-            resX += drx * MathUtils.cosDeg(dr) + dry * MathUtils.sinDeg(dr);
-            resY += drx * -MathUtils.sinDeg(dr) + dry * MathUtils.cosDeg(dr);
-        }
-
-        if (enableFlat) {
-            resX += dx;
-            resY += dy;
-        }
-
         if (enableFollowRotation) {
-            resR += dr;
+            resR += rotation;
         }
     }
 
-    @Override
-    public void onFree() {
-        resetFlatOffset();
-        resetRotatedOffset();
-        resetFollowRotationOffset();
+    protected float getDiffX() {
+        return diffX;
+    }
+
+    protected float getDiffY() {
+        return diffY;
     }
 
     public void free() {
@@ -41,42 +40,58 @@ public class Translation implements ObjectPool.IPooledObject {
     }
 
     public static Translation obtain() {
-        return ObjectPool.obtain(Translation.class);
+        Translation t = ObjectPool.obtain(Translation.class);
+        t.enableFlat = false;
+        t.enableRotate = false;
+        t.enableFollowRotation = false;
+        // don't really care about resetting actual values
+        return t;
     }
 
     public Translation setFlatOffset(float x, float y) {
-        dx = x;
-        dy = y;
+        flatX = x;
+        flatY = y;
         enableFlat = true;
-        return this;
-    }
-
-    public Translation resetFlatOffset() {
-        enableFlat = false;
+        recalculate();
         return this;
     }
 
     public Translation setRotatedOffset(float x, float y) {
-        drx = x;
-        dry = y;
+        relX = x;
+        relY = y;
         enableRotate = true;
-        return this;
-    }
-
-    public Translation resetRotatedOffset() {
-        enableRotate = false;
+        recalculate();
         return this;
     }
 
     public Translation setFollowRotationOffset(float rotation) {
-        dr = rotation;
+        this.rotation = rotation;
         enableFollowRotation = true;
+        recalculate();
         return this;
     }
 
-    public Translation resetFollowRotationOffset() {
-        enableFollowRotation = false;
-        return this;
+    public TranslateAnimation getAnimation(float duration) {
+        TranslateAnimation anim = Animation.obtain(TranslateAnimation.class);
+        anim.init(0, 0, getDiffX() - markX, getDiffY() - markY, duration);
+        return anim;
+    }
+
+    public void recalculate() {
+        float dx = 0, dy = 0;
+
+        if (enableRotate) {
+            dx += relX * MathUtils.cosDeg(rotation) + relY * MathUtils.sinDeg(rotation);
+            dy += relX * -MathUtils.sinDeg(rotation) + relY * MathUtils.cosDeg(rotation);
+        }
+
+        if (enableFlat) {
+            dx += flatX;
+            dy += flatY;
+        }
+
+        this.diffX = dx;
+        this.diffY = dy;
     }
 
     public boolean isFlat() {
@@ -91,15 +106,29 @@ public class Translation implements ObjectPool.IPooledObject {
         return enableFollowRotation;
     }
 
-    public static float getResX() {
+    public float getResX() {
         return resX;
     }
 
-    public static float getResY() {
+    public float getResY() {
         return resY;
     }
 
-    public static float getResR() {
+    public float getResR() {
         return resR;
+    }
+
+    // for animations
+    public void mark() {
+        this.markX = diffX;
+        this.markY = diffY;
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Utils.mapFrom("enableFlat", enableFlat, "enableRotate", enableRotate,
+                "enableFollowRotation", enableFollowRotation, "flatX", flatX, "flatY", flatY,
+                "rotation", rotation, "diffX", diffX, "diffY", diffY, "relX", relX, "relY", relY, "resX", resX,
+                "resY", resY, "resR", resR, "markX", markX, "markY", markY);
     }
 }

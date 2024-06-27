@@ -1,6 +1,7 @@
 package sonnicon.jade.entity.components.world;
 
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.graphical.AnimationComponent;
 import sonnicon.jade.game.Content;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.Translation;
@@ -34,8 +35,8 @@ public class FloatingPositionComponent extends PositionComponent {
     @Override
     public void moveToOther(PositionComponent other, Translation translation) {
         translation.apply(other);
-        moveTo(Translation.getResX(), Translation.getResY());
-        rotateTo(Translation.getResR());
+        moveTo(translation.getResX(), translation.getResY());
+        rotateTo(translation.getResR());
     }
 
     @Override
@@ -102,12 +103,22 @@ public class FloatingPositionComponent extends PositionComponent {
 
     @Override
     public float getDrawX() {
-        return x;
+        AnimationComponent ac = entity.getComponent(AnimationComponent.class);
+        if (ac == null || !ac.isAnimating()) {
+            return x;
+        } else {
+            return x + ac.getX();
+        }
     }
 
     @Override
     public float getDrawY() {
-        return y;
+        AnimationComponent ac = entity.getComponent(AnimationComponent.class);
+        if (ac == null || !ac.isAnimating()) {
+            return y;
+        } else {
+            return y + ac.getY();
+        }
     }
 
     @Override
@@ -132,7 +143,12 @@ public class FloatingPositionComponent extends PositionComponent {
 
     @Override
     public float getRotation() {
-        return rotation;
+        AnimationComponent ac = entity.getComponent(AnimationComponent.class);
+        if (ac == null || !ac.isAnimating()) {
+            return rotation;
+        } else {
+            return rotation + ac.getRotation();
+        }
     }
 
     @Override
