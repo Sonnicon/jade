@@ -65,14 +65,18 @@ public class UseStabComponent extends UseRangeComponent {
 
         // Moving animation
         AnimationComponent ac = entity.getComponent(AnimationComponent.class);
-        translation.mark();
-        translation.setRotatedOffset(0f, 48f);
-        animation = translation.getAnimation(1f).play(ac);
+        Translation trCopy = translation.copy();
+        trCopy.mark();
+        trCopy.setRotatedOffset(0f, 48f);
+        animation = trCopy.getAnimation(1f);
+        trCopy.free();
+        ac.play(animation);
     }
 
     public void stabThrust() {
         // Actual moving
         animation.stop();
+        translation.setRotatedOffset(0f, 48f);
         positionBindComponent.moveTo();
         currentAction.set(this::stabSheathe)
                 .time(1f)

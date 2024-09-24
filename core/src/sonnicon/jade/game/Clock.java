@@ -1,5 +1,7 @@
 package sonnicon.jade.game;
 
+import sonnicon.jade.game.actions.Actions;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -12,8 +14,8 @@ public class Clock {
 
     private static float tickNum = 0f, updateNum = 0f;
 
-    private static float tickInterp = 0f, tickRemaining = 0f, lastDelta;
-    private static final float tickInterpRate = 1 / 60f;
+    private static float advanceTo = 0f, lastTick = 0f;
+    private static final float tickInterpRate = 1f;
 
     //todo make this nicer
     public static void register(IClocked target) {
@@ -26,33 +28,39 @@ public class Clock {
 
     // In-game action step
     public static void tick(float delta) {
-        tickRemaining += delta;
-        lastDelta += delta;
+        advanceTo += delta;
     }
 
     public static void tickFast(float delta) {
-        tickInterp += delta;
-        lastDelta = delta;
-        tickInternal(delta);
+        advanceTo += delta;
+        tickNum += delta;
+        tickInternal();
     }
 
     // Render step
     public static void update(float delta) {
+        // Updates
         updateNum += delta;
         updating.forEach(t -> t.update(delta));
 
-        if (tickRemaining > 0f) {
-            float d = Float.min(tickRemaining, tickInterpRate);
-            tickRemaining -= d;
-            tickInterp += d;
+        // Ticks
+        if (advanceTo > tickNum) {
+            float advancement = Float.min(advanceTo - tickNum, tickInterpRate * delta);
+            while (advancement > 0f) {
 
-            if (tickRemaining <= 0.0001f) {
-                tickRemaining = 0f;
-                tickInterp = tickNum + lastDelta;
-                tickInternal(lastDelta);
+                float shortestAvailable = Actions.shortest() - tickNum;
+                if (shortestAvailable <= advancement) {
+                    advancement -= shortestAvailable;
+                    tickNum += shortestAvailable;
+                    tickInternal();
+                } else {
+                    tickNum += advancement;
+                    advancement = 0f;
+                }
             }
         }
 
+        // Add new handlers
         if (!listAdd.isEmpty()) {
             for (IClocked target : listAdd) {
                 if (target instanceof ITicking) {
@@ -78,9 +86,10 @@ public class Clock {
         }
     }
 
-    private static void tickInternal(float delta) {
-        tickNum += delta;
+    private static void tickInternal() {
+        float delta = tickNum - lastTick;
         ticking.forEach(t -> t.tick(delta));
+        lastTick = tickNum;
     }
 
     public static float getTickNum() {
@@ -92,11 +101,11 @@ public class Clock {
     }
 
     public static float getTickInterp() {
-        return tickInterp;
+        return tickNum;
     }
 
     public static boolean isTickRemaining() {
-        return tickRemaining > 0f;
+        return tickNum < advanceTo;
     }
 
     private interface IClocked {

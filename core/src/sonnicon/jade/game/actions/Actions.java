@@ -61,6 +61,14 @@ public class Actions implements Clock.ITicking, IDebuggable {
         return (T) ObjectPool.obtain(type).reset();
     }
 
+    public static float shortest() {
+        if (actionsList.isEmpty()) {
+            return Float.MAX_VALUE;
+        } else {
+            return actionsList.get(0).timeFinish;
+        }
+    }
+
     @Override
     public Map<Object, Object> debugProperties() {
         return Utils.mapFrom("actions", actionsList);

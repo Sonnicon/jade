@@ -1,6 +1,5 @@
 package sonnicon.jade.entity.components.graphical;
 
-import sonnicon.jade.Jade;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.graphics.animation.Animation;
@@ -16,7 +15,7 @@ public class AnimationComponent extends Component {
     public void play(Animation animation) {
         animation.startTime = Clock.getTickInterp();
         if (this.animation != null && !this.animation.keepRef) {
-            animation.free();
+            this.animation.free();
         }
         this.animation = animation;
     }

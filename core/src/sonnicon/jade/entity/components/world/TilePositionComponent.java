@@ -141,22 +141,12 @@ public class TilePositionComponent extends PositionComponent {
 
     @Override
     public float getDrawX() {
-        AnimationComponent ac = entity.getComponent(AnimationComponent.class);
-        if (ac == null || !ac.isAnimating()) {
-            return tile.getDrawX();
-        } else {
-            return tile.getDrawX() + ac.getX();
-        }
+        return tile.getDrawX();
     }
 
     @Override
     public float getDrawY() {
-        AnimationComponent ac = entity.getComponent(AnimationComponent.class);
-        if (ac == null || !ac.isAnimating()) {
-            return tile.getDrawY();
-        } else {
-            return tile.getDrawY() + ac.getY();
-        }
+        return tile.getDrawY();
     }
 
     @Override

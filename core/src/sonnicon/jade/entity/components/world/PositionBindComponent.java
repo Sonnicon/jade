@@ -80,6 +80,10 @@ public class PositionBindComponent extends Component {
         moveTo();
     }
 
+    public Translation getTranslation() {
+        return translation;
+    }
+
     public void moveTo() {
         if (follow == null) {
             return;

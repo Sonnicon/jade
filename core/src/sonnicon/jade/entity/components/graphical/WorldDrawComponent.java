@@ -3,6 +3,7 @@ package sonnicon.jade.entity.components.graphical;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
+import sonnicon.jade.entity.components.world.PositionBindComponent;
 import sonnicon.jade.entity.components.world.PositionComponent;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.Renderer;
@@ -58,19 +59,72 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
             float rotation = positionComponent.getRotation();
             float drawx = positionComponent.getDrawX() - width / 2f;
             float drawy = positionComponent.getDrawY() - height / 2f;
+            float drawWidth = width;
+            float drawHeight = height;
             TextureRegion region = textures.getDrawable().getRegion();
 
+            AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
+            if (animationComponent != null && animationComponent.isAnimating()) {
+                rotation += animationComponent.getRotation();
+                drawWidth *= animationComponent.getWidth();
+                drawHeight *= animationComponent.getHeight();
+            }
+
+            drawx += getAnimationOffsetX();
+            drawy += getAnimationOffsetY();
+
             if (rotation == 0f) {
-                ((IDrawRegular) batch).draw(region, drawx, drawy, width, height);
+                ((IDrawRegular) batch).draw(region, drawx, drawy, drawWidth, drawHeight);
             } else {
                 //todo default rotation angle
-                ((IDrawRotated) batch).draw(region, drawx, drawy, width, height, 45f - rotation);
+                ((IDrawRotated) batch).draw(region, drawx, drawy, drawWidth, drawHeight, 45f - rotation);
             }
         }
 
         if (joinedRenderables != null) {
             joinedRenderables.forEach(r -> r.render(batch, delta, layer));
         }
+    }
+
+    //todo refactor these functions
+    public float getAnimationOffsetX() {
+        float result = 0;
+
+        // If we're bound to something, we take that animation offset as the base
+        PositionBindComponent positionBindComponent = entity.getComponent(PositionBindComponent.class);
+        if (positionBindComponent != null && positionBindComponent.follow != null) {
+            WorldDrawComponent fwdc = positionBindComponent.follow.getComponentFuzzy(WorldDrawComponent.class);
+            if (fwdc != null) {
+                 result += fwdc.getAnimationOffsetX();
+            }
+        }
+
+        AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
+        if (animationComponent != null && animationComponent.isAnimating()) {
+            result += animationComponent.getX();
+        }
+
+        return result;
+    }
+
+    public float getAnimationOffsetY() {
+        float result = 0;
+
+        // If we're bound to something, we take that animation offset as the base
+        PositionBindComponent positionBindComponent = entity.getComponent(PositionBindComponent.class);
+        if (positionBindComponent != null && positionBindComponent.follow != null) {
+            WorldDrawComponent fwdc = positionBindComponent.follow.getComponentFuzzy(WorldDrawComponent.class);
+            if (fwdc != null) {
+                result += fwdc.getAnimationOffsetY();
+            }
+        }
+
+        AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
+        if (animationComponent != null && animationComponent.isAnimating()) {
+            result += animationComponent.getY();
+        }
+
+        return result;
     }
 
     public void addJoined(IRenderable renderable) {

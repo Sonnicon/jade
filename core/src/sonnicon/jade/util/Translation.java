@@ -124,6 +124,26 @@ public class Translation implements ObjectPool.IPooledObject, IDebuggable {
         this.markY = diffY;
     }
 
+    public Translation copy() {
+        Translation other = ObjectPool.obtain(Translation.class);
+        other.enableFlat = enableFlat;
+        other.enableRotate = enableRotate;
+        other.enableFollowRotation = enableFollowRotation;
+        other.resX = resX;
+        other.resY = resY;
+        other.resR = resR;
+        other.markX = markX;
+        other.markY = markY;
+        other.diffX = diffX;
+        other.diffY = diffY;
+        other.flatX = flatX;
+        other.flatY = flatY;
+        other.rotation = rotation;
+        other.relX = relX;
+        other.relY = relY;
+        return other;
+    }
+
     @Override
     public Map<Object, Object> debugProperties() {
         return Utils.mapFrom("enableFlat", enableFlat, "enableRotate", enableRotate,

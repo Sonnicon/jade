@@ -103,22 +103,12 @@ public class FloatingPositionComponent extends PositionComponent {
 
     @Override
     public float getDrawX() {
-        AnimationComponent ac = entity.getComponent(AnimationComponent.class);
-        if (ac == null || !ac.isAnimating()) {
-            return x;
-        } else {
-            return x + ac.getX();
-        }
+        return x;
     }
 
     @Override
     public float getDrawY() {
-        AnimationComponent ac = entity.getComponent(AnimationComponent.class);
-        if (ac == null || !ac.isAnimating()) {
-            return y;
-        } else {
-            return y + ac.getY();
-        }
+        return y;
     }
 
     @Override

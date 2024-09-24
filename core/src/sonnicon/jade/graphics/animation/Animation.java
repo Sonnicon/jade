@@ -1,6 +1,5 @@
 package sonnicon.jade.graphics.animation;
 
-import sonnicon.jade.entity.components.graphical.AnimationComponent;
 import sonnicon.jade.util.IDebuggable;
 import sonnicon.jade.util.ObjectPool;
 import sonnicon.jade.util.Utils;
@@ -13,11 +12,6 @@ public abstract class Animation implements ObjectPool.IPooledObject, IDebuggable
 
     protected Animation init(float duration) {
         this.duration = duration;
-        return this;
-    }
-
-    public Animation play(AnimationComponent ac) {
-        ac.play(this);
         return this;
     }
 
@@ -39,11 +33,11 @@ public abstract class Animation implements ObjectPool.IPooledObject, IDebuggable
     }
 
     public float getWidth(float time) {
-        return 0;
+        return 1;
     }
 
     public float getHeight(float time) {
-        return 0;
+        return 1;
     }
 
     public float getRotation(float time) {
