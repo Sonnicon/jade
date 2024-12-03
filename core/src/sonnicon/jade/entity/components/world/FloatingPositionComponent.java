@@ -29,7 +29,7 @@ public class FloatingPositionComponent extends PositionComponent {
 
     @Override
     public void moveToOther(PositionComponent other) {
-        moveTo(other.getDrawX(), other.getDrawY());
+        moveTo(other.getFloatingX(), other.getFloatingY());
     }
 
     @Override
@@ -102,22 +102,22 @@ public class FloatingPositionComponent extends PositionComponent {
     }
 
     @Override
-    public float getDrawX() {
+    public float getFloatingX() {
         return x;
     }
 
     @Override
-    public float getDrawY() {
+    public float getFloatingY() {
         return y;
     }
 
     @Override
-    public int getJointX() {
+    public int getSubTileX() {
         return (int) (x / Tile.SUBTILE_DELTA);
     }
 
     @Override
-    public int getJointY() {
+    public int getSubTileY() {
         return (int) (y / Tile.SUBTILE_DELTA);
     }
 
@@ -137,7 +137,7 @@ public class FloatingPositionComponent extends PositionComponent {
         if (ac == null || !ac.isAnimating()) {
             return rotation;
         } else {
-            return rotation + ac.getRotation();
+            return rotation + ac.getIndividualRotation();
         }
     }
 

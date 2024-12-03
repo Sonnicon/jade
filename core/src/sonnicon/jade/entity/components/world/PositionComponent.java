@@ -2,7 +2,9 @@ package sonnicon.jade.entity.components.world;
 
 import sonnicon.jade.EventGenerator;
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.Traits;
 import sonnicon.jade.entity.components.Component;
+import sonnicon.jade.entity.components.graphical.AnimationComponent;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.Translation;
@@ -43,17 +45,28 @@ public abstract class PositionComponent extends Component {
 
     public abstract void rotateTo(float newAngle);
 
-    public abstract float getDrawX();
-
-    public abstract float getDrawY();
-
-    public abstract int getJointX();
-
-    public abstract int getJointY();
-
+    // Tile grid positions
     public abstract int getTileX();
-
     public abstract int getTileY();
+
+    // Sub-tile grid positions
+    public abstract int getSubTileX();
+    public abstract int getSubTileY();
+
+    // Floating world-space positions
+    public abstract float getFloatingX();
+    public abstract float getFloatingY();
+
+    // Floating screen-space positions
+    public float getDrawX() {
+        if (isInNull()) return Float.NaN;
+        return getFloatingX() + AnimationComponent.getNestedX(entity);
+    }
+
+    public float getDrawY() {
+        if (isInNull()) return Float.NaN;
+        return getFloatingY() + AnimationComponent.getNestedY(entity);
+    }
 
     public abstract float getRotation();
 
@@ -62,10 +75,32 @@ public abstract class PositionComponent extends Component {
     @Override
     public Map<Object, Object> debugProperties() {
         return Utils.mapExtendFrom(super.debugProperties(),
+                "getFloatingX", getFloatingX(), "getFloatingY", getFloatingY(),
                 "getDrawX", getDrawX(), "getDrawY", getDrawY(),
-                "getJointX", getJointX(), "getJointY", getJointY(),
+                "getSubTileX", getSubTileX(), "getSubTileY", getSubTileY(),
                 "getTileX", getTileX(), "getTileY", getTileY(),
                 "getRotation", getRotation());
+    }
+
+    public static boolean canMoveTo(Entity entity, Tile destination, short subx, short suby) {
+        if (entity == null) {
+            return true;
+        }
+
+        MoveboxComponent moveboxComponent = entity.getComponent(MoveboxComponent.class);
+
+        if (moveboxComponent == null || entity.traits.hasTrait(Traits.Trait.incorporeal)) {
+            return true;
+        }
+
+        MoveboxComponent.coveredFind(destination.getSubTileX() + subx, destination.getSubTileY() + suby, moveboxComponent.size);
+
+        if (MoveboxComponent.coveredTilesOperation.stream().anyMatch(t -> t.traits.hasTrait(Traits.Trait.blockMovement))) {
+            return false;
+        }
+
+        return MoveboxComponent.coveredStream().noneMatch(
+                o -> o != moveboxComponent && o.entity.traits.hasTrait(Traits.Trait.blockMovement));
     }
 
 

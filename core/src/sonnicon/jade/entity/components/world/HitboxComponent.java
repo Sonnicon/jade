@@ -58,8 +58,8 @@ public class HitboxComponent extends Component implements IRenderable {
             IDrawRegular b = (IDrawRegular) batch;
 
             float drawSize = (float) sizeTotal / fieldCount;
-            float drawx = positionComponent.getDrawX() - sizeTotal / 2f;
-            float drawy = positionComponent.getDrawY() - sizeTotal / 2f;
+            float drawx = positionComponent.getFloatingX() - sizeTotal / 2f;
+            float drawy = positionComponent.getFloatingY() - sizeTotal / 2f;
 
             for (int ix = 0, iy = 0; iy < fieldCount; iy += ++ix / fieldCount, ix %= fieldCount) {
                 b.draw(

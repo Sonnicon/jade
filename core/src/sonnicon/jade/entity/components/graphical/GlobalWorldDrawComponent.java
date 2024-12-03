@@ -36,8 +36,9 @@ public class GlobalWorldDrawComponent extends WorldDrawComponent {
             return false;
         }
 
-        float drawX = positionComponent.getDrawX();
-        float drawY = positionComponent.getDrawY();
+        // Animations don't really matter here, so floating instead of draw
+        float drawX = positionComponent.getFloatingX();
+        float drawY = positionComponent.getFloatingY();
 
         return drawX > Jade.renderer.getCameraEdgeRight() ||
                 (drawX + width) < Jade.renderer.getCameraEdgeLeft() ||

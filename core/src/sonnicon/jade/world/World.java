@@ -24,6 +24,10 @@ public class World implements IDebuggable {
         return chunk.getTile((short) (x % Chunk.CHUNK_SIZE), (short) (y % Chunk.CHUNK_SIZE));
     }
 
+    public Tile getTileJoint(int x, int y) {
+        return getTile(Math.floorDiv(x, Tile.SUBTILE_NUM), Math.floorDiv(y, Tile.SUBTILE_NUM));
+    }
+
     @Override
     public Map<Object, Object> debugProperties() {
         return Utils.mapFrom("chunks", chunks);

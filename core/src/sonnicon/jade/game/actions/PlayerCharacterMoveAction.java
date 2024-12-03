@@ -11,13 +11,11 @@ public class PlayerCharacterMoveAction extends CharacterMoveAction implements Cl
     @Override
     public void onStart() {
         super.onStart();
-        Clock.register(this);
     }
 
     @Override
     public void interrupt() {
         super.interrupt();
-        Clock.unregister(this);
     }
 
     @Override

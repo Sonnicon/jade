@@ -1,7 +1,6 @@
 package sonnicon.jade.entity.components.world;
 
 import sonnicon.jade.entity.Entity;
-import sonnicon.jade.entity.Traits;
 import sonnicon.jade.entity.components.graphical.AnimationComponent;
 import sonnicon.jade.game.Content;
 import sonnicon.jade.generated.EventTypes;
@@ -83,24 +82,7 @@ public class TilePositionComponent extends PositionComponent {
     }
 
     protected boolean canMoveTo(Tile destination, short subx, short suby) {
-        if (entity == null) {
-            return true;
-        }
-
-        MoveboxComponent moveboxComponent = entity.getComponent(MoveboxComponent.class);
-
-        if (moveboxComponent == null || entity.traits.hasTrait(Traits.Trait.incorporeal)) {
-            return true;
-        }
-
-        MoveboxComponent.coveredFind(destination.getJointX() + subx, destination.getJointY() + suby, moveboxComponent.size);
-
-        if (MoveboxComponent.coveredTilesOperation.stream().anyMatch(t -> t.traits.hasTrait(Traits.Trait.blockMovement))) {
-            return false;
-        }
-
-        return MoveboxComponent.coveredStream().noneMatch(
-                o -> o != moveboxComponent && o.entity.traits.hasTrait(Traits.Trait.blockMovement));
+        return canMoveTo(entity, destination, subx, suby);
     }
 
     @Override
@@ -140,23 +122,23 @@ public class TilePositionComponent extends PositionComponent {
     }
 
     @Override
-    public float getDrawX() {
+    public float getFloatingX() {
         return tile.getDrawX();
     }
 
     @Override
-    public float getDrawY() {
+    public float getFloatingY() {
         return tile.getDrawY();
     }
 
     @Override
-    public int getJointX() {
-        return tile.getJointX();
+    public int getSubTileX() {
+        return tile.getSubTileX();
     }
 
     @Override
-    public int getJointY() {
-        return tile.getJointY();
+    public int getSubTileY() {
+        return tile.getSubTileY();
     }
 
     @Override
@@ -175,7 +157,7 @@ public class TilePositionComponent extends PositionComponent {
         if (ac == null || !ac.isAnimating()) {
             return rotation;
         } else {
-            return rotation + ac.getRotation();
+            return rotation + ac.getIndividualRotation();
         }
     }
 

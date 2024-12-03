@@ -18,8 +18,8 @@ public class Translation implements ObjectPool.IPooledObject, IDebuggable {
     private float markX, markY;
 
     public void apply(PositionComponent positionComponent) {
-        resX = positionComponent.getDrawX() + diffX;
-        resY = positionComponent.getDrawY() + diffY;
+        resX = positionComponent.getFloatingX() + diffX;
+        resY = positionComponent.getFloatingY() + diffY;
 
         resR = positionComponent.getRotation();
         if (enableFollowRotation) {

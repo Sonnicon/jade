@@ -77,6 +77,7 @@ public class Actions implements Clock.ITicking, IDebuggable {
     public abstract static class Action implements IDebuggable, ObjectPool.IPooledObject {
         public float timeFinish;
         public boolean keepRef, isQueued;
+        private float duration;
 
         public final Action reset() {
             this.keepRef = false;
@@ -94,11 +95,12 @@ public class Actions implements Clock.ITicking, IDebuggable {
         protected abstract void onFinish();
 
         public final Action time(float duration) {
-            timeFinish = Clock.getTickNum() + duration;
+            this.duration = duration;
             return this;
         }
 
         public final Action enqueue() {
+            timeFinish = Clock.getTickNum() + duration;
             Actions.enqueue(this);
             return this;
         }

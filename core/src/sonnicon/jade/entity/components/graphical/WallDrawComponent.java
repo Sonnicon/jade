@@ -80,7 +80,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
             case terrainBottom: {
                 // Surrounding shadows
                 float drawx = positionComponent.getDrawX() - 8f - Tile.HALF_TILE_SIZE - FowBatch.PIXEL_FIXER;
-                float drawy = positionComponent.getDrawY() - 8f - Tile.HALF_TILE_SIZE - FowBatch.PIXEL_FIXER;
+                float drawy = positionComponent.getFloatingY() - 8f - Tile.HALF_TILE_SIZE - FowBatch.PIXEL_FIXER;
                 float draww = Tile.TILE_SIZE + 16f + FowBatch.PIXEL_FIXER_XL;
                 float drawh = Tile.TILE_SIZE + 16f + FowBatch.PIXEL_FIXER_XL;
 
@@ -110,7 +110,7 @@ public class WallDrawComponent extends ChunkDrawComponent {
                 }
                 PositionComponent playerPos = playerEntity.getComponent(PositionComponent.class);
 
-                short playerDir = Direction.relate(positionComponent, playerPos, Tile.HALF_TILE_SIZE + 0.01f);
+                short playerDir = Direction.relateDraw(positionComponent, playerPos, Tile.HALF_TILE_SIZE + 0.01f);
                 short playerAwayDir = (short) ((playerDir << 2) | (playerDir >>> 2));
 
                 byte leftIndexDir = 0;

@@ -221,7 +221,7 @@ public class FowDrawComponent extends Component implements IRenderable {
             return;
         }
 
-        byte playerDir = Direction.relate(positionComponent, playerPos, Tile.HALF_TILE_SIZE + 0.001f);
+        byte playerDir = Direction.relateDraw(positionComponent, playerPos, Tile.HALF_TILE_SIZE + 0.001f);
 
         FowBatch batch = (FowBatch) b;
 
@@ -262,7 +262,7 @@ public class FowDrawComponent extends Component implements IRenderable {
         //// Diagonal shadows
 
         // which way is the shadow going
-        byte shadowDirection = Direction.relate(playerPos, positionComponent, Tile.SUBTILE_NUM / 2f);
+        byte shadowDirection = Direction.relateDraw(playerPos, positionComponent, Tile.SUBTILE_NUM / 2f);
         byte shadowLeftIndex = 0;
         for (byte i = 0; i < 4; i++) {
             if ((shadowDirection & (1 << i)) > 0 && (shadowDirection & (1 << ((i + 1) % 4))) > 0) {

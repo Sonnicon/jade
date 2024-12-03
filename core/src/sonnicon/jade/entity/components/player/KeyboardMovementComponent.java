@@ -90,27 +90,6 @@ public class KeyboardMovementComponent extends Component implements Clock.IUpdat
 
     @Override
     public void update(float delta) {
-        //todo make this not poll
-        if (!characterMoveAction.isQueued && !Clock.isTickRemaining()) {
-            byte moveDirection = 0;
-            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                moveDirection |= Direction.NORTH;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                moveDirection |= Direction.WEST;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                moveDirection |= Direction.SOUTH;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                moveDirection |= Direction.EAST;
-            }
-            moveDirection = Direction.flatten(moveDirection);
-            if (moveDirection != 0) {
-                characterMoveAction.set((SubtilePositionComponent) entity.getComponent(PositionComponent.class), Direction.directionX(moveDirection), Direction.directionY(moveDirection)).time(0.2f).enqueue();
-            }
-        }
-
         if (Gdx.input.isKeyPressed(Input.Keys.I)) {
             ((StageIngame) Gamestate.State.ingame.getStage()).panelInventory.show(storageComponent.storage);
         }

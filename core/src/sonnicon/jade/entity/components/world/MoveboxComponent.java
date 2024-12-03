@@ -59,7 +59,7 @@ public class MoveboxComponent extends Component {
     public void coveredFind() {
         PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
         if (positionComponent != null) {
-            coveredFind(positionComponent.getJointX(), positionComponent.getJointY(), size);
+            coveredFind(positionComponent.getSubTileX(), positionComponent.getSubTileY(), size);
         } else {
             coveredTilesOperation.clear();
         }
@@ -101,17 +101,17 @@ public class MoveboxComponent extends Component {
         return coveredTilesOperation.stream()
                 .flatMap(tile -> tile.nearbyMoveboxes.stream())
                 .filter(other -> Utils.overlapsSquare(operX, operY, operSize,
-                        other.entity.getComponent(PositionComponent.class).getJointX(),
-                        other.entity.getComponent(PositionComponent.class).getJointY(), other.size));
+                        other.entity.getComponent(PositionComponent.class).getSubTileX(),
+                        other.entity.getComponent(PositionComponent.class).getSubTileY(), other.size));
     }
 
     public boolean overlapsMovebox(MoveboxComponent other) {
         PositionComponent pos = entity.getComponent(PositionComponent.class);
         PositionComponent oth = other.entity.getComponent(PositionComponent.class);
-        return ((pos.getJointX() + size > oth.getJointX() - other.size) ^
-                (pos.getJointX() - size > oth.getJointX() + other.size)) &&
-                (pos.getJointY() + size > oth.getJointY() - other.size) ^
-                        (pos.getJointY() - size > oth.getJointY() + other.size);
+        return ((pos.getSubTileX() + size > oth.getSubTileX() - other.size) ^
+                (pos.getSubTileX() - size > oth.getSubTileX() + other.size)) &&
+                (pos.getSubTileY() + size > oth.getSubTileY() - other.size) ^
+                        (pos.getSubTileY() - size > oth.getSubTileY() + other.size);
     }
 
     protected static void processMove(Entity entity) {

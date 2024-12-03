@@ -39,12 +39,12 @@ public class Direction {
         }
     }
 
-    public static short directionX(byte direction) {
-        return (short) (((direction & EAST) > 0) ? 1 : ((direction & WEST) > 0) ? -1 : 0);
+    public static byte directionX(byte direction) {
+        return (byte) (((direction & EAST) > 0) ? 1 : ((direction & WEST) > 0) ? -1 : 0);
     }
 
-    public static short directionY(byte direction) {
-        return (short) (((direction & NORTH) > 0) ? 1 : ((direction & SOUTH) > 0) ? -1 : 0);
+    public static byte directionY(byte direction) {
+        return (byte) (((direction & NORTH) > 0) ? 1 : ((direction & SOUTH) > 0) ? -1 : 0);
     }
 
     public static byte rotate(byte direction, byte amount) {
@@ -73,11 +73,15 @@ public class Direction {
         return result;
     }
 
-    public static byte relate(float fromX, float fromY, float toX, float toY) {
+    public static byte relate(float fromX, float fromY, float toX, float toY, float range) {
         byte result = 0;
-        if (abs(toX - fromX) > 0.001f) result |= toX > fromX ? EAST : WEST;
-        if (abs(toY - fromY) > 0.001f) result |= toY > fromY ? NORTH : SOUTH;
+        if (abs(toX - fromX) >= range) result |= toX > fromX ? EAST : WEST;
+        if (abs(toY - fromY) >= range) result |= toY > fromY ? NORTH : SOUTH;
         return result;
+    }
+
+    public static byte relate(float fromX, float fromY, float toX, float toY) {
+        return relate(fromX, fromY, toX, toY, 0.001f);
     }
 
     public static byte relate(Tile from, Tile to) {
@@ -85,17 +89,18 @@ public class Direction {
     }
 
     public static byte relate(PositionComponent from, PositionComponent to, float range) {
-        byte result = 0;
-        if (abs(to.getDrawX() - from.getDrawX()) >= range) {
-            result |= to.getDrawX() > from.getDrawX() ? EAST : WEST;
-        }
-        if (abs(to.getDrawY() - from.getDrawY()) >= range) {
-            result |= to.getDrawY() > from.getDrawY() ? NORTH : SOUTH;
-        }
-        return result;
+        return relate(from.getFloatingX(), from.getFloatingY(), to.getFloatingX(), to.getFloatingY(), range);
     }
 
     public static byte relate(PositionComponent from, PositionComponent to) {
+        return relate(from.getFloatingX(), from.getFloatingY(), to.getFloatingX(), to.getFloatingY());
+    }
+
+    public static byte relateDraw(PositionComponent from, PositionComponent to) {
         return relate(from.getDrawX(), from.getDrawY(), to.getDrawX(), to.getDrawY());
+    }
+
+    public static byte relateDraw(PositionComponent from, PositionComponent to, float range) {
+        return relate(from.getDrawX(), from.getDrawY(), to.getDrawX(), to.getDrawY(), range);
     }
 }

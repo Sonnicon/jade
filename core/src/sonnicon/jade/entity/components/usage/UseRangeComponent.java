@@ -34,8 +34,8 @@ public abstract class UseRangeComponent extends Component implements IUsable {
                 (positionComponent = user.getComponent(PositionComponent.class)) == null) {
             throw new IllegalArgumentException();
         }
-        int dx = jointX - positionComponent.getJointX();
-        int dy = jointY - positionComponent.getJointY();
+        int dx = jointX - positionComponent.getSubTileX();
+        int dy = jointY - positionComponent.getSubTileY();
         float distance = Utils.pythag(dx, dy);
         if (distance <= rangeMin || distance >= rangeMax) {
             return;

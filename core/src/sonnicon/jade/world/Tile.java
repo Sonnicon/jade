@@ -18,7 +18,7 @@ public class Tile implements IDebuggable {
 
     private final int globalX, globalY;
     private final int drawX, drawY;
-    private final int jointX, jointY;
+    private final int subTileX, subTileY;
 
     // Pixel size of a tile
     public static final int TILE_SIZE = 32;
@@ -26,6 +26,7 @@ public class Tile implements IDebuggable {
     public static final int HALF_TILE_SIZE = TILE_SIZE / 2;
     // How many positions on each axis there are in each tile
     public static final int SUBTILE_NUM = 4;
+    public static final int HALF_SUBTILE_NUM = SUBTILE_NUM / 2;
     // Pixels between sub-positions in a tile
     public static final int SUBTILE_DELTA = TILE_SIZE / SUBTILE_NUM;
 
@@ -38,8 +39,8 @@ public class Tile implements IDebuggable {
         this.globalY = chunk.y * Chunk.CHUNK_SIZE + y;
         this.drawX = globalX * TILE_SIZE + Tile.HALF_TILE_SIZE;
         this.drawY = globalY * TILE_SIZE + Tile.HALF_TILE_SIZE;
-        this.jointX = globalX * Tile.SUBTILE_NUM;
-        this.jointY = globalY * Tile.SUBTILE_NUM;
+        this.subTileX = globalX * Tile.SUBTILE_NUM;
+        this.subTileY = globalY * Tile.SUBTILE_NUM;
 
         this.entities = new HashSet<>();
         this.nearbyMoveboxes = new HashSet<>();
@@ -71,12 +72,12 @@ public class Tile implements IDebuggable {
         return drawY;
     }
 
-    public int getJointX() {
-        return jointX;
+    public int getSubTileX() {
+        return subTileX;
     }
 
-    public int getJointY() {
-        return jointY;
+    public int getSubTileY() {
+        return subTileY;
     }
 
     public Tile getNearby(byte direction) {
@@ -144,6 +145,15 @@ public class Tile implements IDebuggable {
 
     public void allNearby(Consumer2<Tile, Byte> cons) {
         Direction.cardinals((Byte dir) -> {
+            Tile other = getNearby(dir);
+            if (other != null) {
+                cons.apply(other, dir);
+            }
+        });
+    }
+
+    public void allNearbyRound(Consumer2<Tile, Byte> cons) {
+        Direction.round((Byte dir) -> {
             Tile other = getNearby(dir);
             if (other != null) {
                 cons.apply(other, dir);
