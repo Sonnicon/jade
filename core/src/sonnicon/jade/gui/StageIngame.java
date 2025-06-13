@@ -1,7 +1,10 @@
 package sonnicon.jade.gui;
 
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import sonnicon.jade.Jade;
@@ -11,7 +14,7 @@ import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.Gamestate;
-import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.graphics.draw.SpriteBatch;
 import sonnicon.jade.graphics.particles.TextParticle;
@@ -40,7 +43,8 @@ public class StageIngame extends GuiStage {
     protected LinkedList<Table> entriesToolbar;
 
     public StageIngame() {
-        super(new ScreenViewport(), (SpriteBatch) Renderer.Batch.gui.batch);
+        super(new ScreenViewport(), (SpriteBatch) RenderLayer.gui.batch);
+//        super(new ScreenViewport());
         ((InputMultiplexer) Gamestate.State.ingame.inputProcessor).addProcessor(0, this);
 
         panelInventory = new InventoryPanel();
@@ -51,8 +55,6 @@ public class StageIngame extends GuiStage {
 
     @Override
     public void setup() {
-        Jade.renderer.addRenderable(this, Renderer.RenderLayer.gui);
-
         tableMain = new Table();
         tableMain.setFillParent(true);
         tableMain.align(Align.bottom);
@@ -75,6 +77,14 @@ public class StageIngame extends GuiStage {
             //todo
             Clock.tickFast(1f);
         });
+
+        addToolbarButton("icon-arrow-right-double", () -> {
+            Jade.renderer.particles.createParticle(TextParticle.class, 100, 100).setText("tickFast");
+            //todo
+            Clock.tickFast(1f);
+        });
+
+        addToolbarButton("icon-error", () -> panelDebug.show());
 
         groupToolbar = new HorizontalGroup();
         ScrollPane paneToolbar = new ScrollPane(groupToolbar);

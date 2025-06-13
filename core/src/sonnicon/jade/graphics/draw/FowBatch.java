@@ -111,6 +111,7 @@ public class FowBatch extends CachedIndexedDrawBatch {
         vArray[vIndex + s + 14] = x4; // 7
         vArray[vIndex - s + 15] = y3;
 
+        //todo this should prbably have changed
         iArray[iIndex] = vertdiv; // 0
         iArray[iIndex + 1] = (short) (vertdiv + 1);
         iArray[iIndex + 2] = (short) (vertdiv + 6);
@@ -151,6 +152,7 @@ public class FowBatch extends CachedIndexedDrawBatch {
         vArray[vIndex + s + 8] = x0; // 4
         vArray[vIndex - s + 9] = y2;
 
+        //todo this should probably have changed
         iArray[iIndex] = vertdiv;
         iArray[iIndex + 1] = (short) (vertdiv + 1);
         iArray[iIndex + 2] = (short) (vertdiv + 2);
@@ -167,6 +169,7 @@ public class FowBatch extends CachedIndexedDrawBatch {
         iIndex += 9;
     }
 
+    // Has strict requirements on WHEN to call, do not use unless you know.
     public void drawDiagLeftShallow(float x3, float y1) {
         int s = diagSwap ? 1 : 0;
 
@@ -183,6 +186,7 @@ public class FowBatch extends CachedIndexedDrawBatch {
         iIndex += 3;
     }
 
+    // Has strict requirements on WHEN to call, do not use unless you know.
     public void drawDiagLeftDeep(float x4) {
         int s = diagSwap ? 1 : 0;
 
@@ -190,6 +194,7 @@ public class FowBatch extends CachedIndexedDrawBatch {
         vArray[diagVIndex - s + 1] = vArray[diagVIndex - s + 5];
     }
 
+    // Has strict requirements on WHEN to call, do not use unless you know.
     public void drawDiagRightShallow(float x1, float y3) {
         int s = diagSwap ? 1 : 0;
 
@@ -206,6 +211,7 @@ public class FowBatch extends CachedIndexedDrawBatch {
         iIndex += 3;
     }
 
+    // Has strict requirements on WHEN to call, do not use unless you know.
     public void drawDiagRightDeep(float y4) {
         int s = diagSwap ? 1 : 0;
 
@@ -217,5 +223,11 @@ public class FowBatch extends CachedIndexedDrawBatch {
     public void internalFlush() {
         Gdx.gl.glDisable(GL20.GL_BLEND);
         mesh.render(shader, GL20.GL_TRIANGLES, 0, iIndex);
+    }
+
+    @Override
+    public void end() {
+        super.end();
+        super.flush();
     }
 }

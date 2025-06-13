@@ -1,5 +1,8 @@
 package sonnicon.jade.util;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+
 import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,6 +14,10 @@ public interface IDebuggable {
     }
 
     Map<Object, Object> debugProperties();
+
+    default Map<Object, Runnable> debugActions() {
+        return null;
+    }
 
     static String debugName(Object target) {
         if (target instanceof IDebuggable) {
@@ -43,8 +50,16 @@ public interface IDebuggable {
             for (int i = 0; i < Array.getLength(target); i++) {
                 result.put(String.valueOf(i), Array.get(target, i));
             }
+        } else if (target instanceof Vector2) {
+            Vector2 v = (Vector2) target;
+            result.put("x", v.x);
+            result.put("y", v.y);
+        } else if (target instanceof Vector3) {
+            Vector3 v = (Vector3) target;
+            result.put("x", v.x);
+            result.put("y", v.y);
+            result.put("z", v.z);
         }
-
 
         return result;
     }

@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 public enum Shaders {
     normal("normal"),
+    terrainSide("terrainSide"),
+    terrainTop("terrainTop"),
     fow("fow"),
     viewdist("viewdist"),
     gridoverlay("gridoverlay");

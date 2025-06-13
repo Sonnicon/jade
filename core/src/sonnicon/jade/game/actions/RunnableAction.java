@@ -23,6 +23,16 @@ public class RunnableAction extends Actions.Action {
     }
 
     @Override
+    protected void onInterrupt() {
+
+    }
+
+    @Override
+    protected void onFrame(float progress) {
+
+    }
+
+    @Override
     public Map<Object, Object> debugProperties() {
         return Utils.mapExtendFrom(super.debugProperties(), "func", func);
     }

@@ -53,7 +53,7 @@ public class TextureSet implements Drawable {
     }
 
     protected int getRegionIndex() {
-        return Math.floorMod((int) ((animateTick ? Clock.getTickNum() : Clock.getUpdateNum()) * animateSpeed), regions.length);
+        return Math.floorMod((int) ((animateTick ? Clock.getTickNum() : Clock.getFrameNum()) * animateSpeed), regions.length);
     }
 
     @Override

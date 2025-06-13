@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import sonnicon.jade.graphics.IRenderable;
-import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.graphics.draw.SpriteBatch;
 
@@ -38,12 +38,15 @@ public abstract class GuiStage extends Stage implements IRenderable {
     protected abstract void setup();
 
     @Override
-    public void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
+    public void render(GraphicsBatch batch, float delta, RenderLayer layer) {
+        //todo
+        act(delta);
+        batch.setProjectionMatrix(getCamera().combined);
         getRoot().draw((SpriteBatch) batch, 1.0f);
     }
 
     @Override
-    public boolean culled(Renderer.RenderLayer layer) {
+    public boolean culled(RenderLayer layer) {
         return !getRoot().isVisible();
     }
 }

@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 public class SubRenderer implements IDebuggable {
-    protected final int[] renderLayers = new int[Renderer.RenderLayer.size()];
+    protected final int[] renderLayers = new int[RenderLayer.size()];
     protected final List<IRenderable> renderList = new ArrayList<>();
 
-    public void addRenderable(IRenderable renderable, Renderer.RenderLayer layer) {
+    public void addRenderable(IRenderable renderable, RenderLayer layer) {
         int incr = -1;
-        for (Renderer.RenderLayer listLayer : Renderer.RenderLayer.all()) {
+        for (RenderLayer listLayer : RenderLayer.all) {
             if (incr == -1) {
                 if (listLayer == layer) {
                     renderList.add(renderLayers[listLayer.index], renderable);
@@ -40,10 +40,10 @@ public class SubRenderer implements IDebuggable {
         return result;
     }
 
-    public void renderRenderables(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
+    public void renderRenderables(GraphicsBatch batch, float delta, RenderLayer layer) {
         if (layer != null) {
             int end;
-            if (layer.index < Renderer.RenderLayer.size() - 1) {
+            if (layer.index < RenderLayer.size() - 1) {
                 end = renderLayers[layer.index + 1];
             } else {
                 end = renderList.size();

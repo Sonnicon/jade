@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.MathUtils;
 import sonnicon.jade.Jade;
 import sonnicon.jade.game.Gamestate;
+import sonnicon.jade.generated.EventTypes;
 
 public class Input implements InputProcessor {
     protected int lastScreenX, lastScreenY;
@@ -78,6 +79,7 @@ public class Input implements InputProcessor {
             lastScreenX = screenX;
             lastScreenY = screenY;
             Jade.renderer.updateCamera();
+            Jade.renderer.events.handle(EventTypes.CameraMoveEvent.class, Jade.renderer.camera);
             return true;
         }
 

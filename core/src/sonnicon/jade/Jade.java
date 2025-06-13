@@ -3,8 +3,8 @@ package sonnicon.jade;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import sonnicon.jade.content.Content;
 import sonnicon.jade.game.Clock;
-import sonnicon.jade.game.Content;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.game.actions.Actions;
 import sonnicon.jade.graphics.Renderer;
@@ -32,7 +32,7 @@ public class Jade extends ApplicationAdapter {
     @Override
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
-        Clock.update(delta);
+        Clock.frame(delta);
         Jade.renderer.render(delta);
     }
 

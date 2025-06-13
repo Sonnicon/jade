@@ -3,8 +3,9 @@ package sonnicon.jade.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import sonnicon.jade.EventGenerator;
+import sonnicon.jade.Jade;
 import sonnicon.jade.generated.EventTypes;
-import sonnicon.jade.gui.Gui;
+import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.gui.GuiStage;
 import sonnicon.jade.gui.StageIngame;
 import sonnicon.jade.gui.StageMenuMain;
@@ -24,27 +25,44 @@ public class Gamestate {
     }
 
     public static void setState(State newState) {
+        // Cleanup previous
+        if (state.stage != null) {
+            Jade.renderer.removeRenderable(state.stage);
+        }
+        // Switch
         state = newState;
-        Gui.setActiveStage(newState.getStage());
+
+        //todo move elsewhere?
+        // Setup new stage
+        GuiStage stage = state.getStage();
+        if (stage != null) {
+            stage.create();
+            stage.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            stage.getViewport().apply();
+            Jade.renderer.addRenderable(stage, RenderLayer.gui);
+        }
+        // Setup new state
         Gdx.input.setInputProcessor(newState.inputProcessor);
         EventTypes.StateSetEvent.handle(events, state);
     }
 
     public enum State {
         loading,
-        menu(StageMenuMain.class),
-        ingame(StageIngame.class);
+        menu(StageMenuMain.class, new RenderLayer[]{RenderLayer.gui}),
+        ingame(StageIngame.class, RenderLayer.all);
 
         private GuiStage stage;
         private final Class<? extends GuiStage> stageClass;
+        private final RenderLayer[] layersToRender;
         public InputProcessor inputProcessor;
 
         State() {
-            this(null);
+            this(null, new RenderLayer[]{});
         }
 
-        State(Class<? extends GuiStage> stageClass) {
+        State(Class<? extends GuiStage> stageClass, RenderLayer[] layersToRender) {
             this.stageClass = stageClass;
+            this.layersToRender = layersToRender;
         }
 
         public GuiStage getStage() {
@@ -57,6 +75,10 @@ public class Gamestate {
             } else {
                 return stage;
             }
+        }
+
+        public RenderLayer[] getLayersToRender() {
+            return layersToRender;
         }
 
         public boolean isActive() {

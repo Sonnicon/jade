@@ -2,99 +2,103 @@ package sonnicon.jade.world;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
-import sonnicon.jade.entity.components.world.MoveboxComponent;
+import sonnicon.jade.game.IPosition;
 import sonnicon.jade.util.*;
 
 import java.util.HashSet;
 import java.util.Map;
 
-public class Tile implements IDebuggable {
-    private final short x, y;
+public class Tile implements IDebuggable, IPosition {
+    /**
+     * Position of tile within the local chunk.
+     */
+    private final short localX, localY;
+    /**
+     * Chunk inside which the tile is.
+     */
     public final Chunk chunk;
+    /**
+     * Entities with center within this tile.
+     */
     public final HashSet<Entity> entities;
-    public final HashSet<MoveboxComponent> nearbyMoveboxes;
+    /**
+     * Trait attributes associated with this tile.
+     */
     public final Traits traits;
+    /**
+     * Event handler for events happening to the tile.
+     */
     public final Events events;
 
-    private final int globalX, globalY;
-    private final int drawX, drawY;
-    private final int subTileX, subTileY;
-
-    // Pixel size of a tile
+    /**
+     * World-position floating size of a tile.
+     */
     public static final int TILE_SIZE = 32;
-    // Half of pixel size of a tile
     public static final int HALF_TILE_SIZE = TILE_SIZE / 2;
-    // How many positions on each axis there are in each tile
-    public static final int SUBTILE_NUM = 4;
-    public static final int HALF_SUBTILE_NUM = SUBTILE_NUM / 2;
-    // Pixels between sub-positions in a tile
-    public static final int SUBTILE_DELTA = TILE_SIZE / SUBTILE_NUM;
 
-    public Tile(short x, short y, Chunk chunk) {
-        this.x = x;
-        this.y = y;
+    public Tile(short localX, short y, Chunk chunk) {
+        this.localX = localX;
+        this.localY = y;
         this.chunk = chunk;
 
-        this.globalX = chunk.x * Chunk.CHUNK_SIZE + x;
-        this.globalY = chunk.y * Chunk.CHUNK_SIZE + y;
-        this.drawX = globalX * TILE_SIZE + Tile.HALF_TILE_SIZE;
-        this.drawY = globalY * TILE_SIZE + Tile.HALF_TILE_SIZE;
-        this.subTileX = globalX * Tile.SUBTILE_NUM;
-        this.subTileY = globalY * Tile.SUBTILE_NUM;
-
         this.entities = new HashSet<>();
-        this.nearbyMoveboxes = new HashSet<>();
         this.traits = new Traits();
         this.events = new Events();
     }
 
-    public int getX() {
-        return globalX;
+
+    /**
+     * @return Horizontal X position of the tile in its world.
+     */
+    public int getTileX() {
+        return chunk.chunkX * Chunk.CHUNK_SIZE + localX;
     }
 
-    public int getY() {
-        return globalY;
+    /**
+     * @return Horizontal Y position of the tile in its world.
+     */
+    public int getTileY() {
+        return chunk.chunkY * Chunk.CHUNK_SIZE + localY;
     }
 
-    public int getLocalX() {
-        return x;
+
+    @Override
+    public float getX() {
+        return getTileX() * TILE_SIZE + Tile.HALF_TILE_SIZE;
     }
 
-    public int getLocalY() {
-        return y;
+    @Override
+    public float getY() {
+        return getTileY() * TILE_SIZE + Tile.HALF_TILE_SIZE;
     }
 
-    public float getDrawX() {
-        return drawX;
+    @Override
+    public float getRotation() {
+        return 0f;
     }
 
-    public float getDrawY() {
-        return drawY;
-    }
-
-    public int getSubTileX() {
-        return subTileX;
-    }
-
-    public int getSubTileY() {
-        return subTileY;
+    @Override
+    public World getWorld() {
+        return chunk.getWorld();
     }
 
     public Tile getNearby(byte direction) {
-        direction = Direction.flatten(direction);
+        //todo was this important?
+//        direction = Direction.flatten(direction);
+
         if (direction == 0) {
             return this;
         }
 
-        short targetX = x, targetY = y;
+        short targetX = localX, targetY = localY;
         short dChunkX = 0, dChunkY = 0;
 
         // move target coords
-        targetX += (((direction & Direction.EAST) > 0) ? 1 : 0) + (((direction & Direction.WEST) > 0) ? -1 : 0);
-        targetY += (((direction & Direction.NORTH) > 0) ? 1 : 0) + (((direction & Direction.SOUTH) > 0) ? -1 : 0);
+        targetX += Directions.directionX(direction);
+        targetY += Directions.directionY(direction);
 
         // move x chunk
-        if (x != targetX) {
+        if (localX != targetX) {
             if (targetX >= Chunk.CHUNK_SIZE) {
                 dChunkX++;
                 targetX -= Chunk.CHUNK_SIZE;
@@ -105,7 +109,7 @@ public class Tile implements IDebuggable {
         }
 
         // move y chunk
-        if (y != targetY) {
+        if (localY != targetY) {
             if (targetY >= Chunk.CHUNK_SIZE) {
                 dChunkY++;
                 targetY -= Chunk.CHUNK_SIZE;
@@ -131,10 +135,10 @@ public class Tile implements IDebuggable {
             } else if (dChunkY == -1) {
                 index = 2;
             }
-            c = chunk.getNearby(index);
+            c = chunk.getNearbyChunk(index);
         } else {
             // Moving multiple chunks
-            c = chunk.world.chunks.get(Chunk.getHashcode((short) (chunk.x + dChunkX), (short) (chunk.y + dChunkY)));
+            c = chunk.getWorld().chunks.get(Chunk.getHashcode((short) (chunk.chunkX + dChunkX), (short) (chunk.chunkY + dChunkY)));
         }
 
         if (c != null) {
@@ -143,17 +147,8 @@ public class Tile implements IDebuggable {
         return null;
     }
 
-    public void allNearby(Consumer2<Tile, Byte> cons) {
-        Direction.cardinals((Byte dir) -> {
-            Tile other = getNearby(dir);
-            if (other != null) {
-                cons.apply(other, dir);
-            }
-        });
-    }
-
     public void allNearbyRound(Consumer2<Tile, Byte> cons) {
-        Direction.round((Byte dir) -> {
+        Directions.round((Byte dir) -> {
             Tile other = getNearby(dir);
             if (other != null) {
                 cons.apply(other, dir);
@@ -163,6 +158,6 @@ public class Tile implements IDebuggable {
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Utils.mapFrom("x", x, "y", y, "chunk", chunk, "entities", entities, "nearbyMoveboxes", nearbyMoveboxes, "traits", traits);
+        return Utils.mapFrom("x", localX, "y", localY, "chunk", chunk, "entities", entities, "traits", traits);
     }
 }

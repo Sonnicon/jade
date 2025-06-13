@@ -1,9 +1,14 @@
 package sonnicon.jade.entity;
 
 import sonnicon.jade.EventGenerator;
+import sonnicon.jade.content.Content;
 import sonnicon.jade.entity.components.Component;
+import sonnicon.jade.entity.components.world.CollisionComponent;
+import sonnicon.jade.game.IPositionMoving;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.*;
+import sonnicon.jade.world.Tile;
+import sonnicon.jade.world.World;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -12,13 +17,20 @@ import java.util.stream.Stream;
 @EventGenerator(id = "EntityComponentRemove", param = {Entity.class, Component.class}, label = {"entity", "component"})
 @EventGenerator(id = "EntityTraitAdd", param = {Entity.class, Traits.Trait.class}, label = {"entity", "trait"})
 @EventGenerator(id = "EntityTraitRemove", param = {Entity.class, Traits.Trait.class}, label = {"entity", "trait"})
-public class Entity implements ICopyable, IComparable, IDebuggable {
+@EventGenerator(id = "EntityMove", param = {Entity.class}, label = {"entity"})
+@EventGenerator(id = "EntityMoveTile", param = {Entity.class, Tile.class, Tile.class}, label = {"entity", "from", "dest"})
+@EventGenerator(id = "EntityRotate", param = {Entity.class, Float.class}, label = {"entity", "newAngle"})
+public class Entity implements ICopyable, IComparable, IDebuggable, IPositionMoving {
     public HashMap<Class<? extends Component>, Component> components;
     public Traits traits;
     public final int id;
     private static int nextId = 1;
 
     public final Events events = new Events();
+
+    protected float x = Float.NaN;
+    protected float y = Float.NaN;
+    protected float rotation;
 
     public Entity() {
         components = new HashMap<>();
@@ -58,16 +70,32 @@ public class Entity implements ICopyable, IComparable, IDebuggable {
     }
 
     public boolean canAddComponent(Component component) {
+        if (component == null) {
+            return false;
+        }
+
+        if (component.entity != null || components.containsKey(component.getKeyClass())) {
+            return false;
+        }
         return component.canAddToEntity(this);
+    }
+
+    public boolean canRemoveComponent(Component component) {
+        if (component == null) {
+            return false;
+        }
+
+        if (component.entity != this || !hasComponent(component.getClass())) {
+            return false;
+        }
+        return component.canRemoveFromEntity(this);
     }
 
     public boolean addComponent(Component component) {
         if (!canAddComponent(component)) {
             return false;
         }
-        if (components.containsKey(component.getKeyClass())) {
-            return false;
-        }
+
         components.put(component.getKeyClass(), component);
         component.addToEntity(this);
         EventTypes.EntityComponentAddEvent.handle(events, this, component);
@@ -75,7 +103,10 @@ public class Entity implements ICopyable, IComparable, IDebuggable {
     }
 
     public boolean removeComponent(Component component) {
-        //todo dependency checking
+        if (!canRemoveComponent(component)) {
+            return false;
+        }
+
         components.remove(component.getKeyClass(), component);
         component.removeFromEntity(this);
         EventTypes.EntityComponentRemoveEvent.handle(events, this, component);
@@ -83,11 +114,7 @@ public class Entity implements ICopyable, IComparable, IDebuggable {
     }
 
     public boolean removeComponent(Class<? extends Component> type) {
-        //todo dependency checking
-        Component comp = components.remove(type);
-        comp.removeFromEntity(this);
-        EventTypes.EntityComponentRemoveEvent.handle(events, this, comp);
-        return true;
+        return removeComponent(getComponent(type));
     }
 
     public <T extends Component> T getComponent(Class<T> type) {
@@ -192,8 +219,87 @@ public class Entity implements ICopyable, IComparable, IDebuggable {
         return true;
     }
 
+    public void forceMoveTo(float x, float y) {
+        //todo
+        Tile tileBefore = getTile();
+        this.x = x;
+        this.y = y;
+
+        Tile tileAfter = getTile();
+        if (tileBefore != tileAfter) {
+            if (tileBefore != null) {
+                tileBefore.entities.remove(this);
+            }
+            if (tileAfter != null) {
+                tileAfter.entities.add(this);
+            }
+            EventTypes.EntityMoveTileEvent.handle(events, this, tileBefore, tileAfter);
+        }
+        EventTypes.EntityMoveEvent.handle(events, this);
+    }
+
+    public void forceMoveBy(float x, float y) {
+        forceMoveTo(this.x + x, this.y + y);
+    }
+
+    public float canMoveBy(float x, float y) {
+        //todo cancellable events?
+        CollisionComponent component = getComponent(CollisionComponent.class);
+        if (component != null) {
+            return component.getMaxMoveDistance(x, y);
+        }
+        return 1f;
+    }
+
+    @Override
+    public float getX() {
+        return x;
+    }
+
+    @Override
+    public float getY() {
+        return y;
+    }
+
+    public float getRotation() {
+        return rotation;
+    }
+
+    @Override
+    public World getWorld() {
+        //todo
+        return Content.world;
+    }
+
+    public boolean rotateTo(float degrees) {
+        //todo rotation utils, incl. fix for (x <= -360)
+        this.rotation = (degrees + 360) % 360;
+        EventTypes.EntityRotateEvent.handle(events, this, this.rotation);
+        return true;
+    }
+
+
     @Override
     public Map<Object, Object> debugProperties() {
-        return Utils.mapFrom("components", components, "traits", traits, "id", id, "events", events);
+        return Utils.mapFrom(
+                "components", components,
+                "traits", traits,
+                "id", id,
+                "events", events,
+                "getX", getX(), "getY", getY(),
+                "getRotation", getRotation());
+    }
+
+    @Override
+    public String debugName() {
+        return IDebuggable.super.debugName() + " (" + components.size() + " components)";
+    }
+
+    @Override
+    public Map<Object, Runnable> debugActions() {
+        return Utils.mapFrom(
+                "Move to null", (Runnable) () -> forceMoveTo(Float.NaN, Float.NaN),
+                "Rotate 15 Clockwise", (Runnable) () -> rotateBy(15f)
+        );
     }
 }

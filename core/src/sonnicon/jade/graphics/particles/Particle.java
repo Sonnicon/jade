@@ -1,5 +1,7 @@
 package sonnicon.jade.graphics.particles;
 
+import sonnicon.jade.graphics.IRenderable;
+import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.util.IDebuggable;
 import sonnicon.jade.util.ObjectPool;
@@ -7,7 +9,7 @@ import sonnicon.jade.util.Utils;
 
 import java.util.Map;
 
-public abstract class Particle implements IDebuggable, ObjectPool.IPooledObject {
+public abstract class Particle implements IDebuggable, ObjectPool.IPooledObject, IRenderable {
     public float life = 0f;
     public float lifetime = 1f;
     public boolean destroy = false;
@@ -22,7 +24,7 @@ public abstract class Particle implements IDebuggable, ObjectPool.IPooledObject 
         destroy = false;
     }
 
-    public void render(GraphicsBatch batch, float delta) {
+    public void render(GraphicsBatch batch, float delta, RenderLayer layer) {
         advanceLife(delta);
     }
 

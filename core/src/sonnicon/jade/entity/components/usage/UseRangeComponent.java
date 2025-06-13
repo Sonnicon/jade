@@ -3,7 +3,6 @@ package sonnicon.jade.entity.components.usage;
 import com.badlogic.gdx.math.MathUtils;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
-import sonnicon.jade.entity.components.world.PositionComponent;
 import sonnicon.jade.game.IUsable;
 import sonnicon.jade.util.IComparable;
 import sonnicon.jade.util.Utils;
@@ -28,22 +27,20 @@ public abstract class UseRangeComponent extends Component implements IUsable {
     }
 
     @Override
-    public final void use(Entity user, int jointX, int jointY) {
-        PositionComponent positionComponent;
-        if (user == null ||
-                (positionComponent = user.getComponent(PositionComponent.class)) == null) {
+    public final void use(Entity user, float targetX, float targetY) {
+        if (user == null) {
             throw new IllegalArgumentException();
         }
-        int dx = jointX - positionComponent.getSubTileX();
-        int dy = jointY - positionComponent.getSubTileY();
+        float dx = targetX - user.getX();
+        float dy = targetY - user.getY();
         float distance = Utils.pythag(dx, dy);
         if (distance <= rangeMin || distance >= rangeMax) {
             return;
         }
-        use(user, distance, (float) Math.toDegrees(((MathUtils.atan2(dy, -dx) + Math.PI * 1.5f) % (Math.PI * 2f))));
+        usePolar(user, distance, (float) Math.toDegrees(((MathUtils.atan2(dy, -dx) + Math.PI * 1.5f) % (Math.PI * 2f))));
     }
 
-    public abstract void use(Entity user, float dist, float angle);
+    public abstract void usePolar(Entity user, float dist, float angle);
 
     @Override
     public Component copy() {

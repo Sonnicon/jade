@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import sonnicon.jade.Jade;
+import sonnicon.jade.content.Content;
 import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.actions.Actions;
@@ -103,11 +104,13 @@ public class DebugPanel extends Panel {
             hide();
             return;
         }
-        labelName.setText(IDebuggable.debugName(targets.peek()));
+
+        Object target = targets.peek();
+        labelName.setText(IDebuggable.debugName(target));
 
         tableContents.clearChildren();
         int rowNum = 0;
-        for (Map.Entry<Object, Object> entry : IDebuggable.debugProperties(targets.peek()).entrySet()) {
+        for (Map.Entry<Object, Object> entry : IDebuggable.debugProperties(target).entrySet()) {
             Table rowTable = new Table(Gui.skin);
             if ((rowNum++ & 1) == 0) {
                 rowTable.background("dark-10");
@@ -118,6 +121,41 @@ public class DebugPanel extends Panel {
 
             tableContents.add(rowTable).colspan(2).growX().left();
             tableContents.row();
+        }
+
+        if (target instanceof IDebuggable) {
+            IDebuggable debuggable = (IDebuggable) target;
+            Map<Object, Runnable> actionMap = debuggable.debugActions();
+            if (actionMap != null) {
+                for (Map.Entry<Object, Runnable> entry : actionMap.entrySet()) {
+                    Table rowTable = new Table(Gui.skin);
+                    if ((rowNum++ & 1) == 0) {
+                        rowTable.background("dark-10");
+                    }
+
+                    Actor result;
+                    String buttonText;
+                    if (PURE_TYPES.contains(entry.getKey().getClass())) {
+                        buttonText = entry.getKey().toString();
+                    } else {
+                        buttonText = IDebuggable.debugName(entry.getKey());
+                    }
+                    result = new TextButton(buttonText, Gui.skin, "debug");
+                    result.addListener(new ChangeListener() {
+                        @Override
+                        public void changed(ChangeEvent event, Actor actor) {
+                            entry.getValue().run();
+                            recreate();
+                        }
+                    });
+
+                    rowTable.add(result).left().expandX().pad(0f, 4f, 0f, 4f);
+                    tableContents.add(rowTable).colspan(1).growX().left();
+                    tableContents.row();
+                }
+            }
+
+
         }
     }
 
@@ -140,6 +178,8 @@ public class DebugPanel extends Panel {
     }
 
     public void show(Object target) {
+        // Clearing here might keep it not GCed, but it makes debugging easier
+        targets.clear();
         targets.push(target);
         show();
     }
@@ -147,7 +187,6 @@ public class DebugPanel extends Panel {
     @Override
     public void hide() {
         super.hide();
-        targets.clear();
     }
 
     private static final class DebugGlobal implements IDebuggable {
@@ -161,13 +200,15 @@ public class DebugPanel extends Panel {
         public Map<Object, Object> debugProperties() {
             return Utils.mapFrom(
                     "actions", Actions.actions,
-                    "clock_ticking", Clock.ticking,
-                    "clock_updating", Clock.updating,
+                    "clock_ticking", Clock.onTickList,
+                    "clock_updating", Clock.onFrameList,
                     "clock_tick", Clock.getTickNum(),
-                    "clock_update", Clock.getUpdateNum(),
+                    "clock_update", Clock.getFrameNum(),
                     "clock_interp", Clock.getTickInterp(),
                     "controlled", PlayerControlComponent.getEntity(),
-                    "renderer", Jade.renderer
+                    "renderer", Jade.renderer,
+                    "viewOverlay", Content.viewOverlay,
+                    "world", Content.world
             );
         }
     }

@@ -12,6 +12,7 @@ import java.util.Map;
 
 public class TileTraitComponent extends Component {
     private HashSet<Traits.Trait> traits;
+    //todo make this work again
 
     private static final EventTypes.EntityMoveTileEvent MOVE_TILE_EVENT = (Entity e, Tile from, Tile to) -> {
         if (from != null) {
@@ -37,14 +38,14 @@ public class TileTraitComponent extends Component {
 
     public void addTrait(Traits.Trait trait) {
         if (entity != null) {
-            entity.getComponent(PositionComponent.class).getTile().traits.addTrait(trait);
+            entity.getTile().traits.addTrait(trait);
             traits.add(trait);
         }
     }
 
     public void removeTrait(Traits.Trait trait) {
         if (entity != null) {
-            entity.getComponent(PositionComponent.class).getTile().traits.removeTrait(trait);
+            entity.getTile().traits.removeTrait(trait);
             traits.remove(trait);
         }
     }
@@ -53,14 +54,14 @@ public class TileTraitComponent extends Component {
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
         entity.events.register(MOVE_TILE_EVENT);
-        MOVE_TILE_EVENT.apply(entity, null, entity.getComponent(PositionComponent.class).getTile());
+        MOVE_TILE_EVENT.apply(entity, null, entity.getTile());
     }
 
     @Override
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
         entity.events.unregister(MOVE_TILE_EVENT);
-        MOVE_TILE_EVENT.apply(entity, entity.getComponent(PositionComponent.class).getTile(), null);
+        MOVE_TILE_EVENT.apply(entity, entity.getTile(), null);
     }
 
     @Override
@@ -70,7 +71,7 @@ public class TileTraitComponent extends Component {
 
     @Override
     public HashSet<Class<? extends Component>> getDependencies() {
-        return Utils.setFrom(PositionComponent.class);
+        return null;
     }
 
     @Override

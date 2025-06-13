@@ -24,6 +24,15 @@ public abstract class Component implements ICopyable, IComparable, IDebuggable {
         return true;
     }
 
+    public boolean canRemoveFromEntity(Entity entity) {
+        for (Component other : entity.components.values()) {
+            if (other != this && other.getDependencies().contains(entity.getClass())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void addToEntity(Entity entity) {
         this.entity = entity;
     }

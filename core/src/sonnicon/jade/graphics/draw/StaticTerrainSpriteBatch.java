@@ -1,10 +1,7 @@
 package sonnicon.jade.graphics.draw;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import sonnicon.jade.graphics.Textures;
@@ -13,18 +10,14 @@ import sonnicon.jade.world.Tile;
 
 import java.nio.Buffer;
 
-public class TerrainSpriteBatch extends CachedDrawBatch implements IDrawRegular {
-    public TerrainSpriteBatch() {
+public class StaticTerrainSpriteBatch extends CachedDrawBatch implements IDrawRegular {
+    public StaticTerrainSpriteBatch() {
         this(10000);
     }
 
-    public TerrainSpriteBatch(int size) {
-        super(size * 16);
-        if (size * 4 > (1 << 16)) {
-            throw new IndexOutOfBoundsException();
-        }
-
-        int maxVertices = size * 4, maxIndices = size * 6;
+    public StaticTerrainSpriteBatch(int size) {
+        super(size * 5);
+        int maxVertices = size * 5, maxIndices = size * 6;
 
         mesh = new Mesh(VERTEX_DATA_TYPE, false, maxVertices, maxIndices,
                 new VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
@@ -48,33 +41,41 @@ public class TerrainSpriteBatch extends CachedDrawBatch implements IDrawRegular 
     }
 
     public void draw(TextureRegion region, float x, float y, float width, float height) {
-        float x2 = x + width;
-        float y2 = y + height;
+        drawPoly(region, x, y, x + width, y + height);
+    }
 
+    public void drawPoly(TextureRegion region, float x1, float y1, float x2, float y2) {
+        draw(region, x1, y1, x1, y2, x2, y2, x2, y1);
+    }
+
+    // Watch out if you texture it
+    public void draw(TextureRegion region,
+                     float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
         float tx1 = region.getU();
         float tx2 = region.getU2();
         float ty1 = region.getV();
         float ty2 = region.getV2();
 
-        vArray[vIndex] = x;
-        vArray[vIndex + 1] = y;
+        vArray[vIndex] = x1;
+        vArray[vIndex + 1] = y1;
         vArray[vIndex + 2] = tx1;
         vArray[vIndex + 3] = ty2;
 
-        vArray[vIndex + 4] = x;
+        vArray[vIndex + 4] = x2;
         vArray[vIndex + 5] = y2;
         vArray[vIndex + 6] = tx1;
         vArray[vIndex + 7] = ty1;
 
-        vArray[vIndex + 8] = x2;
-        vArray[vIndex + 9] = y2;
+        vArray[vIndex + 8] = x3;
+        vArray[vIndex + 9] = y3;
         vArray[vIndex + 10] = tx2;
         vArray[vIndex + 11] = ty1;
 
-        vArray[vIndex + 12] = x2;
-        vArray[vIndex + 13] = y;
+        vArray[vIndex + 12] = x4;
+        vArray[vIndex + 13] = y4;
         vArray[vIndex + 14] = tx2;
         vArray[vIndex + 15] = ty2;
+
         vIndex += 16;
     }
 
@@ -94,28 +95,30 @@ public class TerrainSpriteBatch extends CachedDrawBatch implements IDrawRegular 
         float ty1 = region.getV();
         float ty2 = region.getV2();
 
+        // Vertex positions
         vArray[vIndex] = x;
         vArray[vIndex + 1] = y;
+
         vArray[vIndex + 4] = x;
         vArray[vIndex + 5] = y2;
+
         vArray[vIndex + 8] = x2;
         vArray[vIndex + 9] = y2;
+
         vArray[vIndex + 12] = x2;
         vArray[vIndex + 13] = y;
 
+        // Texture coordinates, with rotation
         short offset = (short) (rotation * 4);
 
         vArray[vIndex + (2 + offset) % 16] = tx1;
         vArray[vIndex + (3 + offset) % 16] = ty2;
 
-
         vArray[vIndex + (6 + offset) % 16] = tx1;
         vArray[vIndex + (7 + offset) % 16] = ty1;
 
-
         vArray[vIndex + (10 + offset) % 16] = tx2;
         vArray[vIndex + (11 + offset) % 16] = ty1;
-
 
         vArray[vIndex + (14 + offset) % 16] = tx2;
         vArray[vIndex + (15 + offset) % 16] = ty2;

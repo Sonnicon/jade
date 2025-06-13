@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Clock {
-    public static LinkedList<ITicking> ticking = new LinkedList<>();
-    public static LinkedList<IUpdate> updating = new LinkedList<>();
+    //todo dont linkedlist, just use iterators
+    public static LinkedList<IOnTick> onTickList = new LinkedList<>();
+    public static LinkedList<IOnFrame> onFrameList = new LinkedList<>();
 
     private static final ArrayList<IClocked> listAdd = new ArrayList<>();
     private static final ArrayList<IClocked> listRemove = new ArrayList<>();
 
-    private static float tickNum = 0f, updateNum = 0f;
+    private static float tickNum = 0f, frameNum = 0f;
 
     private static float advanceTo = 0f, lastTick = 0f;
     private static final float tickInterpRate = 1f;
@@ -38,17 +39,17 @@ public class Clock {
     }
 
     // Render step
-    public static void update(float delta) {
+    public static void frame(float delta) {
         // Updates
-        updateNum += delta;
-        updating.forEach(t -> t.update(delta));
+        frameNum += delta;
+        onFrameList.forEach(t -> t.onFrame(delta));
 
         // Ticks
         if (advanceTo > tickNum) {
             float advancement = Float.min(advanceTo - tickNum, tickInterpRate * delta);
             while (advancement > 0f) {
 
-                float shortestAvailable = Actions.shortest() - tickNum;
+                float shortestAvailable = Actions.getEarliestTimeFinish() - tickNum;
                 if (shortestAvailable <= advancement) {
                     advancement -= shortestAvailable;
                     tickNum += shortestAvailable;
@@ -63,11 +64,11 @@ public class Clock {
         // Add new handlers
         if (!listAdd.isEmpty()) {
             for (IClocked target : listAdd) {
-                if (target instanceof ITicking) {
-                    ticking.add((ITicking) target);
+                if (target instanceof IOnTick) {
+                    onTickList.add((IOnTick) target);
                 }
-                if (target instanceof IUpdate) {
-                    updating.add((IUpdate) target);
+                if (target instanceof IOnFrame) {
+                    onFrameList.add((IOnFrame) target);
                 }
             }
             listAdd.clear();
@@ -75,11 +76,11 @@ public class Clock {
 
         if (!listRemove.isEmpty()) {
             for (IClocked target : listRemove) {
-                if (target instanceof ITicking) {
-                    ticking.remove((ITicking) target);
+                if (target instanceof IOnTick) {
+                    onTickList.remove((IOnTick) target);
                 }
-                if (target instanceof IUpdate) {
-                    updating.remove((IUpdate) target);
+                if (target instanceof IOnFrame) {
+                    onFrameList.remove((IOnFrame) target);
                 }
             }
             listRemove.clear();
@@ -88,7 +89,7 @@ public class Clock {
 
     private static void tickInternal() {
         float delta = tickNum - lastTick;
-        ticking.forEach(t -> t.tick(delta));
+        onTickList.forEach(t -> t.onTick(delta));
         lastTick = tickNum;
     }
 
@@ -96,8 +97,8 @@ public class Clock {
         return tickNum;
     }
 
-    public static float getUpdateNum() {
-        return updateNum;
+    public static float getFrameNum() {
+        return frameNum;
     }
 
     public static float getTickInterp() {
@@ -112,11 +113,11 @@ public class Clock {
 
     }
 
-    public interface ITicking extends IClocked {
-        void tick(float delta);
+    public interface IOnTick extends IClocked {
+        void onTick(float delta);
     }
 
-    public interface IUpdate extends IClocked {
-        void update(float delta);
+    public interface IOnFrame extends IClocked {
+        void onFrame(float delta);
     }
 }

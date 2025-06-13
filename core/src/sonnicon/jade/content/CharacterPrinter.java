@@ -2,18 +2,17 @@ package sonnicon.jade.content;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.Traits;
-import sonnicon.jade.entity.components.graphical.AnimationComponent;
+import sonnicon.jade.entity.components.DebugComponent;
 import sonnicon.jade.entity.components.graphical.ChunkDrawComponent;
 import sonnicon.jade.entity.components.player.KeyboardMovementComponent;
 import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.entity.components.storage.CharacterStorageComponent;
-import sonnicon.jade.entity.components.world.HitboxComponent;
-import sonnicon.jade.entity.components.world.MoveboxComponent;
-import sonnicon.jade.entity.components.world.SubtilePositionComponent;
+import sonnicon.jade.entity.components.world.CollisionComponent;
 import sonnicon.jade.game.EntitySize;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.FixedSlotEntityStorage;
-import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.game.collision.SquareCollider;
+import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.world.Tile;
 
@@ -35,7 +34,6 @@ public class CharacterPrinter {
 
         result.addComponents(
                 storageComponent,
-                new AnimationComponent(),
                 new KeyboardMovementComponent());
         PlayerControlComponent.setControlledEntity(result);
 
@@ -57,11 +55,12 @@ public class CharacterPrinter {
 
     public static Entity printCharacterEnemy(Tile location) {
         Entity result = new Entity();
-        result.addComponents(new SubtilePositionComponent(location),
-                new ChunkDrawComponent(new TextureSet("character-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE, Renderer.RenderLayer.characters),
-                new MoveboxComponent((short) 2),
-                new HitboxComponent((short) Tile.TILE_SIZE, (short) 3));
+        result.addComponents(
+                new DebugComponent(),
+                new ChunkDrawComponent(new TextureSet("character-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE, RenderLayer.objects),
+                new CollisionComponent(new SquareCollider(15.9f)));
         result.addTrait(Traits.Trait.blockMovement);
+        result.forceMoveTo(location);
         return result;
     }
 }

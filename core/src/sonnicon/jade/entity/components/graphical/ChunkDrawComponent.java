@@ -1,28 +1,24 @@
 package sonnicon.jade.entity.components.graphical;
 
 import sonnicon.jade.entity.Entity;
-import sonnicon.jade.entity.components.world.PositionComponent;
 import sonnicon.jade.generated.EventTypes;
-import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.TextureSet;
-import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.Tile;
 
 public class ChunkDrawComponent extends WorldDrawComponent {
 
-    private transient Chunk currentChunk;
     private static final EventTypes.EntityMoveTileEvent moveHandler =
-            (Entity entity, Tile source, Tile destination) -> {
+            (Entity entity, Tile from, Tile dest) -> {
                 ChunkDrawComponent comp = entity.getComponentFuzzy(ChunkDrawComponent.class);
-                Chunk c = destination == null ? null : destination.chunk;
 
-                if (c != comp.currentChunk) {
-                    if (comp.currentChunk != null) {
-                        comp.removeFromChunk();
+                if (from != dest) {
+                    if (from != null) {
+                        from.chunk.removeRenderable(comp);
                     }
 
-                    if (c != null) {
-                        comp.addToChunk(c);
+                    if (dest != null) {
+                        dest.chunk.addRenderable(comp, comp.layer);
                     }
                 }
             };
@@ -31,38 +27,26 @@ public class ChunkDrawComponent extends WorldDrawComponent {
 
     }
 
-    public ChunkDrawComponent(TextureSet textures, float width, float height, Renderer.RenderLayer layer) {
+    public ChunkDrawComponent(TextureSet textures, float width, float height, RenderLayer layer) {
         super(textures, width, height, layer);
+    }
+
+    public ChunkDrawComponent(TextureSet textures, float size, RenderLayer layer) {
+        super(textures, size, size, layer);
     }
 
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
         entity.events.register(moveHandler);
-
-        PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
-        if (!positionComponent.isInNull()) {
-            addToChunk(positionComponent.getTile().chunk);
-        }
+        moveHandler.apply(entity, null, entity.getTile());
     }
 
     @Override
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
+        moveHandler.apply(entity, entity.getTile(), null);
         entity.events.unregister(moveHandler);
-        if (currentChunk != null) {
-            removeFromChunk();
-        }
-    }
-
-    protected void addToChunk(Chunk chunk) {
-        currentChunk = chunk;
-        chunk.addRenderable(this, layer);
-    }
-
-    protected void removeFromChunk() {
-        currentChunk.removeRenderable(this);
-        currentChunk = null;
     }
 
     @Override

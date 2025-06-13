@@ -4,5 +4,5 @@ import sonnicon.jade.entity.Entity;
 
 @FunctionalInterface
 public interface IUsable {
-    void use(Entity user, int jointX, int jointY);
+    void use(Entity user, float targetX, float targetY);
 }

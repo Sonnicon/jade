@@ -1,21 +1,21 @@
-package sonnicon.jade.game;
+package sonnicon.jade.content;
 
 import sonnicon.jade.Jade;
-import sonnicon.jade.content.CharacterPrinter;
-import sonnicon.jade.content.ItemPrinter;
-import sonnicon.jade.content.WorldPrinter;
+import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.graphical.WallDrawComponent;
+import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.overlays.GridOverlay;
+import sonnicon.jade.graphics.overlays.ViewOverlay;
 import sonnicon.jade.graphics.particles.ParticleEngine;
 import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.Tile;
 import sonnicon.jade.world.World;
 
-import java.util.Random;
-
 public class Content {
     public static World world;
+    public static ViewOverlay viewOverlay;
+    public static Entity targetEntity;
     //todo this is temporary
 
     private static final EventTypes.StateSetEvent stateChangeListener = (Gamestate.State state) -> {
@@ -34,6 +34,8 @@ public class Content {
 
     public static void create() {
         Jade.renderer.particles = new ParticleEngine(Jade.renderer);
+        viewOverlay = new ViewOverlay(240);
+        targetEntity = ControlPrinter.targetEntity();
 
         world = new World();
         for (int i = 0; i < 4; i++) {
@@ -42,8 +44,12 @@ public class Content {
                 WorldPrinter.printFloorEntity(c.getTile((short) (j / 16), (short) (j % 16)));
             }
         }
+
         CharacterPrinter.printCharacterPlayer(world.chunks.get(0).getTile((short) 4, (short) 4));
-        ItemPrinter.printWeaponDebug(world.chunks.get(0).getTile((short) 5, (short) 5));
+        for (int i = 0; i < 8; i++) {
+            ItemPrinter.printWeaponDebug(world.chunks.get(0).getTile((short) 5, (short) 5));
+        }
+
 
         for (short i = 0; i < 32 * 4; i++) {
             if (i % 5 == 0) continue;
@@ -53,10 +59,10 @@ public class Content {
                     c = 0;
                     break;
                 case 1:
-                    c = 7;
+                    c = 5;
                     break;
                 case 2:
-                    c = 15;
+                    c = 9;
                     break;
                 case 3:
                     c = 31;
@@ -93,11 +99,10 @@ public class Content {
             WorldPrinter.printWallEntity(t);
         }
 
-        Random random = new Random();
-        for (int i = 0; i < 8; i++) {
-            ItemPrinter.printItemDebug(world.getTile(random.nextInt(32), random.nextInt(32)));
-            ItemPrinter.printWeaponDebug(world.getTile(random.nextInt(32), random.nextInt(32)));
-            CharacterPrinter.printCharacterEnemy(world.getTile(random.nextInt(32), random.nextInt(32)));
-        }
+//        for (int i = 0; i < 6; i++) {
+//            ItemPrinter.printItemDebug(world.getTile(random.nextInt(32), random.nextInt(32)));
+//            ItemPrinter.printWeaponDebug(world.getTile(random.nextInt(32), random.nextInt(32)));
+//            CharacterPrinter.printCharacterEnemy(world.getTile(random.nextInt(32), random.nextInt(32)));
+//        }
     }
 }

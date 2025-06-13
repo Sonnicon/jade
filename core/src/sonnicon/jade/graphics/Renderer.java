@@ -1,17 +1,21 @@
 package sonnicon.jade.graphics;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import sonnicon.jade.game.Content;
+import sonnicon.jade.EventGenerator;
+import sonnicon.jade.content.Content;
 import sonnicon.jade.game.Gamestate;
-import sonnicon.jade.graphics.draw.*;
-import sonnicon.jade.graphics.overlays.ViewOverlay;
+import sonnicon.jade.graphics.draw.CachedDrawBatch;
+import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.graphics.particles.ParticleEngine;
 import sonnicon.jade.gui.Gui;
+import sonnicon.jade.util.Events;
 import sonnicon.jade.util.IDebuggable;
 import sonnicon.jade.util.Utils;
 import sonnicon.jade.world.Chunk;
@@ -19,7 +23,9 @@ import sonnicon.jade.world.Chunk;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 
+@EventGenerator(id = "CameraMove", param = {Camera.class}, label = {"camera"})
 public class Renderer implements IDebuggable {
     public Viewport viewport;
     public OrthographicCamera camera;
@@ -32,120 +38,41 @@ public class Renderer implements IDebuggable {
     private float cameraEdgeRight;
     private float cameraEdgeTop;
     private float cameraEdgeBottom;
+    public final Events events = new Events();
 
     private final LinkedList<IRenderable> renderFullList;
     private final SubRenderer subRenderer;
 
-    public final ViewOverlay viewOverlay;
+    public static final float CAMERA_DIST_MUL = 1f / 1000f;
 
     public Renderer() {
         subRenderer = new SubRenderer();
         renderFullList = new LinkedList<>();
 
-        Batch.terrain.batch = new TerrainSpriteBatch();
-        Batch.terrainDynamic.batch = new TerrainSpriteBatch();
-        Batch.world.batch = new SpriteBatch();
-        Batch.gui.batch = new SpriteBatch();
-        Batch.fow.batch = new FowBatch();
-        Batch.overfow.batch = new SpriteBatch();
-
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
-
-        //todo find a place for this
-        viewOverlay = new ViewOverlay();
-        viewOverlay.setRadius(160);
     }
 
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
-        Gui.render(delta);
+        Gdx.gl.glDepthFunc(GL20.GL_ALWAYS);
 
-        if (Gamestate.getState() == Gamestate.State.menu) {
-            return;
-        }
+        for (RenderLayer layer : Gamestate.getState().getLayersToRender()) {
+            layer.begin();
 
-        // Clear depth
-        Gdx.gl.glClearDepthf(1f);
-
-        // Draw depth mask
-        Gdx.gl.glDepthFunc(GL20.GL_LESS);
-        Batch.overfow.batch.begin();
-        Gdx.gl.glDepthMask(true);
-        viewOverlay.render((SpriteBatch) Batch.overfow.batch);
-        Batch.overfow.batch.end();
-
-        // Hide things we can't see
-        Gdx.gl.glDepthMask(false);
-        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
-        Gdx.gl.glDepthFunc(GL20.GL_EQUAL);
-
-        GraphicsBatch batch = null;
-        for (RenderLayer layer : RenderLayer.all) {
-            // Don't want to mask out the GUI
-            if (layer == RenderLayer.overfow) {
-                Gdx.gl.glDepthFunc(GL20.GL_ALWAYS);
-            }
-
-            if (layer.batchType != null) {
-                if (batch != null) {
-                    if (batch instanceof CachedDrawBatch && (!((CachedDrawBatch) batch).invalidated)) {
-                        batch.flush();
-                    } else {
-                        batch.end();
-                    }
-                }
-                batch = layer.batchType.batch;
-                if (batch instanceof CachedDrawBatch && (!((CachedDrawBatch) batch).invalidated)) {
-                    continue;
-                }
-                batch.begin();
-            }
-
-            if (batch == null) {
-                throw new EnumConstantNotPresentException(RenderLayer.class, layer.name() + ".batchType.batch");
-            }
-
-            // Draw view circle
-            if (layer == RenderLayer.overfow) {
-                viewOverlay.render((SpriteBatch) Batch.overfow.batch);
-            }
-
-            if (batch instanceof CachedDrawBatch && !((CachedDrawBatch) batch).invalidated) {
-                continue;
-            }
-
-            renderLayer(batch, delta, layer);
-        }
-
-        if (batch != null) {
-            if (batch instanceof CachedDrawBatch && (!((CachedDrawBatch) batch).invalidated)) {
+            GraphicsBatch batch = layer.batch;
+            boolean cached = (batch instanceof CachedDrawBatch) && !((CachedDrawBatch) batch).invalidated;
+            if (cached) {
+                // Cached things get flushed
                 batch.flush();
             } else {
+                // Dirty things get re-rendered
+                batch.begin();
+                renderLayer(batch, delta, layer);
                 batch.end();
             }
-        }
 
-        boolean cameraMoved = false;
-        //todo move this
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            camera.translate(-3, 0, 0);
-            cameraMoved = true;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            camera.translate(3, 0, 0);
-            cameraMoved = true;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            camera.translate(0, -3, 0);
-            cameraMoved = true;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            camera.translate(0, 3, 0);
-            cameraMoved = true;
-        }
-        if (cameraMoved) {
-            updateCamera();
+            layer.end();
         }
     }
 
@@ -172,9 +99,11 @@ public class Renderer implements IDebuggable {
         camera.zoom = viewportScale;
         viewport.apply();
 
-        for (Batch batch : Batch.allFollowing) {
-            batch.batch.setProjectionMatrix(camera.combined);
-        }
+        Arrays.stream(RenderLayer.all)
+                .filter(r -> r.project)
+                .map(r -> r.batch)
+                .filter(Objects::nonNull)
+                .forEach(batch -> batch.setProjectionMatrix(camera.combined));
 
         cameraEdgeLeft = camera.position.x - camera.viewportWidth / 2;
         cameraEdgeRight = camera.position.x + camera.viewportWidth / 2;
@@ -214,6 +143,22 @@ public class Renderer implements IDebuggable {
         return renderFullList.remove(renderable) || subRenderer.removeRenderable(renderable);
     }
 
+    private final Vector3 TEMP_VEC = new Vector3();
+
+    public Vector2 worldToScreen(Vector2 world, Vector2 result) {
+        TEMP_VEC.set(world, 0f);
+        camera.project(TEMP_VEC);
+        result.set(TEMP_VEC.x, TEMP_VEC.y);
+        return result;
+    }
+
+    public Vector2 screenToWorld(Vector2 screen, Vector2 result) {
+        TEMP_VEC.set(screen, 0f);
+        camera.unproject(TEMP_VEC);
+        result.set(TEMP_VEC.x, TEMP_VEC.y);
+        return result;
+    }
+
     @Override
     public Map<Object, Object> debugProperties() {
         return Utils.mapFrom(
@@ -225,86 +170,7 @@ public class Renderer implements IDebuggable {
                 "camEdgeTop", cameraEdgeTop,
                 "camEdgeBottom", cameraEdgeBottom,
                 "renderFullList", renderFullList,
-                "subRenderer", subRenderer,
-                "viewOverlay", viewOverlay
+                "subRenderer", subRenderer
         );
-    }
-
-    public enum Batch {
-        terrain,
-        terrainDynamic,
-        world,
-        gui(false),
-        fow,
-        overfow;
-
-        public GraphicsBatch batch;
-        public final boolean followCamera;
-
-        Batch() {
-            this(true);
-        }
-
-        Batch(boolean followCamera) {
-            this.followCamera = followCamera;
-        }
-
-
-        public static final Batch[] all = values();
-        public static final Batch[] allFollowing = Arrays.stream(values()).filter(b -> b.followCamera).toArray(Batch[]::new);
-    }
-
-    private static int layerNextIndex = 0;
-
-    public enum RenderLayer {
-        bottom(Batch.terrain),
-        floor,
-        terrainBottom,
-        terrain(false),
-        terrainTop(Batch.terrainDynamic, false),
-        characters(Batch.world),
-        particles,
-        fow(Batch.fow),
-        overfow(Batch.overfow),
-        overlay(Batch.gui),
-        gui,
-        top;
-
-        public final Batch batchType;
-        public final int index;
-
-        private static final RenderLayer[] all = values();
-
-        RenderLayer() {
-            this(null, true);
-        }
-
-        RenderLayer(boolean separate) {
-            this(null, separate);
-        }
-
-        RenderLayer(Batch batchType) {
-            this(batchType, true);
-        }
-
-        RenderLayer(Batch batchType, boolean separate) {
-            this.batchType = batchType;
-            this.index = separate ? ++layerNextIndex : layerNextIndex;
-        }
-
-        RenderLayer next() {
-            if (ordinal() == all().length - 1) {
-                return null;
-            }
-            return all()[ordinal() + 1];
-        }
-
-        static RenderLayer[] all() {
-            return all;
-        }
-
-        static int size() {
-            return layerNextIndex + 1;
-        }
     }
 }

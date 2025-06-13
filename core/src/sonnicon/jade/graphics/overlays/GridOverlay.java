@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import sonnicon.jade.Jade;
 import sonnicon.jade.graphics.IRenderable;
-import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.graphics.draw.Shaders;
@@ -17,11 +17,12 @@ public class GridOverlay implements IRenderable {
     private static final Vector3 TEMP_VEC = new Vector3();
 
     public GridOverlay() {
-        Jade.renderer.addRenderable(this, Renderer.RenderLayer.overfow);
+        Jade.renderer.addRenderable(this, RenderLayer.overfow);
     }
 
     @Override
-    public void render(GraphicsBatch batch, float delta, Renderer.RenderLayer layer) {
+    public void render(GraphicsBatch batch, float delta, RenderLayer layer) {
+        //todo
         TEMP_VEC.set(Gdx.input.getX(), Gdx.input.getY(), 0f);
         Jade.renderer.camera.unproject(TEMP_VEC);
         TEMP_VEC.x = Math.floorDiv((int) TEMP_VEC.x, Tile.TILE_SIZE) * Tile.TILE_SIZE;

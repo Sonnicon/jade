@@ -32,8 +32,8 @@ public class TilePathfinder extends Pathfinder<Tile> {
 
     @Override
     public float predicate(Tile source) {
-        float dx = destination.getX() - source.getX();
-        float dy = destination.getY() - source.getY();
+        float dx = destination.getTileX() - source.getTileX();
+        float dy = destination.getTileY() - source.getTileY();
         return (float) Math.sqrt(dx * dx + dy * dy);
     }
 }

@@ -2,8 +2,7 @@ package sonnicon.jade.entity.components.graphical;
 
 import sonnicon.jade.Jade;
 import sonnicon.jade.entity.Entity;
-import sonnicon.jade.entity.components.world.PositionComponent;
-import sonnicon.jade.graphics.Renderer;
+import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.TextureSet;
 
 public class GlobalWorldDrawComponent extends WorldDrawComponent {
@@ -12,7 +11,7 @@ public class GlobalWorldDrawComponent extends WorldDrawComponent {
 
     }
 
-    public GlobalWorldDrawComponent(TextureSet textures, float width, float height, Renderer.RenderLayer layer) {
+    public GlobalWorldDrawComponent(TextureSet textures, float width, float height, RenderLayer layer) {
         super(textures, width, height, layer);
     }
 
@@ -30,20 +29,18 @@ public class GlobalWorldDrawComponent extends WorldDrawComponent {
 
 
     @Override
-    public boolean culled(Renderer.RenderLayer layer) {
-        PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
-        if (positionComponent == null || positionComponent.isInNull()) {
+    public boolean culled(RenderLayer layer) {
+        if (entity == null) {
             return false;
         }
 
-        // Animations don't really matter here, so floating instead of draw
-        float drawX = positionComponent.getFloatingX();
-        float drawY = positionComponent.getFloatingY();
+        float drawX = entity.getX();
+        float drawY = entity.getY();
 
-        return drawX > Jade.renderer.getCameraEdgeRight() ||
-                (drawX + width) < Jade.renderer.getCameraEdgeLeft() ||
-                drawY > Jade.renderer.getCameraEdgeBottom() ||
-                (drawY + height) < Jade.renderer.getCameraEdgeTop();
+        return drawX - width / 2f > Jade.renderer.getCameraEdgeRight() ||
+                drawX + width / 2f < Jade.renderer.getCameraEdgeLeft() ||
+                drawY - height / 2f > Jade.renderer.getCameraEdgeBottom() ||
+                drawY + height / 2f < Jade.renderer.getCameraEdgeTop();
     }
 
     @Override
