@@ -1,5 +1,6 @@
 package sonnicon.jade.game;
 
+import com.badlogic.gdx.math.Vector2;
 import sonnicon.jade.world.Tile;
 import sonnicon.jade.world.World;
 
@@ -34,4 +35,9 @@ public interface IPosition {
      * @return World containing this object.
      */
     World getWorld();
+
+    default Vector2 getPosition(Vector2 result) {
+        result.set(getX(), getY());
+        return result;
+    }
 }

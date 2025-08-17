@@ -28,7 +28,17 @@ public class RunnableAction extends Actions.Action {
     }
 
     @Override
-    protected void onFrame(float progress) {
+    protected void onFrame() {
+
+    }
+
+    @Override
+    protected void onAlign() {
+
+    }
+
+    @Override
+    protected void onTick() {
 
     }
 

@@ -22,8 +22,18 @@ public class Actions implements Clock.IOnTick, Clock.IOnFrame, IDebuggable {
     }
 
     @Override
+    public void onAlign(float delta) {
+        actionsList.forEach(Action::onAlign);
+    }
+
+    @Override
     public void onTick(float delta) {
         //todo cache nearest time finish
+
+        // Tick every action
+        actionsList.forEach(Action::onTick);
+
+        // Deal with interrupts and finishing
         Iterator<Action> iterator = actionsList.iterator();
         while (iterator.hasNext()) {
             Action action = iterator.next();
@@ -65,8 +75,8 @@ public class Actions implements Clock.IOnTick, Clock.IOnFrame, IDebuggable {
     @Override
     public void onFrame(float delta) {
         for (Action action : actionsList) {
-            float progress = (Clock.getTickNum() - action.timeStart) / action.duration;
-            action.onFrame(progress);
+
+            action.onFrame();
         }
     }
 
@@ -83,11 +93,19 @@ public class Actions implements Clock.IOnTick, Clock.IOnFrame, IDebuggable {
 
         protected abstract void onInterrupt();
 
-        protected abstract void onFrame(float progress);
+        protected abstract void onFrame();
 
-        public final Action duration(float duration) {
+        protected abstract void onAlign();
+
+        protected abstract void onTick();
+
+        public final Action setDuration(float duration) {
             this.duration = duration;
             return this;
+        }
+
+        public final float getProgress() {
+            return (Clock.getTickNum() - timeStart) / duration;
         }
 
         public final Action start() {

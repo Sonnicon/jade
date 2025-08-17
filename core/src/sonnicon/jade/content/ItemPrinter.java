@@ -1,13 +1,12 @@
 package sonnicon.jade.content;
 
 import sonnicon.jade.entity.Entity;
-import sonnicon.jade.entity.components.DebugComponent;
 import sonnicon.jade.entity.components.graphical.ChunkDrawComponent;
-import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.entity.components.storage.EntitySizeComponent;
 import sonnicon.jade.entity.components.storage.StorableComponent;
 import sonnicon.jade.entity.components.storage.StorageComponent;
-import sonnicon.jade.entity.components.world.PositionRelativeComponent;
+import sonnicon.jade.entity.components.usage.UseFunctionComponent;
+import sonnicon.jade.entity.components.weapon.ClickSwingComponent;
 import sonnicon.jade.game.EntityStorage;
 import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.TextureSet;
@@ -21,7 +20,12 @@ public class ItemPrinter {
                 new ChunkDrawComponent(new TextureSet("item-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE, RenderLayer.objects),
                 EntitySizeComponent.medium,
                 new StorableComponent("debug item", Textures.atlasFindDrawable("item-debug")),
-                new StorageComponent(new EntityStorage()));
+                new StorageComponent(new EntityStorage()),
+                new UseFunctionComponent((Entity user, Float x, Float y) -> {
+                    user.forceMoveTo(x, y);
+                    return true;
+                })
+        );
         result.forceMoveTo(location);
         return result;
     }
@@ -29,11 +33,10 @@ public class ItemPrinter {
     public static Entity printWeaponDebug(Tile location) {
         Entity result = new Entity();
         result.addComponents(
-                new ChunkDrawComponent(new TextureSet("item-weapon"), Tile.TILE_SIZE, Tile.TILE_SIZE, RenderLayer.objects),
+                new ChunkDrawComponent(new TextureSet("item-weapon"), Tile.TILE_SIZE * 0.5f, Tile.TILE_SIZE * 1.5f, RenderLayer.objects),
                 EntitySizeComponent.medium,
                 new StorableComponent("debug weapon", Textures.atlasFindDrawable("item-weapon")),
-                new DebugComponent(),
-                new PositionRelativeComponent().bindToEntity(PlayerControlComponent.getEntity()));
+                new ClickSwingComponent());
         result.forceMoveTo(location);
         return result;
     }

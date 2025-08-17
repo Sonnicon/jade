@@ -38,4 +38,14 @@ public class WorldPrinter {
         wallEntity.forceMoveTo(location);
         return wallEntity;
     }
+
+    public static Entity printRedboxEntity(Tile location) {
+        Entity redboxEntity = new Entity();
+        redboxEntity.addComponents(
+                new ChunkDrawComponent(new TextureSet("debug-redbox"), 16f, RenderLayer.objects),
+                new CollisionComponent(new SquareCollider(8f))
+        );
+        redboxEntity.forceMoveTo(location);
+        return redboxEntity;
+    }
 }

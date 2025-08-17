@@ -1,11 +1,26 @@
 package sonnicon.jade.game;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+
 public interface IPositionMoving extends IPosition {
 
     void forceMoveTo(float x, float y);
 
     default void forceMoveTo(IPosition other) {
-        forceMoveTo(other.getX(), other.getY());
+        if (other == null) {
+            forceMoveTo(Float.NaN, Float.NaN);
+        } else {
+            forceMoveTo(other.getX(), other.getY());
+        }
+    }
+
+    default void forceMoveTo(Vector3 other) {
+        forceMoveTo(other.x, other.y);
+    }
+
+    default void forceMoveTo(Vector2 other) {
+        forceMoveTo(other.x, other.y);
     }
 
     default void forceMoveBy(float x, float y) {

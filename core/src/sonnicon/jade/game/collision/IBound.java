@@ -1,5 +1,6 @@
 package sonnicon.jade.game.collision;
 
+import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.IPosition;
 
 public interface IBound {
@@ -11,6 +12,7 @@ public interface IBound {
     boolean containsPoint(IPosition pos, float otherX, float otherY);
 
     default boolean intersects(IPosition pos, IBound otherBound, IPosition otherPos) {
+        assert Clock.getPhase() == Clock.ClockPhase.tick;
         if (otherBound instanceof IBoundSquare) return intersects(pos, (IBoundSquare) otherBound, otherPos);
         if (otherBound instanceof IBoundCircle) return intersects(pos, (IBoundCircle) otherBound, otherPos);
 

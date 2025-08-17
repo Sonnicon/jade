@@ -24,6 +24,7 @@ public class MoveAction extends Actions.Action {
 
     @Override
     public void onStart() {
+        //todo get rid of the allocations
         IPositionMoving debugTarget = new DebugTarget();
         debugTarget.forceMoveTo(entity);
         source = debugTarget;
@@ -50,10 +51,21 @@ public class MoveAction extends Actions.Action {
     }
 
     @Override
-    protected void onFrame(float progress) {
+    protected void onFrame() {
+        float progress = getProgress();
         entity.forceMoveTo(
                 Utils.lerpX(source, target, progress),
                 Utils.lerpY(source, target, progress));
+    }
+
+    @Override
+    protected void onAlign() {
+
+    }
+
+    @Override
+    protected void onTick() {
+
     }
 
     //todo remove this when simultaenous collisions
@@ -77,14 +89,14 @@ public class MoveAction extends Actions.Action {
             }
             DebugTarget locTo = new DebugTarget(eX + unitX * i, eY + unitY * i);
             actionIter.set(e, locTo);
-            actionIter.duration(timePerTile);
+            actionIter.setDuration(timePerTile);
         }
 
         if (length > Math.floor(length)) {
             MoveAction nextAction = Actions.obtain(MoveAction.class);
             nextAction.set(e, target);
             actionIter.then(nextAction);
-            actionIter.duration(timePerTile);
+            actionIter.setDuration(timePerTile);
         }
 
         return result;

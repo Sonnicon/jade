@@ -1,6 +1,7 @@
 package sonnicon.jade.entity;
 
 import sonnicon.jade.EventGenerator;
+import sonnicon.jade.Jade;
 import sonnicon.jade.content.Content;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.entity.components.world.CollisionComponent;
@@ -19,7 +20,6 @@ import java.util.stream.Stream;
 @EventGenerator(id = "EntityTraitRemove", param = {Entity.class, Traits.Trait.class}, label = {"entity", "trait"})
 @EventGenerator(id = "EntityMove", param = {Entity.class}, label = {"entity"})
 @EventGenerator(id = "EntityMoveTile", param = {Entity.class, Tile.class, Tile.class}, label = {"entity", "from", "dest"})
-@EventGenerator(id = "EntityRotate", param = {Entity.class, Float.class}, label = {"entity", "newAngle"})
 public class Entity implements ICopyable, IComparable, IDebuggable, IPositionMoving {
     public HashMap<Class<? extends Component>, Component> components;
     public Traits traits;
@@ -36,6 +36,11 @@ public class Entity implements ICopyable, IComparable, IDebuggable, IPositionMov
         components = new HashMap<>();
         traits = new Traits();
         id = nextId++;
+    }
+
+    public Entity(Component... components) {
+        this();
+        addComponents(components);
     }
 
     public Entity addComponents(Component... comps) {
@@ -274,7 +279,7 @@ public class Entity implements ICopyable, IComparable, IDebuggable, IPositionMov
     public boolean rotateTo(float degrees) {
         //todo rotation utils, incl. fix for (x <= -360)
         this.rotation = (degrees + 360) % 360;
-        EventTypes.EntityRotateEvent.handle(events, this, this.rotation);
+        EventTypes.EntityMoveEvent.handle(events, this);
         return true;
     }
 
@@ -299,6 +304,7 @@ public class Entity implements ICopyable, IComparable, IDebuggable, IPositionMov
     public Map<Object, Runnable> debugActions() {
         return Utils.mapFrom(
                 "Move to null", (Runnable) () -> forceMoveTo(Float.NaN, Float.NaN),
+                "Move to camera", (Runnable) () -> forceMoveTo(Jade.renderer.camera.position),
                 "Rotate 15 Clockwise", (Runnable) () -> rotateBy(15f)
         );
     }

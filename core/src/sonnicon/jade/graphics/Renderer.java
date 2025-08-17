@@ -43,8 +43,6 @@ public class Renderer implements IDebuggable {
     private final LinkedList<IRenderable> renderFullList;
     private final SubRenderer subRenderer;
 
-    public static final float CAMERA_DIST_MUL = 1f / 1000f;
-
     public Renderer() {
         subRenderer = new SubRenderer();
         renderFullList = new LinkedList<>();
@@ -145,18 +143,18 @@ public class Renderer implements IDebuggable {
 
     private final Vector3 TEMP_VEC = new Vector3();
 
-    public Vector2 worldToScreen(Vector2 world, Vector2 result) {
+    public Vector2 worldToScreen(Vector2 world, Vector2 screen) {
         TEMP_VEC.set(world, 0f);
         camera.project(TEMP_VEC);
-        result.set(TEMP_VEC.x, TEMP_VEC.y);
-        return result;
+        screen.set(TEMP_VEC.x, TEMP_VEC.y);
+        return screen;
     }
 
-    public Vector2 screenToWorld(Vector2 screen, Vector2 result) {
+    public Vector2 screenToWorld(Vector2 screen, Vector2 world) {
         TEMP_VEC.set(screen, 0f);
         camera.unproject(TEMP_VEC);
-        result.set(TEMP_VEC.x, TEMP_VEC.y);
-        return result;
+        world.set(TEMP_VEC.x, TEMP_VEC.y);
+        return world;
     }
 
     @Override

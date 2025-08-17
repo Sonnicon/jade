@@ -18,6 +18,7 @@ import java.util.Map;
 public abstract class WorldDrawComponent extends Component implements IRenderable {
     //todo make this protected again
     public TextureSet textures;
+
     protected float width;
     protected float height;
 
@@ -83,6 +84,14 @@ public abstract class WorldDrawComponent extends Component implements IRenderabl
         if (joinedRenderables != null) {
             joinedRenderables.remove(renderable);
         }
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
     }
 
     @Override

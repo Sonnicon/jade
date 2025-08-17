@@ -27,7 +27,7 @@ public abstract class UseRangeComponent extends Component implements IUsable {
     }
 
     @Override
-    public final void use(Entity user, float targetX, float targetY) {
+    public final boolean use(Entity user, float targetX, float targetY) {
         if (user == null) {
             throw new IllegalArgumentException();
         }
@@ -35,9 +35,10 @@ public abstract class UseRangeComponent extends Component implements IUsable {
         float dy = targetY - user.getY();
         float distance = Utils.pythag(dx, dy);
         if (distance <= rangeMin || distance >= rangeMax) {
-            return;
+            return false;
         }
         usePolar(user, distance, (float) Math.toDegrees(((MathUtils.atan2(dy, -dx) + Math.PI * 1.5f) % (Math.PI * 2f))));
+        return true;
     }
 
     public abstract void usePolar(Entity user, float dist, float angle);

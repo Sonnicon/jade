@@ -35,6 +35,24 @@ public class Utils {
         return map;
     }
 
+    public static float lerpDeg(float amount, float min, float max) {
+        if (max > min) {
+            return min + lengthDeg(min, max) * amount;
+        } else {
+            return min - lengthDeg(max, min) * amount;
+        }
+    }
+
+    public static float lengthDeg(float min, float max) {
+        if (min > max) {
+            return lengthDeg(max, min);
+        }
+        if (Math.abs(min - max) > 180f) {
+            return max - min - 360f;
+        }
+        return max - min;
+    }
+
     public static boolean overlapsSquare(int x1, int y1, short r1, int x2, int y2, short r2) {
         return ((x1 + r1 > x2 - r2) ^ (x1 - r1 > x2 + r2)) &&
                 (y1 + r1 > y2 - r2) ^ (y1 - r1 > y2 + r2);

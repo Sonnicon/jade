@@ -12,11 +12,13 @@ import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.Tile;
 import sonnicon.jade.world.World;
 
+//todo this whole file is temporary
 public class Content {
     public static World world;
     public static ViewOverlay viewOverlay;
     public static Entity targetEntity;
     //todo this is temporary
+    public static Entity swordEntity;
 
     private static final EventTypes.StateSetEvent stateChangeListener = (Gamestate.State state) -> {
         if (state == Gamestate.State.ingame) {
@@ -46,9 +48,11 @@ public class Content {
         }
 
         CharacterPrinter.printCharacterPlayer(world.chunks.get(0).getTile((short) 4, (short) 4));
-        for (int i = 0; i < 8; i++) {
-            ItemPrinter.printWeaponDebug(world.chunks.get(0).getTile((short) 5, (short) 5));
+        for (int i = 0; i < 1; i++) {
+            swordEntity = ItemPrinter.printWeaponDebug(world.chunks.get(0).getTile((short) 2, (short) 2));
         }
+
+        WorldPrinter.printRedboxEntity(world.chunks.get(0).getTile((short) 3, (short) 3));
 
 
         for (short i = 0; i < 32 * 4; i++) {

@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+//todo why is this a linkedlist??
+
 @EventGenerator(id = "Any", param = {Class.class}, label = {"eventType"})
 public class Events implements IDebuggable {
     private final HashMap<Class<? extends EventHandler>, LinkedList<EventHandler>> handlers = new HashMap<>();

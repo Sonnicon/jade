@@ -4,12 +4,13 @@ import sonnicon.jade.Jade;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.RenderLayer;
+import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.graphics.draw.SpriteBatch;
 
-public class Debug2Component extends Component implements IRenderable {
+public class DebugPointComponent extends Component implements IRenderable {
 
-    public Debug2Component() {
+    public DebugPointComponent() {
     }
 
     @Override
@@ -27,8 +28,8 @@ public class Debug2Component extends Component implements IRenderable {
     @Override
     public void render(GraphicsBatch batch, float delta, RenderLayer layer) {
         SpriteBatch b = (SpriteBatch) batch;
-//            b.draw(Textures.atlasFindRegion("debugPoint"),
-//                    c.collider.getX() - colliderRadius, c.collider.getY() - colliderRadius,
-//                    colliderRadius * 2f, colliderRadius * 2f);
+        b.draw(Textures.atlasFindRegion("debugPoint"),
+                entity.getX() - 1f, entity.getY() - 1f,
+                2f, 2f);
     }
 }

@@ -3,96 +3,103 @@ package sonnicon.jade.entity.components.world;
 import com.badlogic.gdx.math.MathUtils;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
-import sonnicon.jade.game.IPositionMoving;
 import sonnicon.jade.generated.EventTypes;
-import sonnicon.jade.world.World;
 
-public class PositionRelativeComponent extends Component implements IPositionMoving {
-    protected float x, y, rotation;
+public class PositionRelativeComponent extends Component {
+    protected float x = 0f;
+    protected float y = 0f;
+    protected float rotation = 0f;
 
-    protected Entity bound;
+    protected Entity binding;
     // Kept inactive while component is not assigned to an entity
-    protected EventTypes.EntityMoveEvent onMoveEvent = ignored -> onBoundMoved();
+    protected EventTypes.EntityMoveEvent onBindingMove = ignored -> onBindingMoved();
+    protected EventTypes.EntityMoveEvent onEntityMove = ignored -> onEntityMoved();
+
+    private float lastEntityX;
+    private float lastEntityY;
+    private float lastEntityRotation;
 
     @Override
     public void addToEntity(Entity entity) {
         super.addToEntity(entity);
-        if (bound != null) {
-            bound.events.register(onMoveEvent);
-            onBoundMoved();
+        if (binding != null) {
+            binding.events.register(onBindingMove);
+            onBindingMoved();
         }
+        entity.events.register(onEntityMove);
     }
 
     @Override
     public void removeFromEntity(Entity entity) {
         super.removeFromEntity(entity);
-        if (bound != null) {
-            bound.events.unregister(onMoveEvent);
+        if (binding != null) {
+            binding.events.unregister(onBindingMove);
         }
+        entity.events.unregister(onEntityMove);
     }
 
     public PositionRelativeComponent bindToEntity(Entity newBound) {
         // Unregister from previous
-        if (bound != null) {
-            bound.events.unregister(onMoveEvent);
+        if (binding != null) {
+            binding.events.unregister(onBindingMove);
         }
 
         // Register to new
-        this.bound = newBound;
+        this.binding = newBound;
         if (entity != null) {
-            bound.events.register(onMoveEvent);
-            onBoundMoved();
+            binding.events.register(onBindingMove);
+            onBindingMoved();
         }
         return this;
     }
 
-    protected void onBoundMoved() {
-        if (bound == null || entity == null) return;
+    protected void onBindingMoved() {
+        if (binding == null || entity == null) return;
 
-        float getX = getX();
-        float getY = getY();
-        float boundRotation = bound.getRotation();
+        float bindingRotation = binding.getRotation();
+        float sin = MathUtils.sinDeg(bindingRotation);
+        float cos = MathUtils.cosDeg(bindingRotation);
 
-        float newX = bound.getX() + getX * MathUtils.cosDeg(boundRotation) + getY * MathUtils.sinDeg(boundRotation);
-        float newY = bound.getY() + -getX * MathUtils.sinDeg(boundRotation) + getY * MathUtils.cosDeg(boundRotation);
-        float newRotation = boundRotation + getRotation();
+        float newX = binding.getX() + (x * cos + y * sin);
+        float newY = binding.getY() + (x * -sin + y * cos);
+        float newRotation = bindingRotation + rotation;
 
+        lastEntityX = newX;
+        lastEntityY = newY;
+        lastEntityRotation = newRotation;
         entity.forceMoveTo(newX, newY);
         entity.rotateTo(newRotation);
     }
 
-    @Override
-    public void forceMoveTo(float x, float y) {
-        this.x = x;
-        this.y = y;
-        onBoundMoved();
+    protected void onEntityMoved() {
+        if (binding == null || entity == null) return;
+
+        float bindingRotation = binding.getRotation();
+        float sin = MathUtils.sinDeg(bindingRotation);
+        float cos = MathUtils.cosDeg(bindingRotation);
+
+        float eX = entity.getX();
+        float eY = entity.getY();
+        float eRotation = entity.getRotation();
+
+        //todo get rid of this
+        if (eX == lastEntityX && eY == lastEntityY && eRotation == lastEntityRotation) return;
+
+        this.x = (eX * cos + eY * -sin) - binding.getX();
+        this.y = (eX * sin + eY * cos) - binding.getY();
+        this.rotation = eRotation - bindingRotation;
+
     }
 
-    @Override
-    public boolean rotateTo(float degrees) {
-        this.rotation = degrees;
-        onBoundMoved();
-        return true;
-    }
-
-    @Override
-    public float getX() {
+    public float getOffsetX() {
         return x;
     }
 
-    @Override
-    public float getY() {
+    public float getOffsetY() {
         return y;
     }
 
-    @Override
-    public float getRotation() {
-        return rotation;
-    }
-
-    @Override
-    public World getWorld() {
-        // Dont follow worlds for now
-        return entity.getWorld();
+    public Entity getBinding() {
+        return binding;
     }
 }

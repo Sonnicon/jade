@@ -24,6 +24,7 @@ public class KeyboardMovementComponent extends Component implements Clock.IOnFra
     protected StorageComponent storageComponent;
 
     private boolean pPressed = false;
+    private boolean spacePressed = false;
 
     private static final EventTypes.EntityMoveEvent onMove = (e) -> {
         ((CachedDrawBatch) RenderLayer.terrainTop.batch).invalidate();
@@ -69,12 +70,19 @@ public class KeyboardMovementComponent extends Component implements Clock.IOnFra
             pPressed = false;
         } else if (!pPressed && Gdx.input.isKeyPressed(Input.Keys.P)) {
             pPressed = true;
+            storageComponent.storage.addEntity(ItemPrinter.printWeaponDebug(null));
             storageComponent.storage.addEntity(ItemPrinter.printItemDebug(null));
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && !Clock.isTickRemaining()) {
-            Clock.tick(1f);
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            if (!spacePressed) {
+                spacePressed = true;
+                Clock.tick(1f);
+            }
+        } else {
+            spacePressed = false;
         }
+        Clock.tick(100f);
 
         //todo remove this
         float moveX = 0f;

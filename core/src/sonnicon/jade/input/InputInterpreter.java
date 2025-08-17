@@ -1,8 +1,6 @@
 package sonnicon.jade.input;
 
-import com.badlogic.gdx.InputAdapter;
-
-public class InputInterpreter extends InputAdapter {
+public class InputInterpreter implements IInputProcessor {
     public static final float TAP_DISTANCE = 4f;
     public static final long HOLD_LENGTH = 1000;
 
@@ -12,6 +10,8 @@ public class InputInterpreter extends InputAdapter {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+
+
         if (!tapActive) {
             tapStartX = screenX;
             tapStartY = screenY;
@@ -20,12 +20,19 @@ public class InputInterpreter extends InputAdapter {
             tapActive = true;
             tapStartTime = System.currentTimeMillis();
         }
+
+        if (true) {
+            //todo remove
+            tapped(tapStartX, tapStartY, pointer, button);
+        }
+
         // I don't want to deal with multiple taps at the same time
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+
         if (tapActive && pointer == tapPointer && button == tapButton) {
             tapActive = false;
 
@@ -41,7 +48,8 @@ public class InputInterpreter extends InputAdapter {
                 }
             }
 
-            return tapped(tapStartX, tapStartY, pointer, button);
+            //todo
+            //return tapped(tapStartX, tapStartY, pointer, button);
         }
 
         return false;

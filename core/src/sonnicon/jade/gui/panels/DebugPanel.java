@@ -204,11 +204,19 @@ public class DebugPanel extends Panel {
                     "clock_updating", Clock.onFrameList,
                     "clock_tick", Clock.getTickNum(),
                     "clock_update", Clock.getFrameNum(),
-                    "clock_interp", Clock.getTickInterp(),
                     "controlled", PlayerControlComponent.getEntity(),
                     "renderer", Jade.renderer,
                     "viewOverlay", Content.viewOverlay,
-                    "world", Content.world
+                    "world", Content.world,
+                    "Clock tickInterpRate", Clock.tickInterpRate
+            );
+        }
+
+        @Override
+        public Map<Object, Runnable> debugActions() {
+            return Utils.mapFrom(
+                    "Set tickInterpRate +0.1f", (Runnable) () -> Clock.tickInterpRate += 0.1f,
+                    "Set tickInterpRate -0.1f", (Runnable) () -> Clock.tickInterpRate -= 0.1f
             );
         }
     }

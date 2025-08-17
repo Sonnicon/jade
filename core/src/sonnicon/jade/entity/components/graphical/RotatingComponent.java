@@ -2,7 +2,6 @@ package sonnicon.jade.entity.components.graphical;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
-import sonnicon.jade.entity.components.world.PositionRelativeComponent;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.util.Utils;
 
@@ -27,14 +26,10 @@ public class RotatingComponent extends Component implements Clock.IOnFrame {
         Clock.unregister(this);
     }
 
+    //todo do on ticks
     @Override
     public void onFrame(float delta) {
-        PositionRelativeComponent component = entity.getComponent(PositionRelativeComponent.class);
-        if (component != null) {
-            component.rotateBy(rotationSpeed * delta);
-        } else {
-            entity.rotateBy(rotationSpeed * delta);
-        }
+        entity.rotateBy(rotationSpeed * delta);
     }
 
     @Override

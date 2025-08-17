@@ -10,21 +10,40 @@ public class Clock {
     public static LinkedList<IOnTick> onTickList = new LinkedList<>();
     public static LinkedList<IOnFrame> onFrameList = new LinkedList<>();
 
-    private static final ArrayList<IClocked> listAdd = new ArrayList<>();
-    private static final ArrayList<IClocked> listRemove = new ArrayList<>();
+    private static final ArrayList<IOnTick> tickListAdd = new ArrayList<>();
+    private static final ArrayList<IOnTick> tickListRemove = new ArrayList<>();
+    private static final ArrayList<IOnFrame> frameListAdd = new ArrayList<>();
+    private static final ArrayList<IOnFrame> frameListRemove = new ArrayList<>();
 
     private static float tickNum = 0f, frameNum = 0f;
 
     private static float advanceTo = 0f, lastTick = 0f;
-    private static final float tickInterpRate = 1f;
+    public static float tickInterpRate = 1f;
+    private static final float TICK_MIN_PERIOD = 0.4f;
+
+    protected static ClockPhase phase;
+
+    public static ClockPhase getPhase() {
+        return phase;
+    }
 
     //todo make this nicer
     public static void register(IClocked target) {
-        listAdd.add(target);
+        if (target instanceof IOnTick) {
+            tickListAdd.add((IOnTick) target);
+        }
+        if (target instanceof IOnFrame) {
+            frameListAdd.add((IOnFrame) target);
+        }
     }
 
     public static void unregister(IClocked target) {
-        listRemove.add(target);
+        if (target instanceof IOnTick) {
+            tickListRemove.add((IOnTick) target);
+        }
+        if (target instanceof IOnFrame) {
+            frameListRemove.add((IOnFrame) target);
+        }
     }
 
     // In-game action step
@@ -42,17 +61,19 @@ public class Clock {
     public static void frame(float delta) {
         // Updates
         frameNum += delta;
+        phase = ClockPhase.frame;
         onFrameList.forEach(t -> t.onFrame(delta));
+        phase = ClockPhase.none;
 
         // Ticks
         if (advanceTo > tickNum) {
             float advancement = Float.min(advanceTo - tickNum, tickInterpRate * delta);
-            while (advancement > 0f) {
 
-                float shortestAvailable = Actions.getEarliestTimeFinish() - tickNum;
-                if (shortestAvailable <= advancement) {
-                    advancement -= shortestAvailable;
-                    tickNum += shortestAvailable;
+            while (advancement > 0.001f) {
+                float timeToNextTick = getTimeToNextTick();
+                if (timeToNextTick <= advancement) {
+                    advancement -= timeToNextTick;
+                    tickNum += timeToNextTick + 0.001f;
                     tickInternal();
                 } else {
                     tickNum += advancement;
@@ -62,34 +83,34 @@ public class Clock {
         }
 
         // Add new handlers
-        if (!listAdd.isEmpty()) {
-            for (IClocked target : listAdd) {
-                if (target instanceof IOnTick) {
-                    onTickList.add((IOnTick) target);
-                }
-                if (target instanceof IOnFrame) {
-                    onFrameList.add((IOnFrame) target);
-                }
-            }
-            listAdd.clear();
+        // Needs to be during frames since particles can disappear between ticks
+        if (!frameListAdd.isEmpty()) {
+            onFrameList.addAll(frameListAdd);
+            frameListAdd.clear();
         }
-
-        if (!listRemove.isEmpty()) {
-            for (IClocked target : listRemove) {
-                if (target instanceof IOnTick) {
-                    onTickList.remove((IOnTick) target);
-                }
-                if (target instanceof IOnFrame) {
-                    onFrameList.remove((IOnFrame) target);
-                }
-            }
-            listRemove.clear();
+        if (!frameListRemove.isEmpty()) {
+            onFrameList.removeAll(frameListRemove);
+            frameListRemove.clear();
         }
     }
 
     private static void tickInternal() {
         float delta = tickNum - lastTick;
+
+        phase = ClockPhase.align;
+        onTickList.forEach(t -> t.onAlign(delta));
+        phase = ClockPhase.tick;
         onTickList.forEach(t -> t.onTick(delta));
+        phase = ClockPhase.none;
+
+        if (!tickListAdd.isEmpty()) {
+            onTickList.addAll(tickListAdd);
+            tickListAdd.clear();
+        }
+        if (!tickListRemove.isEmpty()) {
+            onTickList.removeAll(tickListRemove);
+            tickListRemove.clear();
+        }
         lastTick = tickNum;
     }
 
@@ -101,8 +122,12 @@ public class Clock {
         return frameNum;
     }
 
-    public static float getTickInterp() {
-        return tickNum;
+    public static float getTimeToNextTick() {
+        //todo getTimeOfNextTick
+        //todo cache this
+        float shortestAvailable = Actions.getEarliestTimeFinish() - tickNum;
+        float minPeriodRate = TICK_MIN_PERIOD - (tickNum % TICK_MIN_PERIOD);
+        return Math.min(minPeriodRate, shortestAvailable);
     }
 
     public static boolean isTickRemaining() {
@@ -114,10 +139,21 @@ public class Clock {
     }
 
     public interface IOnTick extends IClocked {
+        default void onAlign(float delta) {
+        }
+
         void onTick(float delta);
     }
 
     public interface IOnFrame extends IClocked {
         void onFrame(float delta);
+    }
+
+    // Mainly for assertions
+    public enum ClockPhase {
+        frame,
+        align,
+        tick,
+        none
     }
 }

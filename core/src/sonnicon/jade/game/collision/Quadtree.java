@@ -1,5 +1,6 @@
 package sonnicon.jade.game.collision;
 
+import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.IPosition;
 import sonnicon.jade.util.Directions;
 import sonnicon.jade.util.IDebuggable;
@@ -39,6 +40,7 @@ public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
     }
 
     public Quadtree add(Collider collider) {
+        assert Clock.getPhase() == Clock.ClockPhase.tick;
         // Not in this quadtree
         if (!collider.intersects(this)) {
             return null;
@@ -84,6 +86,7 @@ public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
     }
 
     public Quadtree containing(Collider collider) {
+        assert Clock.getPhase() == Clock.ClockPhase.tick;
         // It's not here or in children
         if (!collider.intersects(this)) {
             return null;
@@ -107,6 +110,7 @@ public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
     }
 
     public void remove(Collider collider) {
+        assert Clock.getPhase() == Clock.ClockPhase.tick;
         //todo shrink layers
         if (elements.contains(collider)) {
             elements.remove(collider);
@@ -121,12 +125,14 @@ public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
     }
 
     protected void rebuildDeepen() {
+        assert Clock.getPhase() == Clock.ClockPhase.tick;
         ArrayList<Collider> colliders = new ArrayList<>(elements);
         elements.clear();
         colliders.forEach(this::add);
     }
 
     public boolean anyElementsIntersect(Collider collider) {
+        assert Clock.getPhase() == Clock.ClockPhase.tick;
         if (anyElementsIntersectHere(collider)) {
             return true;
         }
