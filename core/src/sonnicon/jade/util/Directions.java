@@ -22,10 +22,14 @@ public class Directions {
     public static final byte VERTICAL = NORTH | SOUTH;
     public static final byte CARDINAL = HORIZONTAL | VERTICAL;
     public static final byte DIAGONAL = NORTHEAST | SOUTHEAST | SOUTHWEST | NORTHWEST;
+
     public static final byte NORTHWARD = NORTHWEST | NORTH | NORTHEAST;
     public static final byte EASTWARD = NORTHEAST | EAST | SOUTHEAST;
     public static final byte SOUTHWARD = SOUTHEAST | SOUTH | SOUTHWEST;
     public static final byte WESTWARD = SOUTHWEST | WEST | NORTHWEST;
+    public static final byte HORIZONTALWARD = WESTWARD | EASTWARD;
+    public static final byte VERTICALWARD = NORTHWARD | SOUTHWARD;
+
     public static final byte NONE = (byte) 0;
     public static final byte ALL = CARDINAL | DIAGONAL;
 

@@ -58,7 +58,7 @@ public class CharacterPrinter {
         result.addComponents(
                 new DebugComponent(),
                 new ChunkDrawComponent(new TextureSet("character-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE, RenderLayer.objects),
-                new CollisionComponent(new SquareCollider(15f)));
+                new CollisionComponent(new SquareCollider(14f)));
         result.addTrait(Traits.Trait.blockMovement);
         result.moveTo(location);
         return result;

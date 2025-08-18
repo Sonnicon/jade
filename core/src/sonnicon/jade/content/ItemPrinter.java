@@ -39,7 +39,7 @@ public class ItemPrinter {
                 EntitySizeComponent.medium,
                 new StorableComponent("move box", Textures.atlasFindDrawable("debug-redbox")),
                 new UseFunctionComponent((Entity user, Float x, Float y) -> {
-                    Actions.obtain(CollisionMoveAction.class).set(user, x, y).setDuration(3f).start();
+                    Actions.obtain(CollisionMoveAction.class).set(user, x, y, 0f).setDuration(3f).start();
                     return true;
                 })
         );

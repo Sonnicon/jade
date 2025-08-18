@@ -1,6 +1,5 @@
 package sonnicon.jade.game.actions;
 
-import com.badlogic.gdx.math.MathUtils;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.world.CollisionComponent;
 import sonnicon.jade.game.Clock;
@@ -12,54 +11,62 @@ import sonnicon.jade.util.Utils;
 import java.util.Map;
 
 public class CollisionMoveAction extends Actions.Action implements ColliderMoveSchedule {
-    protected float sourceX, sourceY;
-    protected float destX, destY;
+    protected float diffX, diffY, diffRotation;
     protected Entity entity;
 
+    protected float totalX, totalY, totalRotation;
 
-    public CollisionMoveAction set(Entity entity, float destX, float destY) {
+
+    public CollisionMoveAction set(Entity entity, float diffX, float diffY, float diffRotation) {
         this.entity = entity;
-        this.destX = destX;
-        this.destY = destY;
+        this.diffX = diffX;
+        this.diffY = diffY;
+        this.diffRotation = diffRotation;
+
 
         assert entity.hasComponent(CollisionComponent.class);
         setDuration(1f);
         return this;
     }
 
-
     @Override
     public void onStart() {
-        sourceX = entity.getX();
-        sourceY = entity.getY();
-
         Collisions.move(this);
         Actions.interruption = Clock.getTickNum();
+        totalX = 0f;
+        totalY = 0f;
+        totalRotation = 0f;
     }
 
     @Override
     public void onFinish() {
-        entity.moveTo(getCollider(Clock.getTickNum()));
+        entity.moveBy(getDeltaX(Clock.getTickNum()) - totalX, getDeltaY(Clock.getTickNum()) - totalY);
+        entity.rotateBy(getDeltaRotation(Clock.getTickNum()) - totalRotation);
         Collisions.remove(this);
     }
 
     @Override
     protected void onInterrupt() {
-        entity.moveTo(getX(Clock.getTickNum()), getY(Clock.getTickNum()));
-        entity.rotateTo(getRotation(Clock.getTickNum()));
-        Collisions.remove(this);
+        onFinish();
     }
 
     @Override
     protected void onFrame() {
-        entity.rotateTo(getRotation(Clock.getTickNum()));
-        entity.moveTo(getX(Clock.getTickNum()), getY(Clock.getTickNum()));
+        float dx = getDeltaX(Clock.getTickNum());
+        float dy = getDeltaY(Clock.getTickNum());
+        float dr = getDeltaRotation(Clock.getTickNum());
+
+        entity.moveBy(dx - totalX, dy - totalY);
+        entity.rotateBy(dr - totalRotation);
+
+        totalX = dx;
+        totalY = dy;
+        totalRotation = dr;
     }
 
     @Override
     protected void onAlign() {
-        entity.moveTo(getX(Clock.getTickNum()), getY(Clock.getTickNum()));
-        entity.rotateTo(getRotation(Clock.getTickNum()));
+        onFrame();
     }
 
     @Override
@@ -69,26 +76,30 @@ public class CollisionMoveAction extends Actions.Action implements ColliderMoveS
     @Override
     public Map<Object, Object> debugProperties() {
         return Utils.mapExtendFrom(super.debugProperties(),
-                "sourceX", sourceX,
-                "sourceY", sourceY,
-                "destX", destX,
-                "destY", destY,
+                "diffX", diffX,
+                "diffY", diffY,
+                "diffRotation", diffRotation,
                 "entity", entity);
     }
 
     @Override
-    public float getX(float tickNum) {
-        return MathUtils.lerp(sourceX, destX, getProgress(tickNum));
+    public Entity getEntity() {
+        return entity;
     }
 
     @Override
-    public float getY(float tickNum) {
-        return MathUtils.lerp(sourceY, destY, getProgress(tickNum));
+    public float getDeltaX(float tickNum) {
+        return diffX * getProgress(tickNum);
     }
 
     @Override
-    public float getRotation(float tickNum) {
-        return entity.getRotation();
+    public float getDeltaY(float tickNum) {
+        return diffY * getProgress(tickNum);
+    }
+
+    @Override
+    public float getDeltaRotation(float tickNum) {
+        return diffRotation * getProgress(tickNum);
     }
 
     @Override

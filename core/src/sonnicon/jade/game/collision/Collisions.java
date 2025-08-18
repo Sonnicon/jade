@@ -1,8 +1,6 @@
 package sonnicon.jade.game.collision;
 
-import sonnicon.jade.Jade;
 import sonnicon.jade.game.Clock;
-import sonnicon.jade.graphics.particles.CrossParticle;
 import sonnicon.jade.world.Chunk;
 
 import java.util.ArrayList;
@@ -10,7 +8,7 @@ import java.util.ArrayList;
 public class Collisions implements Clock.IOnTick {
     protected static ArrayList<ColliderMoveSchedule> schedules = new ArrayList<>();
 
-    private static final float TICK_STEP_SIZE = 0.15f;
+    public static final float TICK_STEP_SIZE = 0.1f;
     private static final ArrayList<Chunk> TEMP_CHUNKS2 = new ArrayList<>();
 
     public static Collisions collisions;
@@ -40,15 +38,21 @@ public class Collisions implements Clock.IOnTick {
                 return;
             }
 
+            //todo put an interpolation on this, so close is more precise (or binarysearch)
             float clockTime = Clock.getTickNum() + tickTimeStep * step;
 
-            // Move everything
+            // First, back to base positions
             for (ColliderMoveSchedule schedule : schedules) {
                 Collider collider = schedule.getCollider(clockTime);
-                collider.moveTo(schedule.getX(clockTime), schedule.getY(clockTime));
-                Jade.renderer.particles.createParticle(CrossParticle.class, collider.getX(), collider.getY()).scale = 0.2f;
+                collider.moveTo(schedule.getEntity());
+            }
+            // Then, add all deltas
+            for (ColliderMoveSchedule schedule : schedules) {
+                Collider collider = schedule.getCollider(clockTime);
+                collider.moveBy(schedule.getDeltaX(clockTime), schedule.getDeltaY(clockTime));
             }
 
+            // Check collision
             boolean collided = false;
             for (ColliderMoveSchedule schedule : schedules) {
                 Collider collider = schedule.getCollider(clockTime);
@@ -74,7 +78,7 @@ public class Collisions implements Clock.IOnTick {
 
         for (ColliderMoveSchedule schedule : schedules) {
             Collider collider = schedule.getCollider(Clock.getTickNum());
-            collider.moveTo(schedule.getX(Clock.getTickNum()), schedule.getY(Clock.getTickNum()));
+            collider.moveTo(schedule.getEntity());
         }
     }
 
@@ -84,5 +88,25 @@ public class Collisions implements Clock.IOnTick {
 
     public static void remove(ColliderMoveSchedule schedule) {
         schedules.remove(schedule);
+    }
+
+    public static boolean collisionAt(Collider collider, float dx, float dy, float drotation) {
+        float oldX = collider.getX();
+        float oldY = collider.getY();
+        float oldRotation = collider.getRotation();
+        collider.moveBy(dx, dy);
+        collider.rotateBy(drotation);
+        TEMP_CHUNKS2.clear();
+        collider.containingChunks(TEMP_CHUNKS2);
+        boolean collided = false;
+        for (Chunk chunk : TEMP_CHUNKS2) {
+            if (chunk.collisionTree.anyElementsIntersect(collider)) {
+                collided = true;
+                break;
+            }
+        }
+        collider.moveTo(oldX, oldY);
+        collider.rotateTo(oldRotation);
+        return collided;
     }
 }

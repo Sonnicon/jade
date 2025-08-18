@@ -1,11 +1,15 @@
 package sonnicon.jade.game.collision;
 
+import sonnicon.jade.entity.Entity;
+
 public interface ColliderMoveSchedule {
-    float getX(float tickNum);
+    Entity getEntity();
 
-    float getY(float tickNum);
+    float getDeltaX(float tickNum);
 
-    float getRotation(float tickNum);
+    float getDeltaY(float tickNum);
+
+    float getDeltaRotation(float tickNum);
 
     // If using multiple colliders, be careful with positions changing
     Collider getCollider(float tickNum);
