@@ -36,7 +36,7 @@ public abstract class Collider implements IPositionMoving, IHitbox {
     }
 
     @Override
-    public void forceMoveTo(float x, float y) {
+    public void moveTo(float x, float y) {
         this.x = x;
         this.y = y;
     }

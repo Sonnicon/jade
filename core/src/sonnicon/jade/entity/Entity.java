@@ -4,7 +4,6 @@ import sonnicon.jade.EventGenerator;
 import sonnicon.jade.Jade;
 import sonnicon.jade.content.Content;
 import sonnicon.jade.entity.components.Component;
-import sonnicon.jade.entity.components.world.CollisionComponent;
 import sonnicon.jade.game.IPositionMoving;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.util.*;
@@ -224,7 +223,7 @@ public class Entity implements ICopyable, IComparable, IDebuggable, IPositionMov
         return true;
     }
 
-    public void forceMoveTo(float x, float y) {
+    public void moveTo(float x, float y) {
         //todo
         Tile tileBefore = getTile();
         this.x = x;
@@ -243,17 +242,8 @@ public class Entity implements ICopyable, IComparable, IDebuggable, IPositionMov
         EventTypes.EntityMoveEvent.handle(events, this);
     }
 
-    public void forceMoveBy(float x, float y) {
-        forceMoveTo(this.x + x, this.y + y);
-    }
-
-    public float canMoveBy(float x, float y) {
-        //todo cancellable events?
-        CollisionComponent component = getComponent(CollisionComponent.class);
-        if (component != null) {
-            return component.getMaxMoveDistance(x, y);
-        }
-        return 1f;
+    public void moveBy(float x, float y) {
+        moveTo(this.x + x, this.y + y);
     }
 
     @Override
@@ -303,8 +293,8 @@ public class Entity implements ICopyable, IComparable, IDebuggable, IPositionMov
     @Override
     public Map<Object, Runnable> debugActions() {
         return Utils.mapFrom(
-                "Move to null", (Runnable) () -> forceMoveTo(Float.NaN, Float.NaN),
-                "Move to camera", (Runnable) () -> forceMoveTo(Jade.renderer.camera.position),
+                "Move to null", (Runnable) () -> moveTo(Float.NaN, Float.NaN),
+                "Move to camera", (Runnable) () -> moveTo(Jade.renderer.camera.position),
                 "Rotate 15 Clockwise", (Runnable) () -> rotateBy(15f)
         );
     }

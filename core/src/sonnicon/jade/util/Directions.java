@@ -22,11 +22,12 @@ public class Directions {
     public static final byte VERTICAL = NORTH | SOUTH;
     public static final byte CARDINAL = HORIZONTAL | VERTICAL;
     public static final byte DIAGONAL = NORTHEAST | SOUTHEAST | SOUTHWEST | NORTHWEST;
-    public static final byte ALL = CARDINAL | DIAGONAL;
     public static final byte NORTHWARD = NORTHWEST | NORTH | NORTHEAST;
     public static final byte EASTWARD = NORTHEAST | EAST | SOUTHEAST;
     public static final byte SOUTHWARD = SOUTHEAST | SOUTH | SOUTHWEST;
     public static final byte WESTWARD = SOUTHWEST | WEST | NORTHWEST;
+    public static final byte NONE = (byte) 0;
+    public static final byte ALL = CARDINAL | DIAGONAL;
 
     public static boolean is(byte dir1, byte dir2) {
         return (dir1 & dir2) != 0;
@@ -78,7 +79,8 @@ public class Directions {
         return rotate(direction, (byte) 4);
     }
 
-    public static byte encode(byte deltaX, byte deltaY) {
+    // Every direction that could be
+    public static byte encodePossible(byte deltaX, byte deltaY) {
         byte result = ALL;
 
         if (deltaX > 0) {
@@ -89,11 +91,24 @@ public class Directions {
 
         if (deltaY > 0) {
             result &= Directions.NORTHWARD;
-        } else if (deltaX > 0) {
+        } else if (deltaY < 0) {
             result &= Directions.SOUTHWARD;
         }
 
         return result;
+    }
+
+    // Exactly the direction given
+    public static byte encodePrecise(byte deltaX, byte deltaY) {
+        byte d = encodePossible(deltaX, deltaY);
+        if (deltaX == 0 && deltaY == 0) {
+            return Directions.NONE;
+        }
+        if (deltaX * deltaY == 0) {
+            return (byte) (d & Directions.CARDINAL);
+        } else {
+            return d;
+        }
     }
 
     public static byte relate(float fromX, float fromY, float toX, float toY, float range) {

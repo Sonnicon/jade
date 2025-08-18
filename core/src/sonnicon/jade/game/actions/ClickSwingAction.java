@@ -89,8 +89,9 @@ public class ClickSwingAction extends Actions.Action implements IRenderable {
     public void onFinish() {
         PositionRelativeComponent relativeComponent = weapon.getComponent(PositionRelativeComponent.class);
         if (relativeComponent == null) return;
-        weapon.moveBy(interpolator.interpolateX(1f) - relativeComponent.getOffsetX(),
-                interpolator.interpolateY(1f) - relativeComponent.getOffsetY());
+        float x = interpolator.interpolateX(1f) - relativeComponent.getOffsetX();
+        float y = interpolator.interpolateY(1f) - relativeComponent.getOffsetY();
+        weapon.moveBy(x, y);
         weapon.rotateTo(interpolator.endRotation);
         Jade.renderer.removeRenderable(this);
     }
@@ -110,7 +111,7 @@ public class ClickSwingAction extends Actions.Action implements IRenderable {
         float curveMove = curveMoveProgress(progress);
         float curveRotate = curveRotateProgress(progress);
 
-        weapon.forceMoveBy(interpolator.interpolateX(curveMove) - relativeComponent.getOffsetX(),
+        weapon.moveBy(interpolator.interpolateX(curveMove) - relativeComponent.getOffsetX(),
                 interpolator.interpolateY(curveMove) - relativeComponent.getOffsetY());
         weapon.rotateTo(interpolator.interpolateRotation(curveRotate));
     }
@@ -126,8 +127,9 @@ public class ClickSwingAction extends Actions.Action implements IRenderable {
 
         //todo simultaneous movement
         //todo (i know it's not quite right as is)
-        weapon.moveBy(interpolator.interpolateX(curveMove) - relativeComponent.getOffsetX(),
-                interpolator.interpolateY(curveMove) - relativeComponent.getOffsetY());
+        float x = interpolator.interpolateX(curveMove) - relativeComponent.getOffsetX();
+        float y = interpolator.interpolateY(curveMove) - relativeComponent.getOffsetY();
+        weapon.moveBy(x, y);
         weapon.rotateTo(interpolator.interpolateRotation(curveRotate));
     }
 

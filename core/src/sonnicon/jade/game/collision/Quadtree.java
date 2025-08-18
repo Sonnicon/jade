@@ -1,7 +1,9 @@
 package sonnicon.jade.game.collision;
 
+import sonnicon.jade.Jade;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.IPosition;
+import sonnicon.jade.graphics.particles.CrossParticle;
 import sonnicon.jade.util.Directions;
 import sonnicon.jade.util.IDebuggable;
 import sonnicon.jade.util.Utils;
@@ -176,6 +178,7 @@ public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
         for (Collider element : elements) {
             if (element == collider) continue;
             if (element.intersects(collider)) {
+                Jade.renderer.particles.createParticle(CrossParticle.class, element.getX(), element.getY());
                 return true;
             }
         }

@@ -15,7 +15,8 @@ public class Actions implements Clock.IOnTick, Clock.IOnFrame, IDebuggable {
     private static final ArrayList<Action> newActions = new ArrayList<>();
 
     public static Actions actions;
-    protected static int currentInterruptions = 0;
+    // Time of nearest interruption
+    public static float interruption = Float.POSITIVE_INFINITY;
 
     public static void init() {
         Clock.register(actions = new Actions());
@@ -28,8 +29,6 @@ public class Actions implements Clock.IOnTick, Clock.IOnFrame, IDebuggable {
 
     @Override
     public void onTick(float delta) {
-        //todo cache nearest time finish
-
         // Tick every action
         actionsList.forEach(Action::onTick);
 
@@ -38,7 +37,6 @@ public class Actions implements Clock.IOnTick, Clock.IOnFrame, IDebuggable {
         while (iterator.hasNext()) {
             Action action = iterator.next();
             if (action.interrupted) {
-                currentInterruptions--;
                 iterator.remove();
                 action.onInterrupt();
                 action.freeRecursively();
@@ -46,11 +44,18 @@ public class Actions implements Clock.IOnTick, Clock.IOnFrame, IDebuggable {
                 iterator.remove();
                 action.onFinish();
                 newActions.addAll(action.then);
-                action.free();
+                if (!action.then.contains(action)) {
+                    action.free();
+                }
             }
         }
+
         newActions.forEach(Action::start);
         newActions.clear();
+
+        if (Clock.getTickNum() >= interruption) {
+            interruption = Float.POSITIVE_INFINITY;
+        }
     }
 
     public static <T extends Action> T obtain(Class<T> type) {
@@ -58,11 +63,8 @@ public class Actions implements Clock.IOnTick, Clock.IOnFrame, IDebuggable {
     }
 
     public static float getEarliestTimeFinish() {
-        if (currentInterruptions > 0) {
-            return 0f;
-        } else {
-            return (float) actionsList.stream().mapToDouble(Action::getTimeFinish).min().orElse(Float.MAX_VALUE);
-        }
+        return Math.min(interruption,
+                (float) actionsList.stream().mapToDouble(Action::getTimeFinish).min().orElse(Float.MAX_VALUE));
     }
 
     @Override
@@ -104,8 +106,12 @@ public class Actions implements Clock.IOnTick, Clock.IOnFrame, IDebuggable {
             return this;
         }
 
+        public final float getProgress(float tickNum) {
+            return (tickNum - timeStart) / duration;
+        }
+
         public final float getProgress() {
-            return (Clock.getTickNum() - timeStart) / duration;
+            return getProgress(Clock.getTickNum());
         }
 
         public final Action start() {
@@ -135,10 +141,14 @@ public class Actions implements Clock.IOnTick, Clock.IOnFrame, IDebuggable {
         }
 
         public final void interrupt() {
-            //todo flesh out interruptions
             assert (Actions.actionsList.contains(this));
             interrupted = true;
-            Actions.currentInterruptions++;
+        }
+
+        public final void interrupt(float tickNum) {
+            interrupt();
+            assert interruption >= Clock.getTickNum();
+            interruption = Math.min(tickNum, interruption);
         }
 
         protected final void freeRecursively() {

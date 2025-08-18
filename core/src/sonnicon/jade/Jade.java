@@ -7,6 +7,7 @@ import sonnicon.jade.content.Content;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.game.actions.Actions;
+import sonnicon.jade.game.collision.Collisions;
 import sonnicon.jade.graphics.Renderer;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.gui.Gui;
@@ -19,12 +20,14 @@ public class Jade extends ApplicationAdapter {
     public void create() {
         ShaderProgram.pedantic = false;
 
+
         Textures.init();
         renderer = new Renderer();
         Input.init();
         Gui.init();
         Content.init();
         Actions.init();
+        Collisions.init();
 
         Gamestate.setState(Gamestate.State.menu);
     }

@@ -8,6 +8,8 @@ import sonnicon.jade.entity.components.storage.StorageComponent;
 import sonnicon.jade.entity.components.usage.UseFunctionComponent;
 import sonnicon.jade.entity.components.weapon.ClickSwingComponent;
 import sonnicon.jade.game.EntityStorage;
+import sonnicon.jade.game.actions.Actions;
+import sonnicon.jade.game.actions.CollisionMoveAction;
 import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.graphics.Textures;
@@ -22,11 +24,26 @@ public class ItemPrinter {
                 new StorableComponent("debug item", Textures.atlasFindDrawable("item-debug")),
                 new StorageComponent(new EntityStorage()),
                 new UseFunctionComponent((Entity user, Float x, Float y) -> {
-                    user.forceMoveTo(x, y);
+                    user.moveTo(x, y);
                     return true;
                 })
         );
-        result.forceMoveTo(location);
+        result.moveTo(location);
+        return result;
+    }
+
+    public static Entity printItemRedbox(Tile location) {
+        Entity result = new Entity();
+        result.addComponents(
+                new ChunkDrawComponent(new TextureSet("debug-redbox"), Tile.TILE_SIZE, Tile.TILE_SIZE, RenderLayer.objects),
+                EntitySizeComponent.medium,
+                new StorableComponent("move box", Textures.atlasFindDrawable("debug-redbox")),
+                new UseFunctionComponent((Entity user, Float x, Float y) -> {
+                    Actions.obtain(CollisionMoveAction.class).set(user, x, y).setDuration(3f).start();
+                    return true;
+                })
+        );
+        result.moveTo(location);
         return result;
     }
 
@@ -37,7 +54,7 @@ public class ItemPrinter {
                 EntitySizeComponent.medium,
                 new StorableComponent("debug weapon", Textures.atlasFindDrawable("item-weapon")),
                 new ClickSwingComponent());
-        result.forceMoveTo(location);
+        result.moveTo(location);
         return result;
     }
 }

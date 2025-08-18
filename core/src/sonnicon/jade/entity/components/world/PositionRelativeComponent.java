@@ -67,7 +67,7 @@ public class PositionRelativeComponent extends Component {
         lastEntityX = newX;
         lastEntityY = newY;
         lastEntityRotation = newRotation;
-        entity.forceMoveTo(newX, newY);
+        entity.moveTo(newX, newY);
         entity.rotateTo(newRotation);
     }
 

@@ -3,12 +3,10 @@ package sonnicon.jade.game;
 import sonnicon.jade.game.actions.Actions;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class Clock {
-    //todo dont linkedlist, just use iterators
-    public static LinkedList<IOnTick> onTickList = new LinkedList<>();
-    public static LinkedList<IOnFrame> onFrameList = new LinkedList<>();
+    public static ArrayList<IOnTick> onTickList = new ArrayList<>();
+    public static ArrayList<IOnFrame> onFrameList = new ArrayList<>();
 
     private static final ArrayList<IOnTick> tickListAdd = new ArrayList<>();
     private static final ArrayList<IOnTick> tickListRemove = new ArrayList<>();
@@ -19,7 +17,6 @@ public class Clock {
 
     private static float advanceTo = 0f, lastTick = 0f;
     public static float tickInterpRate = 1f;
-    private static final float TICK_MIN_PERIOD = 0.4f;
 
     protected static ClockPhase phase;
 
@@ -69,11 +66,11 @@ public class Clock {
         if (advanceTo > tickNum) {
             float advancement = Float.min(advanceTo - tickNum, tickInterpRate * delta);
 
-            while (advancement > 0.001f) {
+            while (advancement > 0.0001f) {
                 float timeToNextTick = getTimeToNextTick();
                 if (timeToNextTick <= advancement) {
                     advancement -= timeToNextTick;
-                    tickNum += timeToNextTick + 0.001f;
+                    tickNum += timeToNextTick;
                     tickInternal();
                 } else {
                     tickNum += advancement;
@@ -123,11 +120,8 @@ public class Clock {
     }
 
     public static float getTimeToNextTick() {
-        //todo getTimeOfNextTick
         //todo cache this
-        float shortestAvailable = Actions.getEarliestTimeFinish() - tickNum;
-        float minPeriodRate = TICK_MIN_PERIOD - (tickNum % TICK_MIN_PERIOD);
-        return Math.min(minPeriodRate, shortestAvailable);
+        return Actions.getEarliestTimeFinish() - tickNum;
     }
 
     public static boolean isTickRemaining() {

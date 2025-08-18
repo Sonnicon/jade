@@ -22,7 +22,7 @@ public class WorldPrinter {
         floorEntity.addComponents(
                 new DebugComponent(),
                 new ChunkDrawComponent(floorTextures, Tile.TILE_SIZE, Tile.TILE_SIZE, RenderLayer.floor));
-        floorEntity.forceMoveTo(location);
+        floorEntity.moveTo(location);
         return floorEntity;
     }
 
@@ -35,7 +35,7 @@ public class WorldPrinter {
                 new CollisionComponent(new SquareCollider(16f)),
                 new TileTraitComponent(Traits.Trait.blockMovement)
         );
-        wallEntity.forceMoveTo(location);
+        wallEntity.moveTo(location);
         return wallEntity;
     }
 
@@ -45,7 +45,7 @@ public class WorldPrinter {
                 new ChunkDrawComponent(new TextureSet("debug-redbox"), 16f, RenderLayer.objects),
                 new CollisionComponent(new SquareCollider(8f))
         );
-        redboxEntity.forceMoveTo(location);
+        redboxEntity.moveTo(location);
         return redboxEntity;
     }
 }

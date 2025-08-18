@@ -3,6 +3,7 @@ package sonnicon.jade.content;
 import sonnicon.jade.Jade;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.graphical.WallDrawComponent;
+import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.overlays.GridOverlay;
@@ -108,5 +109,8 @@ public class Content {
 //            ItemPrinter.printWeaponDebug(world.getTile(random.nextInt(32), random.nextInt(32)));
 //            CharacterPrinter.printCharacterEnemy(world.getTile(random.nextInt(32), random.nextInt(32)));
 //        }
+
+        // Some action/collision stuff needs to setup
+        Clock.tickFast(0f);
     }
 }

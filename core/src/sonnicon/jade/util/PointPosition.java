@@ -1,27 +1,35 @@
 package sonnicon.jade.util;
 
 import sonnicon.jade.content.Content;
-import sonnicon.jade.game.IPosition;
 import sonnicon.jade.game.IPositionMoving;
 import sonnicon.jade.world.World;
 
-public class DebugTarget implements IPositionMoving {
+public class PointPosition implements IPositionMoving, ObjectPool.IPooledObject {
     public float x, y, rotation;
 
-    public DebugTarget() {
-        this(Float.NaN, Float.NaN);
+    public PointPosition() {
+
     }
 
-    public DebugTarget(IPosition other) {
-        forceMoveTo(other);
+    public static PointPosition at(float x, float y) {
+        return at(x, y, 0f);
     }
 
-    public DebugTarget(float x, float y) {
-        forceMoveTo(x, y);
+    public static PointPosition at(float x, float y, float rotation) {
+        PointPosition p = ObjectPool.obtain(PointPosition.class);
+        p.moveTo(x, y);
+        p.rotateTo(rotation);
+        return p;
     }
 
     @Override
-    public void forceMoveTo(float x, float y) {
+    public void onObtained() {
+        moveTo(Float.NaN, Float.NaN);
+        rotateTo(0f);
+    }
+
+    @Override
+    public void moveTo(float x, float y) {
         this.x = x;
         this.y = y;
     }
