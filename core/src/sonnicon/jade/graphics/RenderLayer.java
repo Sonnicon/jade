@@ -2,8 +2,10 @@ package sonnicon.jade.graphics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import sonnicon.jade.content.Content;
 import sonnicon.jade.graphics.draw.*;
+import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public enum RenderLayer {
     // Floor, bottom layer of everything
@@ -54,6 +56,7 @@ public enum RenderLayer {
     private final Runnable begin;
     private final Runnable end;
     public final boolean project;
+    public final ShapeDrawer shapeDrawer;
 
     // Hack to access static fields from enum constructor
     private static class RenderLayerInternal {
@@ -92,6 +95,13 @@ public enum RenderLayer {
         this.begin = begin;
         this.end = end;
         this.project = project;
+
+        if (batch instanceof SpriteBatch) {
+            this.shapeDrawer = new ShapeDrawer((Batch) batch, Textures.atlasFindRegion("blank"));
+        } else {
+            //todo make this not spray warnings everywhere
+            this.shapeDrawer = null;
+        }
     }
 
     static int size() {

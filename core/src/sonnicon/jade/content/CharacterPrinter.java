@@ -11,7 +11,7 @@ import sonnicon.jade.entity.components.world.CollisionComponent;
 import sonnicon.jade.game.EntitySize;
 import sonnicon.jade.game.EntityStorageSlot;
 import sonnicon.jade.game.FixedSlotEntityStorage;
-import sonnicon.jade.game.collision.SquareCollider;
+import sonnicon.jade.game.collision.RectangleCollider;
 import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.world.Tile;
@@ -26,6 +26,8 @@ public class CharacterPrinter {
         addHand(storageComponent, EntitySize.tiny, EntitySize.huge, 1);
         addHand(storageComponent, EntitySize.tiny, EntitySize.huge, 1);
 
+        addSlot(storage, EntitySize.tiny, EntitySize.huge, 1);
+        addSlot(storage, EntitySize.tiny, EntitySize.huge, 1);
         addSlot(storage, EntitySize.tiny, EntitySize.huge, 1);
         addSlot(storage, EntitySize.tiny, EntitySize.huge, 4);
         addSlot(storage, EntitySize.tiny, EntitySize.large, 2);
@@ -58,7 +60,7 @@ public class CharacterPrinter {
         result.addComponents(
                 new DebugComponent(),
                 new ChunkDrawComponent(new TextureSet("character-debug"), Tile.TILE_SIZE, Tile.TILE_SIZE, RenderLayer.objects),
-                new CollisionComponent(new SquareCollider(14f)));
+                new CollisionComponent(new RectangleCollider(14f)));
         result.addTrait(Traits.Trait.blockMovement);
         result.moveTo(location);
         return result;

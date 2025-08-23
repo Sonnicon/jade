@@ -76,7 +76,7 @@ public class Directions {
 
     public static byte rotate(byte dir, byte amount) {
         byte amt = (byte) Math.floorMod(amount, 8);
-        return (byte) ((dir << amt) | ((dir & Byte.MAX_VALUE) >> (8 - amt)));
+        return (byte) ((dir << amt) | ((dir & 0b011111111) >> (8 - amt)));
     }
 
     public static byte opposite(byte direction) {
@@ -185,5 +185,9 @@ public class Directions {
         if (is(direction, Directions.WEST)) result.append("W ");
         if (is(direction, Directions.NORTHWEST)) result.append("NW ");
         return result.toString().trim();
+    }
+
+    public static byte cardinalize(byte direction) {
+        return (byte) ((direction | rotate(direction, (byte) -1) | rotate(direction, (byte) 1)) & Directions.CARDINAL);
     }
 }

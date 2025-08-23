@@ -2,6 +2,7 @@ package sonnicon.jade.entity.components.world;
 
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
+import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.collision.Collider;
 import sonnicon.jade.game.collision.Quadtree;
 import sonnicon.jade.generated.EventTypes;
@@ -45,11 +46,13 @@ public class CollisionComponent extends Component {
     }
 
     protected static void onEntityMove(Entity e) {
-        //todo
+        if (Clock.getPhase() == Clock.ClockPhase.frame) return;
+
         CollisionComponent comp = e.getComponent(CollisionComponent.class);
         comp.quadtrees.forEach(q -> q.remove(comp.collider));
         comp.quadtrees.clear();
         comp.collider.moveTo(e.getX(), e.getY());
+        comp.collider.rotateTo(e.getRotation());
         TEMP_CHUNKS1.clear();
         comp.collider.containingChunks(TEMP_CHUNKS1);
         for (Chunk c : TEMP_CHUNKS1) {

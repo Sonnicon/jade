@@ -1,5 +1,6 @@
 package sonnicon.jade.graphics.particles;
 
+import sonnicon.jade.game.Clock;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
@@ -10,9 +11,8 @@ import sonnicon.jade.util.Utils;
 import java.util.Map;
 
 public abstract class Particle implements IDebuggable, ObjectPool.IPooledObject, IRenderable {
-    public float life = 0f;
+    public float timeCreated = 0f;
     public float lifetime = 1f;
-    public boolean destroy = false;
 
     public float x, y;
 
@@ -20,26 +20,17 @@ public abstract class Particle implements IDebuggable, ObjectPool.IPooledObject,
         this.x = x;
         this.y = y;
 
-        life = 0f;
-        destroy = false;
+        timeCreated = Clock.getTickNum();
     }
 
-    public void render(GraphicsBatch batch, float delta, RenderLayer layer) {
-        advanceLife(delta);
-    }
+    public abstract void render(GraphicsBatch batch, float delta, RenderLayer layer);
 
-    public void tick(float delta) {
-    }
-
-    protected void advanceLife(float delta) {
-        life += delta;
-        if (life > lifetime) {
-            destroy = true;
-        }
+    public float getProgress() {
+        return Math.min((Clock.getTickNum() - timeCreated) / lifetime, 1f);
     }
 
     @Override
     public Map<Object, Object> debugProperties() {
-        return Utils.mapFrom("life", life, "lifetime", lifetime, "x", x, "y");
+        return Utils.mapFrom("timeCreated", timeCreated, "lifetime", lifetime, "x", x, "y");
     }
 }

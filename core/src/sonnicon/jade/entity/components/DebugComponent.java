@@ -1,21 +1,27 @@
 package sonnicon.jade.entity.components;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFontCache;
 import sonnicon.jade.Jade;
 import sonnicon.jade.content.Content;
 import sonnicon.jade.entity.Entity;
+import sonnicon.jade.entity.components.player.PlayerControlComponent;
 import sonnicon.jade.entity.components.world.CollisionComponent;
 import sonnicon.jade.game.collision.CircleCollider;
-import sonnicon.jade.game.collision.SquareCollider;
+import sonnicon.jade.game.collision.RectangleCollider;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.graphics.draw.SpriteBatch;
+import sonnicon.jade.gui.Gui;
 import sonnicon.jade.world.Chunk;
 
 public class DebugComponent extends Component implements IRenderable {
+
     private static final class DebugOverlays implements IRenderable {
         private final Chunk chunk;
+        private int numTexts = 0;
 
         public DebugOverlays(Chunk chunk) {
             this.chunk = chunk;
@@ -30,6 +36,18 @@ public class DebugComponent extends Component implements IRenderable {
                     chunk.getX() + 1f - Chunk.CHUNK_WORLD_SIZE / 2f,
                     chunk.getY() + 1f - Chunk.CHUNK_WORLD_SIZE / 2f,
                     Chunk.CHUNK_WORLD_SIZE - 2f, Chunk.CHUNK_WORLD_SIZE - 2f);
+
+            numTexts = 0;
+
+            int s = PlayerControlComponent.getEntity().getComponent(CollisionComponent.class).quadtrees.size();
+            writeText("Player Quadtrees: " + s, b);
+        }
+
+        public void writeText(String text, SpriteBatch batch) {
+            BitmapFontCache cache = new BitmapFontCache(Gui.getFont());
+            cache.setText(text, 10f, Gdx.graphics.getHeight() - 10f - 30f * numTexts);
+            cache.draw(batch);
+            numTexts++;
         }
     }
 
@@ -66,13 +84,24 @@ public class DebugComponent extends Component implements IRenderable {
         CollisionComponent c = entity.getComponent(CollisionComponent.class);
         if (c != null) {
 
-            float colliderRadius = 0f;
-            if (c.collider instanceof CircleCollider) colliderRadius = ((CircleCollider) c.collider).getRadius();
-            else if (c.collider instanceof SquareCollider) colliderRadius = ((SquareCollider) c.collider).getRadius();
+            if (c.collider instanceof CircleCollider) {
+                CircleCollider col = (CircleCollider) c.collider;
+                b.draw(Textures.atlasFindRegion("debug-boundCircle"),
+                        col.getX() - col.getRadius(), col.getY() - col.getRadius(),
+                        col.getRadius() * 2f, col.getRadius() * 2f);
+            } else if (c.collider instanceof RectangleCollider) {
+                RectangleCollider col = (RectangleCollider) c.collider;
+                b.draw(Textures.atlasFindRegion("debug-boundSquare"),
+                        col.getX() - col.getWidth() / 2f, col.getY() - col.getHeight() / 2f,
+                        col.getWidth(), col.getHeight(), col.getRotation());
+            }
 
-            b.draw(Textures.atlasFindRegion("debugPoint"),
-                    c.collider.getX() - colliderRadius, c.collider.getY() - colliderRadius,
-                    colliderRadius * 2f, colliderRadius * 2f);
+
+        }
+
+        if (entity.hasComponent(PlayerControlComponent.class) && layer == RenderLayer.gui) {
+
+
         }
     }
 }

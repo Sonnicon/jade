@@ -31,6 +31,10 @@ public class CollisionMoveAction extends Actions.Action implements ColliderMoveS
 
     @Override
     public void onStart() {
+        if (Math.abs(diffX) < 0.001f && Math.abs(diffY) < 0.001f) {
+            interrupt();
+        }
+
         Collisions.move(this);
         Actions.interruption = Clock.getTickNum();
         totalX = 0f;

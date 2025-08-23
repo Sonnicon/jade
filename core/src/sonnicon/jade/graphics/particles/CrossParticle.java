@@ -16,10 +16,9 @@ public class CrossParticle extends Particle {
 
     @Override
     public void render(GraphicsBatch batch, float delta, RenderLayer layer) {
-        super.render(batch, delta, layer);
 
         SpriteBatch sb = (SpriteBatch) batch;
-        float scl = scale * (1f - (life / lifetime));
+        float scl = scale * (1f - getProgress());
         float w = textureRegion.getRegionWidth() * scl;
         float h = textureRegion.getRegionHeight() * scl;
         sb.draw(textureRegion, x - w / 2f, y - h / 2f, w, h);

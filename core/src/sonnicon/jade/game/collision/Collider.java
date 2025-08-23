@@ -1,17 +1,23 @@
 package sonnicon.jade.game.collision;
 
 import sonnicon.jade.content.Content;
+import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.IPosition;
 import sonnicon.jade.game.IPositionMoving;
+import sonnicon.jade.util.IDebuggable;
+import sonnicon.jade.util.Utils;
 import sonnicon.jade.world.Chunk;
 import sonnicon.jade.world.World;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
-public abstract class Collider implements IPositionMoving, IHitbox {
+public abstract class Collider implements IPositionMoving, IHitbox, IDebuggable {
     protected float x;
     protected float y;
+    protected float rotation;
+
     private static final ArrayList<Chunk> TEMP_SEARCHLIST = new ArrayList<>();
 
     @Override
@@ -26,7 +32,7 @@ public abstract class Collider implements IPositionMoving, IHitbox {
 
     @Override
     public float getRotation() {
-        return 0f;
+        return rotation;
     }
 
     @Override
@@ -43,7 +49,8 @@ public abstract class Collider implements IPositionMoving, IHitbox {
 
     @Override
     public boolean rotateTo(float degrees) {
-        return false;
+        rotation = degrees;
+        return true;
     }
 
     public boolean containsPoint(float otherX, float otherY) {
@@ -62,11 +69,11 @@ public abstract class Collider implements IPositionMoving, IHitbox {
         return containsPoint(this, other);
     }
 
-    public void containingChunks(ArrayList<Chunk> results) {
-        TEMP_SEARCHLIST.clear();
-        if (getTile() == null) return;
+    public ArrayList<Chunk> containingChunks(ArrayList<Chunk> results) {
+        if (getTile() == null) return results;
 
         // Breadth-first search containing chunks
+        TEMP_SEARCHLIST.clear();
         TEMP_SEARCHLIST.add(getTile().chunk);
         int i = 0;
         while (TEMP_SEARCHLIST.size() > i) {
@@ -79,5 +86,17 @@ public abstract class Collider implements IPositionMoving, IHitbox {
             }
             i++;
         }
+        return results;
+    }
+
+    @Override
+    public Map<Object, Object> debugProperties() {
+        return Utils.mapFrom(
+                "x", getX(),
+                "y", getY(),
+                "rotation", getRotation(),
+                "world", getWorld(),
+                "containingChunks", containingChunks(new ArrayList<>())
+        );
     }
 }

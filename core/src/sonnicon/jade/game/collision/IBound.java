@@ -13,14 +13,14 @@ public interface IBound {
 
     default boolean intersects(IPosition pos, IBound otherBound, IPosition otherPos) {
         assert Clock.getPhase() == Clock.ClockPhase.tick;
-        if (otherBound instanceof IBoundSquare) return intersects(pos, (IBoundSquare) otherBound, otherPos);
+        if (otherBound instanceof IBoundRectangle) return intersects(pos, (IBoundRectangle) otherBound, otherPos);
         if (otherBound instanceof IBoundCircle) return intersects(pos, (IBoundCircle) otherBound, otherPos);
 
         assert (otherBound != null);
         throw new UnsupportedOperationException("Unknown collision type.");
     }
 
-    boolean intersects(IPosition pos, IBoundSquare otherBound, IPosition otherPos);
+    boolean intersects(IPosition pos, IBoundRectangle otherBound, IPosition otherPos);
 
     boolean intersects(IPosition pos, IBoundCircle otherBound, IPosition otherPos);
 }

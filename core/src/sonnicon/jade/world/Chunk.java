@@ -29,7 +29,7 @@ public class Chunk implements IRenderable, IDebuggable, IPosition {
 
     public static final short CHUNK_SIZE = 16;
     public static final float CHUNK_WORLD_SIZE = CHUNK_SIZE * Tile.TILE_SIZE;
-    public static final IBoundSquare bound = () -> CHUNK_WORLD_SIZE / 2f;
+    public static final IBoundSquare bound = () -> CHUNK_WORLD_SIZE;
 
     public Chunk(short chunkX, short chunkY, World world) {
         this.chunkX = chunkX;
@@ -37,7 +37,7 @@ public class Chunk implements IRenderable, IDebuggable, IPosition {
         this.world = world;
         world.chunks.put(hashCode(), this);
 
-        this.collisionTree = new Quadtree(getX(), getY(), CHUNK_WORLD_SIZE / 2f, world);
+        this.collisionTree = new Quadtree(getX(), getY(), CHUNK_WORLD_SIZE, world);
 
         subRenderer = new SubRenderer();
         renderer.addRenderable(this);

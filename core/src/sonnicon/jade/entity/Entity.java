@@ -224,7 +224,6 @@ public class Entity implements ICopyable, IComparable, IDebuggable, IPositionMov
     }
 
     public void moveTo(float x, float y) {
-        //todo
         Tile tileBefore = getTile();
         this.x = x;
         this.y = y;
@@ -239,6 +238,7 @@ public class Entity implements ICopyable, IComparable, IDebuggable, IPositionMov
             }
             EventTypes.EntityMoveTileEvent.handle(events, this, tileBefore, tileAfter);
         }
+
         EventTypes.EntityMoveEvent.handle(events, this);
     }
 
@@ -267,8 +267,7 @@ public class Entity implements ICopyable, IComparable, IDebuggable, IPositionMov
     }
 
     public boolean rotateTo(float degrees) {
-        //todo rotation utils, incl. fix for (x <= -360)
-        this.rotation = (degrees + 360) % 360;
+        this.rotation = Utils.normalizeAngle(degrees);
         EventTypes.EntityMoveEvent.handle(events, this);
         return true;
     }

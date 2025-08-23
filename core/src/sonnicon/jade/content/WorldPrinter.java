@@ -8,7 +8,7 @@ import sonnicon.jade.entity.components.graphical.FowDrawComponent;
 import sonnicon.jade.entity.components.graphical.WallDrawComponent;
 import sonnicon.jade.entity.components.world.CollisionComponent;
 import sonnicon.jade.entity.components.world.TileTraitComponent;
-import sonnicon.jade.game.collision.SquareCollider;
+import sonnicon.jade.game.collision.RectangleCollider;
 import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.TextureSet;
 import sonnicon.jade.world.Tile;
@@ -32,7 +32,7 @@ public class WorldPrinter {
                 new DebugComponent(),
                 new WallDrawComponent(wallTextures),
                 new FowDrawComponent(),
-                new CollisionComponent(new SquareCollider(16f)),
+                new CollisionComponent(new RectangleCollider(16f)),
                 new TileTraitComponent(Traits.Trait.blockMovement)
         );
         wallEntity.moveTo(location);
@@ -42,10 +42,11 @@ public class WorldPrinter {
     public static Entity printRedboxEntity(Tile location) {
         Entity redboxEntity = new Entity();
         redboxEntity.addComponents(
-                new ChunkDrawComponent(new TextureSet("debug-redbox"), 16f, RenderLayer.objects),
-                new CollisionComponent(new SquareCollider(8f))
+                new ChunkDrawComponent(new TextureSet("debug-redbox"), 96f, 16f, RenderLayer.objects),
+                new CollisionComponent(new RectangleCollider(96f, 16f))
         );
         redboxEntity.moveTo(location);
+        redboxEntity.rotateTo(45f);
         return redboxEntity;
     }
 }

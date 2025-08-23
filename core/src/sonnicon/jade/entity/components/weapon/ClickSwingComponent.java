@@ -50,11 +50,13 @@ public class ClickSwingComponent extends Component implements IUsable {
         action.set(entity, 48f, targetX, targetY);
         Jade.renderer.particles.createParticle(CrossParticle.class, targetX, targetY).scale = 0.2f;
 
-        ClickSwingAction alreadySwinging = (ClickSwingAction) Actions.actionsList.stream().filter(a -> a instanceof ClickSwingAction).findFirst().orElse(null);
+        ClickSwingAction alreadySwinging = (ClickSwingAction) Actions.actionsList.stream()
+                .filter(a -> a instanceof ClickSwingAction).findFirst().orElse(null);
         if (alreadySwinging == null) {
             action.start();
         } else {
-            ClickSwingAction toCancel = (ClickSwingAction) alreadySwinging.then.stream().filter(a -> a instanceof ClickSwingAction).findFirst().orElse(null);
+            ClickSwingAction toCancel = (ClickSwingAction) alreadySwinging.then.stream()
+                    .filter(a -> a instanceof ClickSwingAction).findFirst().orElse(null);
             if (toCancel != null) {
                 toCancel.free();
                 alreadySwinging.then.remove(toCancel);

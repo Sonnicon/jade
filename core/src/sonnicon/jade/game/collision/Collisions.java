@@ -30,6 +30,7 @@ public class Collisions implements Clock.IOnTick {
             return;
         }
 
+        //todo rework to split over distance and not time
         float timeToNextTick = Clock.getTimeToNextTick();
         int numSteps = (int) Math.ceil(timeToNextTick / TICK_STEP_SIZE);
         float tickTimeStep = timeToNextTick / numSteps;
@@ -39,17 +40,19 @@ public class Collisions implements Clock.IOnTick {
             }
 
             //todo put an interpolation on this, so close is more precise (or binarysearch)
-            float clockTime = Clock.getTickNum() + tickTimeStep * step;
+            float clockTime = Clock.getTickNum() + tickTimeStep * (step + 1);
 
             // First, back to base positions
             for (ColliderMoveSchedule schedule : schedules) {
                 Collider collider = schedule.getCollider(clockTime);
                 collider.moveTo(schedule.getEntity());
+                collider.rotateTo(schedule.getEntity());
             }
             // Then, add all deltas
             for (ColliderMoveSchedule schedule : schedules) {
                 Collider collider = schedule.getCollider(clockTime);
                 collider.moveBy(schedule.getDeltaX(clockTime), schedule.getDeltaY(clockTime));
+                collider.rotateBy(schedule.getDeltaRotation(clockTime));
             }
 
             // Check collision
@@ -61,7 +64,7 @@ public class Collisions implements Clock.IOnTick {
                 for (Chunk chunk : TEMP_CHUNKS2) {
                     if (chunk.collisionTree.anyElementsIntersect(collider)) {
                         // Collision
-                        schedule.interrupt(Clock.getTickNum() + tickTimeStep * Math.max(0, step - 1) - 0.0001f);
+                        schedule.interrupt(Clock.getTickNum() + tickTimeStep * step);
                         collided = true;
 
                         // We only break here, may need to interrupt multiple (improbable, test)
@@ -79,6 +82,7 @@ public class Collisions implements Clock.IOnTick {
         for (ColliderMoveSchedule schedule : schedules) {
             Collider collider = schedule.getCollider(Clock.getTickNum());
             collider.moveTo(schedule.getEntity());
+            collider.rotateTo(schedule.getEntity());
         }
     }
 

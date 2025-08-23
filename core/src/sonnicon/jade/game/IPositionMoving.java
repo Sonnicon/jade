@@ -2,6 +2,7 @@ package sonnicon.jade.game;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import sonnicon.jade.util.Utils;
 
 public interface IPositionMoving extends IPosition {
 
@@ -29,9 +30,12 @@ public interface IPositionMoving extends IPosition {
 
 
     default boolean rotateBy(float degrees) {
-        //todo rotation utils, incl. fix for (x <= -360)
-        return rotateTo(this.getRotation() + degrees);
+        return rotateTo(Utils.normalizeAngle(this.getRotation() + degrees));
     }
 
     boolean rotateTo(float degrees);
+
+    default boolean rotateTo(IPosition other) {
+        return rotateTo(other.getRotation());
+    }
 }

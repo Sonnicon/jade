@@ -12,7 +12,7 @@ public interface IBoundCircle extends IBound {
         return dx * dx + dy * dy < getRadius() * getRadius();
     }
 
-    default boolean intersects(IPosition pos, IBoundSquare otherBound, IPosition otherPos) {
+    default boolean intersects(IPosition pos, IBoundRectangle otherBound, IPosition otherPos) {
         return otherBound.intersects(otherPos, this, pos);
     }
 

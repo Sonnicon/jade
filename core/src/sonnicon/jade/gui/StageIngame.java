@@ -84,8 +84,6 @@ public class StageIngame extends GuiStage {
             Clock.tickFast(1f);
         });
 
-        addToolbarButton("icon-error", () -> panelDebug.show());
-
         groupToolbar = new HorizontalGroup();
         ScrollPane paneToolbar = new ScrollPane(groupToolbar);
         tableToolbar = new Table(Gui.skin);

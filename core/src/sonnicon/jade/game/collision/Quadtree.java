@@ -1,9 +1,7 @@
 package sonnicon.jade.game.collision;
 
-import sonnicon.jade.Jade;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.IPosition;
-import sonnicon.jade.graphics.particles.CrossParticle;
 import sonnicon.jade.util.Directions;
 import sonnicon.jade.util.IDebuggable;
 import sonnicon.jade.util.Utils;
@@ -13,13 +11,11 @@ import java.util.ArrayList;
 import java.util.Map;
 
 //todo don't do oop nesting here, just a flat array
-//todo check if it works
 public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
     private final float x;
     private final float y;
-    private final float radius;
+    private final float diameter;
     private final World world;
-    public final Quadtree parent;
 
     public ArrayList<Collider> elements = new ArrayList<>();
     public Quadtree[] children = new Quadtree[4];
@@ -29,16 +25,11 @@ public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
             Directions.NORTHEAST, Directions.SOUTHEAST, Directions.SOUTHWEST, Directions.NORTHWEST
     };
 
-    public Quadtree(float x, float y, float radius, World world) {
-        this(x, y, radius, world, null);
-    }
-
-    public Quadtree(float x, float y, float radius, World world, Quadtree parent) {
+    public Quadtree(float x, float y, float diameter, World world) {
         this.x = x;
         this.y = y;
-        this.radius = radius;
+        this.diameter = diameter;
         this.world = world;
-        this.parent = parent;
     }
 
     public Quadtree add(Collider collider) {
@@ -49,7 +40,7 @@ public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
         }
 
         // Small enough for us to just add
-        if (QUADTREE_LAYER_SIZE > elements.size()) {
+        if (elements.size() < QUADTREE_LAYER_SIZE) {
             elements.add(collider);
             return this;
         }
@@ -58,9 +49,9 @@ public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
         if (children[0] == null) {
             for (int i = 0; i < 4; i++) {
                 children[i] = new Quadtree(
-                        x + Directions.directionX(SUBTREE_DIRECTIONS[i]) * (radius / 2f),
-                        y + Directions.directionY(SUBTREE_DIRECTIONS[i]) * (radius / 2f),
-                        radius / 2f, world, this);
+                        x + Directions.directionX(SUBTREE_DIRECTIONS[i]) * (diameter / 4f),
+                        y + Directions.directionY(SUBTREE_DIRECTIONS[i]) * (diameter / 4f),
+                        diameter / 2f, world);
             }
             rebuildDeepen();
         }
@@ -72,43 +63,14 @@ public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
                 if (subIndex == -1) {
                     subIndex = i;
                 } else {
-                    subIndex = -1;
+                    elements.add(collider);
+                    return this;
                 }
             }
         }
 
-        if (subIndex == -1) {
-            // Multiple subtrees: add here
-            elements.add(collider);
-            return this;
-        } else {
-            // One subtree
-            return children[subIndex].add(collider);
-        }
-    }
-
-    public Quadtree containing(Collider collider) {
-        assert Clock.getPhase() == Clock.ClockPhase.tick;
-        // It's not here or in children
-        if (!collider.intersects(this)) {
-            return null;
-        }
-
-        // It is in this quadreee
-        if (elements.contains(collider)) {
-            return this;
-        }
-
-        // Must be in child
-        if (children[0] == null) {
-            for (int i = 0; i < 4; i++) {
-                if (collider.intersects(children[i])) {
-                    return children[i].containing(collider);
-                }
-            }
-        }
-
-        throw new RuntimeException();
+        assert subIndex != -1;
+        return children[subIndex].add(collider);
     }
 
     public void remove(Collider collider) {
@@ -135,53 +97,29 @@ public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
 
     public boolean anyElementsIntersect(Collider collider) {
         assert Clock.getPhase() == Clock.ClockPhase.tick;
-        if (anyElementsIntersectHere(collider)) {
-            return true;
-        }
-        if (parent != null && anyElementsIntersectUp(collider)) {
-            return true;
-        }
-        if (children[0] != null && anyElementsIntersectDown(collider)) {
-            return true;
-        }
-        return false;
-    }
 
-    private boolean anyElementsIntersectUp(Collider collider) {
-        if (anyElementsIntersectHere(collider)) {
-            return true;
-        }
-        if (parent != null && anyElementsIntersectUp(collider)) {
-            return true;
-        }
-        return false;
-
-
-    }
-
-    private boolean anyElementsIntersectDown(Collider collider) {
-        if (anyElementsIntersectHere(collider)) {
-            return true;
-        }
-        if (children[0] == null) {
+        // This quadtree is not even involved
+        if (!collider.intersects(this)) {
             return false;
         }
-        for (int i = 0; i < 4; i++) {
-            if (children[i].anyElementsIntersectDown(collider)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
-    private boolean anyElementsIntersectHere(Collider collider) {
+        // Intersects something at this level
         for (Collider element : elements) {
             if (element == collider) continue;
             if (element.intersects(collider)) {
-                Jade.renderer.particles.createParticle(CrossParticle.class, element.getX(), element.getY());
                 return true;
             }
         }
+
+        // Intersects children
+        if (children[0] != null) {
+            for (int i = 0; i < 4; i++) {
+                if (children[i].anyElementsIntersect(collider)) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
@@ -206,8 +144,8 @@ public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
     }
 
     @Override
-    public float getRadius() {
-        return radius;
+    public float getDiameter() {
+        return diameter;
     }
 
     @Override
@@ -215,7 +153,7 @@ public class Quadtree implements IPosition, IBoundSquare, IHitbox, IDebuggable {
         return Utils.mapFrom(
                 "x", x,
                 "y", y,
-                "radius", radius,
+                "diameter", diameter,
                 "world", world,
                 "elements", elements,
                 "children", children

@@ -53,7 +53,7 @@ public class Content {
             swordEntity = ItemPrinter.printWeaponDebug(world.chunks.get(0).getTile((short) 2, (short) 2));
         }
 
-        WorldPrinter.printRedboxEntity(world.chunks.get(0).getTile((short) 3, (short) 3));
+        WorldPrinter.printRedboxEntity(world.chunks.get(0).getTile((short) 2, (short) 3));
 
 
         for (short i = 0; i < 32 * 4; i++) {

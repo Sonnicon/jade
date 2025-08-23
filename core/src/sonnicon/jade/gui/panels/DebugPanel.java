@@ -178,8 +178,6 @@ public class DebugPanel extends Panel {
     }
 
     public void show(Object target) {
-        // Clearing here might keep it not GCed, but it makes debugging easier
-        targets.clear();
         targets.push(target);
         show();
     }
@@ -187,6 +185,7 @@ public class DebugPanel extends Panel {
     @Override
     public void hide() {
         super.hide();
+        targets.clear();
     }
 
     private static final class DebugGlobal implements IDebuggable {

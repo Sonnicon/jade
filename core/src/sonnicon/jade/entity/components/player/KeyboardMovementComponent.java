@@ -8,13 +8,10 @@ import sonnicon.jade.content.ItemPrinter;
 import sonnicon.jade.entity.Entity;
 import sonnicon.jade.entity.components.Component;
 import sonnicon.jade.entity.components.storage.StorageComponent;
-import sonnicon.jade.entity.components.world.CollisionComponent;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.game.Gamestate;
 import sonnicon.jade.game.actions.Actions;
 import sonnicon.jade.game.actions.CollisionMoveAction;
-import sonnicon.jade.game.collision.Collider;
-import sonnicon.jade.game.collision.Collisions;
 import sonnicon.jade.generated.EventTypes;
 import sonnicon.jade.graphics.RenderLayer;
 import sonnicon.jade.graphics.draw.CachedDrawBatch;
@@ -83,13 +80,14 @@ public class KeyboardMovementComponent extends Component implements Clock.IOnFra
             storageComponent.storage.addEntity(ItemPrinter.printWeaponDebug(null));
             storageComponent.storage.addEntity(ItemPrinter.printItemRedbox(null));
             storageComponent.storage.addEntity(ItemPrinter.printItemDebug(null));
+            storageComponent.storage.addEntity(ItemPrinter.printItemDots(null));
 
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             if (!spacePressed) {
                 spacePressed = true;
-                Clock.tick(1f);
+                Clock.tick(0.1f);
             }
         } else {
             spacePressed = false;
@@ -103,6 +101,25 @@ public class KeyboardMovementComponent extends Component implements Clock.IOnFra
         if (!Gdx.input.isKeyPressed(Input.Keys.DOWN)) reqDir &= ~Directions.SOUTHWARD;
         if (!Gdx.input.isKeyPressed(Input.Keys.UP)) reqDir &= ~Directions.NORTHWARD;
 
+
+        if (reqDir != lastDir) {
+            lastDir = reqDir;
+
+            Actions.actionsList.stream()
+                    .filter(a -> a instanceof CollisionMoveAction)
+                    .forEach(p -> p.interrupt(Clock.getTickNum()));
+
+            if (!Directions.is(reqDir, Directions.NONE)) {
+                CollisionMoveAction cma = ObjectPool.obtain(CollisionMoveAction.class);
+                cma.set(entity, Directions.directionX(reqDir) * 24f, Directions.directionY(reqDir) * 24f, 0f);
+                cma.setDuration(0.6f);
+                cma.then(cma);
+                cma.start();
+            }
+        }
+
+
+/*
         if (reqDir == Directions.ALL) {
             if (lastDir != Directions.NONE) {
                 Actions.actionsList.stream()
@@ -153,7 +170,7 @@ public class KeyboardMovementComponent extends Component implements Clock.IOnFra
                 }
             }
         }
-
+*/
 
     }
 

@@ -18,10 +18,14 @@ public class StorableComponent extends Component {
     }
 
     public StorableComponent(String displayName, Drawable... icons) {
-        setup(displayName, icons);
+        setup(displayName, "", icons);
     }
 
-    protected StorableComponent setup(String displayName, Drawable... icons) {
+    public StorableComponent(String displayName, String displayDescription, Drawable... icons) {
+        setup(displayName, displayDescription, icons);
+    }
+
+    protected StorableComponent setup(String displayName, String displayDescription, Drawable... icons) {
         this.displayName = displayName;
         this.icons = icons;
         return this;
@@ -31,7 +35,7 @@ public class StorableComponent extends Component {
 
     @Override
     public StorableComponent copy() {
-        return ((StorableComponent) super.copy()).setup(displayName, icons);
+        return ((StorableComponent) super.copy()).setup(displayName, displayDescription, icons);
     }
 
     @Override

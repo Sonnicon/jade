@@ -20,16 +20,15 @@ public class TextParticle extends Particle {
 
     @Override
     public void render(GraphicsBatch batch, float delta, RenderLayer layer) {
-        super.render(batch, delta, layer);
 
         if (wiggle) {
-            float drawX = (float) (x + 4f * Math.sin(life + System.currentTimeMillis() / 600.));
+            float drawX = (float) (x + 4f * Math.sin(getProgress() * 10f));
             y += delta * 20f;
             cache.setPosition(drawX, y);
         } else {
             cache.setPosition(x, y);
         }
-        cache.setAlphas(Math.max(1f - life / lifetime, 0f));
+        cache.setAlphas(1f - getProgress());
         cache.draw((SpriteBatch) batch);
     }
 }

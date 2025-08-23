@@ -1,7 +1,6 @@
 package sonnicon.jade.game.actions;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -12,11 +11,9 @@ import sonnicon.jade.entity.components.world.PositionRelativeComponent;
 import sonnicon.jade.game.Clock;
 import sonnicon.jade.graphics.IRenderable;
 import sonnicon.jade.graphics.RenderLayer;
-import sonnicon.jade.graphics.Textures;
 import sonnicon.jade.graphics.draw.GraphicsBatch;
 import sonnicon.jade.util.RigidLineInterpolator;
 import sonnicon.jade.util.Utils;
-import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class ClickSwingAction extends Actions.Action implements IRenderable {
     public Entity weapon;
@@ -137,23 +134,15 @@ public class ClickSwingAction extends Actions.Action implements IRenderable {
     protected void onTick() {
     }
 
-
-    //todo remove most of this render stuff
-    public static ShapeDrawer shapeDrawer;
-
     @Override
     public void render(GraphicsBatch batch, float delta, RenderLayer layer) {
-        if (shapeDrawer == null) {
-            shapeDrawer = new ShapeDrawer((Batch) layer.batch, Textures.atlasFindRegion("blank"));
-        }
-
         PositionRelativeComponent relativeComponent = weapon.getComponent(PositionRelativeComponent.class);
         if (relativeComponent == null) return;
 
         float relx = relativeComponent.getBinding().getX();
         float rely = relativeComponent.getBinding().getY();
 
-        drawInterpolation(relx, rely, 1f, true);
+        drawInterpolation(relx, rely, 1f, true, layer);
 
         ClickSwingAction nextAction = (ClickSwingAction) then.stream()
                 .filter(a -> a instanceof ClickSwingAction)
@@ -165,22 +154,13 @@ public class ClickSwingAction extends Actions.Action implements IRenderable {
                     interpolator.endMidX + relx,
                     interpolator.endMidY + rely,
                     interpolator.endRotation);
-            nextAction.drawInterpolation(relx, rely, 0.5f, false);
+            nextAction.drawInterpolation(relx, rely, 0.5f, false, layer);
         }
 
-
-        shapeDrawer.circle(relx, rely, reachRange);
-
-
-        float chartProgress = (Clock.getTickNum() - timeStart) / duration;
-        // move
-        drawDebugChart(Interpolation.pow4, 0, chartProgress, Color.ORANGE);
-        drawDebugChart(Math.abs(interpolator.getRotationLength()) < 45f || interpolator.getLength() < 48f ?
-                        Interpolation.pow2In : Interpolation.swingIn,
-                1, chartProgress, Color.PURPLE);
+        layer.shapeDrawer.circle(relx, rely, reachRange);
     }
 
-    protected void drawInterpolation(float relx, float rely, float dotRadius, boolean trail) {
+    protected void drawInterpolation(float relx, float rely, float dotRadius, boolean trail, RenderLayer layer) {
         for (float progress = 0f; progress < 1f; progress += duration / 500f) {
             Vector2 direction = new Vector2(1f, 0f);
             float smoothRotate;
@@ -196,36 +176,14 @@ public class ClickSwingAction extends Actions.Action implements IRenderable {
             float posy = interpolator.interpolateY(smoothMove) + rely;
             Vector2 direction2 = new Vector2(direction);
             direction.add(posx, posy);
-            shapeDrawer.filledCircle(direction, dotRadius, Color.GREEN);
+            layer.shapeDrawer.filledCircle(direction, dotRadius, Color.GREEN);
 
             if (trail && progress < (Clock.getTickNum() - timeStart) / duration) {
                 Color color = Color.valueOf("00AAAA10");
                 direction2.scl(-1f);
                 direction2.add(posx, posy);
-                shapeDrawer.line(direction, direction2, color, 2f);
+                layer.shapeDrawer.line(direction, direction2, color, 2f);
             }
         }
-    }
-
-    protected void drawDebugChart(Interpolation interp, int offset, float progress, Color color) {
-        final float posX = 32f;
-        final float posY = 32f;
-        final float size = 96f;
-        final float resolution = 0.0001f;
-
-        float lastX = 0f;
-        for (float x = resolution; x < 1f; x += resolution) {
-            shapeDrawer.line(
-                    posX + size * lastX,
-                    posY + size * interp.apply(lastX) + size * offset,
-                    posX + size * x,
-                    posX + size * interp.apply(x) + size * offset,
-                    2f, color, color);
-            lastX = x;
-        }
-        shapeDrawer.rectangle(posX, posY + size * offset, size, size);
-        shapeDrawer.line(posX + size * progress, posY + size * offset,
-                posX + size * progress, posY + size * (offset + 1),
-                Color.GREEN, 1f);
     }
 }
